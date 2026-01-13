@@ -1,6 +1,7 @@
 {
   "name": "cine-connect",
   "version": "1.0.0",
+  "type": "module",
   "description": "CinéConnect Monorepo - Movie Platform",
   "main": "index.js",
   "scripts": {
