@@ -1,0 +1,31 @@
+{
+  "name": "cine-connect",
+  "version": "1.0.0",
+  "description": "CinéConnect Monorepo - Movie Platform",
+  "main": "index.js",
+  "scripts": {
+    "gg": "ts-node cine.ts gg",
+    "gt": "ts-node cine.ts gt",
+    "cb": "ts-node cine.ts cb",
+    "gac": "ts-node cine.ts gac",
+    "gp": "ts-node cine.ts gp",
+    "db": "ts-node cine.ts db",
+    "pipeline": "turbo run build test lint",
+    "dev": "turbo run dev",
+    "test": "turbo run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.0.0",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "ts-node": "^10.9.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}
