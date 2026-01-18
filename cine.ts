@@ -29,7 +29,8 @@ async function generateAICommit(diff: string): Promise<string> {
         let text = result.response.text().trim();
 
         return text.replace(/```/g, '').replace(/^(commit message:)/i, '').trim();
-    } catch (e) {
+    } catch (e: any) {
+        console.error(pc.yellow(`\n⚠️ AI Error: ${e.message}\n`));
         return `chore: update projects ${new Date().toLocaleDateString()}`;
     }
 }
