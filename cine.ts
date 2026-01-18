@@ -19,6 +19,7 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const command = process.argv[2];
 const args = process.argv.slice(3);
 
+
 async function generateAICommit(diff: string): Promise<string> {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
@@ -26,15 +27,28 @@ async function generateAICommit(diff: string): Promise<string> {
         Follow Conventional Commits. Return ONLY the message text, no quotes, no markdown, no explanations.`;
 
         const result = await model.generateContent(prompt);
-        let text = result.response.text().trim();
+        let aiResponse = result.response.text().trim();
 
-        return text.replace(/```/g, '').replace(/^(commit message:)/i, '').trim();
+        return aiResponse.replace(/```/g, '').replace(/^(commit message:)/i, '').trim();
     } catch (e: any) {
-        console.error(pc.yellow(`\n⚠️ AI Error: ${e.message}\n`));
-        return `chore: update projects ${new Date().toLocaleDateString()}`;
+        console.log(pc.yellow(`\n⚠️ Gemini is busy or Limit reached (Error: ${e.message})`));
+
+        const manualMsg = await text({
+            message: 'Please enter your commit message manually:',
+            placeholder: 'feat: add awesome feature',
+            validate: (value) => {
+                if (value.length === 0) return 'Commit message cannot be empty!';
+            },
+        });
+
+        if (isCancel(manualMsg)) {
+            cancel('Commit cancelled.');
+            process.exit(0);
+        }
+
+        return manualMsg as string;
     }
 }
-
 
 async function createComponent(name: string) {
     if (!name) {
@@ -42,17 +56,14 @@ async function createComponent(name: string) {
         return;
     }
 
-    // Ensure first letter is uppercase
     const componentName = name.charAt(0).toUpperCase() + name.slice(1);
     const dir = path.join(process.cwd(), 'apps', 'frontend', 'src', 'components');
     const filePath = path.join(dir, `${componentName}.tsx`);
 
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     if (fs.existsSync(filePath)) {
-        console.error(pc.red(`Error: Component ${componentName} already exists at ${filePath}`));
+        console.error(pc.red(`Error: Component ${componentName} already exists`));
         return;
     }
 
@@ -91,7 +102,7 @@ const commands: Record<string, () => void | Promise<void>> = {
         const branches = execSync('git branch --format="%(refname:short)"').toString().trim().split('\n');
 
         const selectedBranch = await select({
-            message: 'Select a branch to info:',
+            message: 'Select a branch:',
             options: branches.map(b => ({ value: b, label: b })),
         });
 
@@ -103,15 +114,20 @@ const commands: Record<string, () => void | Promise<void>> = {
         execSync(`git checkout ${selectedBranch}`, { stdio: 'inherit' });
     },
     gac: async () => {
-        console.log(pc.dim("Staging and thinking..."));
+        intro(pc.magenta(" CinéConnect Git Helper "));
+
         execSync('git add .');
         const diff = execSync('git diff --cached').toString();
-        if (!diff) return console.log("No changes detected.");
+        if (!diff) {
+            outro(pc.yellow("No changes detected."));
+            return;
+        }
 
+        console.log(pc.dim("Thinking with Gemini..."));
         const msg = await generateAICommit(diff.substring(0, 5000));
-        console.log(pc.green(`AI Message: `) + msg);
 
         execSync(`git commit -m "${msg}"`);
+        outro(pc.green(`✔ Committed with: `) + pc.italic(msg));
     },
     gp: () => {
         console.log(pc.cyan("Pushing to cloud..."));
@@ -123,29 +139,22 @@ const commands: Record<string, () => void | Promise<void>> = {
             execSync('docker-compose up -d', { stdio: 'inherit' });
             console.log(pc.green("Database is running on port 5432"));
         } catch (e) {
-            console.error(pc.red("Docker is not running or docker-compose.yml is missing."));
+            console.error(pc.red("Docker failed. Check if Docker is running."));
         }
     },
     gen: async () => {
         const type = args[0];
         const name = args[1];
-
-        if (type === 'component') {
-            await createComponent(name);
-        } else {
-            console.log(pc.yellow("Usage: pnpm cine gen component <Name>"));
-        }
+        if (type === 'component') await createComponent(name);
+        else console.log(pc.yellow("Usage: pnpm cine gen component <Name>"));
     },
     gg: () => {
-        console.log(pc.magenta("\nThe awesome CinéConnect CLI Helpers:"));
+        console.log(pc.magenta("\nCinéConnect CLI Menu:"));
         console.table([
-            { cmd: "p gt", task: "Get Current Branch" },
-            { cmd: "p cb <name>", task: "Change Branch" },
-            { cmd: "p gac", task: "Add + AI Commit" },
+            { cmd: "p gac", task: "Smart AI Commit (with Manual Fallback)" },
             { cmd: "p gp", task: "Push to GitHub" },
             { cmd: "p db", task: "Start Docker Database" },
             { cmd: "p cine gen component <Name>", task: "Generate React Component" },
-            { cmd: "p gg", task: "Show this help menu" },
         ]);
     }
 };
@@ -153,7 +162,7 @@ const commands: Record<string, () => void | Promise<void>> = {
 if (commands[command]) {
     const result = commands[command]();
     if (result instanceof Promise) {
-        result.catch(err => console.error("Command failed:", err.message));
+        result.catch(err => console.error(pc.red("Command failed:"), err.message));
     }
 } else {
     console.log(pc.yellow("Unknown command. Use 'pnpm gg' for help."));
