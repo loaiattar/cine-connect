@@ -13,7 +13,8 @@
     "db": "ts-node cine.ts db",
     "pipeline": "turbo run build test lint",
     "dev": "turbo run dev",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "cine": "ts-node cine.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +25,9 @@
     "dotenv": "^16.4.7"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.11.0",
     "@types/node": "^20.17.10",
+    "picocolors": "^1.1.1",
     "ts-node": "^10.9.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
