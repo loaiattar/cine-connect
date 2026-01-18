@@ -11,11 +11,11 @@ COPY apps/frontend/package.json ./apps/frontend/
 RUN pnpm install
 
 COPY . .
-COPY . .
 
 RUN pnpm --filter frontend build
 
 FROM nginx:stable-alpine
 COPY --from=build /app/apps/frontend/dist /usr/share/nginx/html
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
