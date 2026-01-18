@@ -11,6 +11,8 @@
     "gac": "ts-node cine.ts gac",
     "gp": "ts-node cine.ts gp",
     "db": "ts-node cine.ts db",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
     "pipeline": "turbo run build test lint",
     "dev": "turbo run dev",
     "test": "turbo run test",
