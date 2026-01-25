@@ -132,6 +132,28 @@ const commands: Record<string, () => void | Promise<void>> = {
     gp: () => {
         console.log(pc.cyan("Pushing to cloud..."));
         execSync('git push', { stdio: 'inherit' });
+
+        console.log(pc.cyan("\n👀 Watching pipeline..."));
+        try {
+            // gh run watch automatically finds the latest run for the current branch
+            execSync('gh run watch', { stdio: 'inherit' });
+        } catch (e) {
+            console.log(pc.yellow("\n⚠️  Could not watch pipeline."));
+            console.log(pc.dim("Make sure GitHub CLI is installed and authenticated:"));
+            console.log(pc.dim("1. Restart your terminal"));
+            console.log(pc.dim("2. Run: gh auth login"));
+        }
+    },
+    ci: () => {
+        console.log(pc.cyan("👀 Watching latest pipeline run..."));
+        try {
+            execSync('gh run watch', { stdio: 'inherit' });
+        } catch (e) {
+            console.log(pc.yellow("\n⚠️  Could not watch pipeline."));
+            console.log(pc.dim("Make sure GitHub CLI is installed and authenticated:"));
+            console.log(pc.dim("1. Restart your terminal"));
+            console.log(pc.dim("2. Run: gh auth login"));
+        }
     },
     db: () => {
         console.log(pc.cyan("Starting Database Container..."));
@@ -152,7 +174,8 @@ const commands: Record<string, () => void | Promise<void>> = {
         console.log(pc.magenta("\nCinéConnect CLI Menu:"));
         console.table([
             { cmd: "p gac", task: "Smart AI Commit (with Manual Fallback)" },
-            { cmd: "p gp", task: "Push to GitHub" },
+            { cmd: "p gp", task: "Push to GitHub (and watch pipeline)" },
+            { cmd: "p ci", task: "Watch Pipeline Logs" },
             { cmd: "p db", task: "Start Docker Database" },
             { cmd: "p cine gen component <Name>", task: "Generate React Component" },
         ]);
