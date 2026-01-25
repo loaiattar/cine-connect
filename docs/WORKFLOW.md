@@ -28,7 +28,7 @@ Create a new branch from `develop`. The branch name should include the Issue ID.
 **Example:**
 If working on Issue #42 (Add Login Page):
 ```bash
-git checkout develop
+./p cb develop
 git pull origin develop
 git checkout -b feat/42-add-login-page
 ```
@@ -45,6 +45,7 @@ git add .
 Push your branch to GitHub.
 ```bash
 ./p gp
+# The pipeline logs will automatically stream in your terminal 🚀
 ```
 
 1.  Go to GitHub and create a **Pull Request (PR)**.
