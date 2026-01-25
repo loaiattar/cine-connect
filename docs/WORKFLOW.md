@@ -14,23 +14,15 @@ Before writing code, create an Issue on GitHub to track the work.
 - **Assignee**: Assign it to yourself.
 
 ### Step 2: Create a Branch
-Create a new branch from `develop`. The branch name should include the Issue ID.
+**The Easy Way (Recommended):**
+1.  Go to the Issue on GitHub.
+2.  Click **"Create a branch"** in the sidebar.
+3.  GitHub will automatically create the branch from `develop` (ensure `develop` is your Default Branch).
+4.  Copy the commands GitHub gives you:
 
-**Naming Convention:**
-`{type}/{issue-number}-{description}`
-
-**Types:**
-- `feat`: New features
-- `fix`: Bug fixes
-- `refactor`: Code cleanup
-- `chore`: Config changes
-
-**Example:**
-If working on Issue #42 (Add Login Page):
 ```bash
-./p cb develop
-git pull origin develop
-git checkout -b feat/42-add-login-page
+git fetch origin
+git checkout feat/42-add-login-page
 ```
 
 ### Step 3: Develop & Commit
