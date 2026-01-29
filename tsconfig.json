@@ -8,12 +8,24 @@
         ],
         "skipLibCheck": true,
         "strict": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "noEmit": true
     },
     "ts-node": {
         "esm": true
     },
     "include": [
         "cine.ts"
+    ],
+    "references": [
+        {
+            "path": "./apps/frontend"
+        },
+        {
+            "path": "./apps/backend"
+        },
+        {
+            "path": "./packages/shared"
+        }
     ]
 }
