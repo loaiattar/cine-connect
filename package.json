@@ -5,18 +5,18 @@
   "description": "CinéConnect Monorepo - Movie Platform",
   "main": "index.js",
   "scripts": {
-    "gg": "ts-node --esm cine.ts gg",
-    "gt": "ts-node --esm cine.ts gt",
-    "cb": "ts-node --esm cine.ts cb",
-    "gac": "ts-node --esm cine.ts gac",
-    "gp": "ts-node --esm cine.ts gp",
-    "db": "ts-node --esm cine.ts db",
+    "gg": "tsx cine.ts gg",
+    "gt": "tsx cine.ts gt",
+    "cb": "tsx cine.ts cb",
+    "gac": "tsx cine.ts gac",
+    "gp": "tsx cine.ts gp",
+    "db": "tsx cine.ts db",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "pipeline": "turbo run build test lint",
     "dev": "turbo run dev",
     "test": "turbo run test",
-    "cine": "ts-node --esm cine.ts"
+    "cine": "tsx cine.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +30,7 @@
     "@clack/prompts": "^0.11.0",
     "@types/node": "^20.17.10",
     "picocolors": "^1.1.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   }

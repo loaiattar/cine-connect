@@ -11,18 +11,25 @@ pnpm install
 
 ### 2. Enable CLI Shortcut
 
-The project includes cross-platform wrapper scripts that let you use `p` instead of `pnpm`:
+The project includes cross-platform wrapper scripts that let you use `./p` instead of `pnpm`:
 
-#### Windows
-✅ **No setup needed** - Works automatically in PowerShell and Command Prompt
-
-#### macOS/Linux
-Run once after cloning to make the script executable:
+**macOS/Linux/Git Bash:**
 ```bash
-chmod +x p
+chmod +x p          # One-time setup
+./p gg              # Use the shortcut
 ```
 
-Now you can use `p gac`, `p gg`, etc. instead of `pnpm gac`, `pnpm gg`.
+**Windows PowerShell:**
+```powershell
+.\p gg              # Use the shortcut (no setup needed)
+```
+
+**Windows Command Prompt:**
+```cmd
+p gg                # Use the shortcut (no setup needed)
+```
+
+Now you can use `./p gac`, `./p gg`, etc. instead of `pnpm gac`, `pnpm gg`.
 
 ## Available Commands
 
