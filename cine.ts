@@ -1,53 +1,27 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as dotenv from "dotenv";
 import pc from "picocolors";
 import { intro, outro, select, isCancel, cancel, text } from "@clack/prompts";
-
-dotenv.config();
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) {
-    console.error(pc.red("Error: GEMINI_API_KEY is not defined in .env file"));
-    process.exit(1);
-}
-
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const command = process.argv[2];
 const args = process.argv.slice(3);
 
+async function askForCommitMessage(): Promise<string> {
+    const manualMsg = await text({
+        message: 'Enter commit message:',
+        placeholder: 'feat: add awesome feature',
+        validate: (value) => {
+            if (value.length === 0) return 'Commit message cannot be empty!';
+        },
+    });
 
-async function generateAICommit(diff: string): Promise<string> {
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-        const prompt = `Write a professional git commit message based on this diff: ${diff}. 
-        Follow Conventional Commits. Return ONLY the message text, no quotes, no markdown, no explanations.`;
-
-        const result = await model.generateContent(prompt);
-        let aiResponse = result.response.text().trim();
-
-        return aiResponse.replace(/```/g, '').replace(/^(commit message:)/i, '').trim();
-    } catch (e: any) {
-        console.log(pc.yellow(`\n⚠️ Gemini is busy or Limit reached (Error: ${e.message})`));
-
-        const manualMsg = await text({
-            message: 'Please enter your commit message manually:',
-            placeholder: 'feat: add awesome feature',
-            validate: (value) => {
-                if (value.length === 0) return 'Commit message cannot be empty!';
-            },
-        });
-
-        if (isCancel(manualMsg)) {
-            cancel('Commit cancelled.');
-            process.exit(0);
-        }
-
-        return manualMsg as string;
+    if (isCancel(manualMsg)) {
+        cancel('Commit cancelled.');
+        process.exit(0);
     }
+
+    return manualMsg as string;
 }
 
 async function createComponent(name: string) {
@@ -123,8 +97,7 @@ const commands: Record<string, () => void | Promise<void>> = {
             return;
         }
 
-        console.log(pc.dim("Thinking with Gemini..."));
-        const msg = await generateAICommit(diff.substring(0, 5000));
+        const msg = await askForCommitMessage();
 
         execSync(`git commit -m "${msg}"`);
         outro(pc.green(`✔ Committed with: `) + pc.italic(msg));
