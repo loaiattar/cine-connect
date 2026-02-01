@@ -35,7 +35,7 @@ Now you can use `./p gac`, `./p gg`, etc. instead of `pnpm gac`, `pnpm gg`.
 
 | Command | Description |
 |---------|-------------|
-| `p gac` | Add all files and commit (AI-generated message) |
+| `p gac` | Add all files and commit (manual) |
 | `p gp` | Push to GitHub and watch pipeline |
 | `p cb` | Change branch (interactive) |
 | `p gt` | Get current branch |
