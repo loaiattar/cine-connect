@@ -32,6 +32,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@cine-connect/shared": [
+        "../../packages/shared/src/index.ts"
       ]
     }
   },
