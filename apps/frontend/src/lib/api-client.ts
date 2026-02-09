@@ -2,6 +2,8 @@ export const ApiClientConfig = {
     BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
 } as const;
 
+import type { ApiResponse } from '@cine-connect/shared';
+
 export const HttpMethod = {
     GET: 'GET',
     POST: 'POST',
@@ -25,7 +27,7 @@ export class ApiClient {
         this.baseUrl = baseUrl;
     }
 
-    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<T> {
+    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
         const url = `${this.baseUrl}${endpoint}`;
 
         const config: RequestInit = {
@@ -49,25 +51,28 @@ export class ApiClient {
         }
 
         if (response.status === 204) {
-            return {} as T;
+            return {
+                success: true,
+                data: {} as T,
+            };
         }
 
-        return (await response.json()) as T;
+        return (await response.json()) as ApiResponse<T>;
     }
 
-    get<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
+    get<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
         return this.request<T>(endpoint, HttpMethod.GET, undefined, headers);
     }
 
-    post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+    post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
         return this.request<T>(endpoint, HttpMethod.POST, body, headers);
     }
 
-    put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+    put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
         return this.request<T>(endpoint, HttpMethod.PUT, body, headers);
     }
 
-    delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
+    delete<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
         return this.request<T>(endpoint, HttpMethod.DELETE, undefined, headers);
     }
 }
