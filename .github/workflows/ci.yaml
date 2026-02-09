@@ -35,4 +35,4 @@ jobs:
         run: pnpm turbo run lint
 
       - name: Build Projects
-        run: pnpm turbo run build --filter=!@cine-connect/shared
+        run: pnpm turbo run build --filter='!@cine-connect/shared'
