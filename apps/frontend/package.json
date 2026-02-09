@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-router": "^1.159.3",
+    "@cine-connect/shared": "workspace:*",
     "clsx": "^2.1.1",
     "framer-motion": "^12.33.0",
     "lucide-react": "^0.563.0",
