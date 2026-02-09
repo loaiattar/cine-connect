@@ -15,7 +15,7 @@ export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
 export interface ApiRequestError {
     status: number;
     message: string;
-    data: any;
+    data: unknown;
 }
 
 export class ApiClient {
