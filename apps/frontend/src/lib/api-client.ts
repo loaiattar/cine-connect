@@ -1,0 +1,75 @@
+export const ApiClientConfig = {
+    BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+} as const;
+
+export const HttpMethod = {
+    GET: 'GET',
+    POST: 'POST',
+    PUT: 'PUT',
+    DELETE: 'DELETE',
+    PATCH: 'PATCH',
+} as const;
+
+export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod];
+
+export interface ApiRequestError {
+    status: number;
+    message: string;
+    data: unknown;
+}
+
+export class ApiClient {
+    private baseUrl: string;
+
+    constructor(baseUrl: string = ApiClientConfig.BASE_URL) {
+        this.baseUrl = baseUrl;
+    }
+
+    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<T> {
+        const url = `${this.baseUrl}${endpoint}`;
+
+        const config: RequestInit = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers,
+            },
+            body: body ? JSON.stringify(body) : undefined,
+        };
+
+        const response = await fetch(url, config);
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            throw {
+                status: response.status,
+                message: errorBody.message || `API Error: ${response.statusText}`,
+                data: errorBody
+            } as ApiRequestError;
+        }
+
+        if (response.status === 204) {
+            return {} as T;
+        }
+
+        return (await response.json()) as T;
+    }
+
+    get<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
+        return this.request<T>(endpoint, HttpMethod.GET, undefined, headers);
+    }
+
+    post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+        return this.request<T>(endpoint, HttpMethod.POST, body, headers);
+    }
+
+    put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+        return this.request<T>(endpoint, HttpMethod.PUT, body, headers);
+    }
+
+    delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
+        return this.request<T>(endpoint, HttpMethod.DELETE, undefined, headers);
+    }
+}
+
+export const apiClient = new ApiClient();
