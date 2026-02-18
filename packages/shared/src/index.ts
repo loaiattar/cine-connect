@@ -7,5 +7,5 @@ export interface UserDTO {
     name: string;
 }
 
-export * from './api';
-export * from './model';
+export * from './api.js';
+export * from './model.js';
