@@ -17,6 +17,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.0.0",
   "dependencies": {
+    "@cine-connect/shared": "workspace:*",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",

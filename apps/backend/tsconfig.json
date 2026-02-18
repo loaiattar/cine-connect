@@ -1,22 +1,33 @@
 {
     "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "outDir": "./dist",
-        "rootDir": "./src",
+        "target": "ES2020",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "lib": [
+            "ES2020"
+        ],
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "composite": true,
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo"
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
+    ],
+    "references": [
+        {
+            "path": "../../packages/shared"
+        }
     ]
 }

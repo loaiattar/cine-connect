@@ -2,18 +2,18 @@
     "name": "@cine-connect/shared",
     "version": "0.0.0",
     "private": true,
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "type": "module",
+    "main": "./dist/api.js",
+    "types": "./dist/api.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/api.d.ts",
+            "import": "./dist/api.js"
+        }
+    },
     "scripts": {
         "build": "tsc",
         "dev": "tsc -w"
-    },
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.js"
-        }
     },
     "devDependencies": {
         "typescript": "^5.7.2"
