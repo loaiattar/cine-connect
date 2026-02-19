@@ -2,7 +2,6 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
-import { Globe } from "@/components/ui/globe";
 import {
   Carousel,
   CarouselContent,
@@ -81,9 +80,8 @@ export const Route = createRootRoute({
         <TanStackRouterDevtools position="bottom-right" />
       </div>
 
-      {/* ✅ Globe en overlay */}
       <div className="absolute bottom-[-150px] right-[-150px] w-[300px] h-[300px] md:w-[500px] md:h-[500px] pointer-events-none">
-        <Globe />
+
       </div>
     </div>
   ),
