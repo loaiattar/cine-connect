@@ -1,15 +1,154 @@
-import { createFileRoute } from '@tanstack/react-router'
-
+import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  Clapperboard,
+  MessageCircle,
+  Play,
+  Star,
+  Users,
+} from "lucide-react";
 
 export const Route = createFileRoute('/')({
     component: Index,
 })
 
 function Index() {
+    const features = [
+        {
+            icon: Clapperboard,
+            title: "Catalogue Immense",
+            text: "Explorez des milliers de films avec des filtres avancés par genre, année et note",
+            color: "text-red-500",
+        },
+        {
+            icon: Star,
+            title: "Notez & Critiquez",
+            text: "Partagez vos avis avec un système de notation par étoiles et des critiques détaillées",
+            color: "text-yellow-400",
+        },
+        {
+            icon: Users,
+            title: "Communauté Active",
+            text: "Suivez d'autres cinéphiles et construisez votre réseau de passionnés de cinéma",
+            color: "text-red-500",
+        },
+        {
+            icon: MessageCircle,
+            title: "Chat en Temps Réel",
+            text: "Discutez en direct avec la communauté et échangez en privé avec vos abonnés",
+            color: "text-yellow-400",
+        },
+    ];
+
     return (
-        <div className="p-2">
-            <h3>Welcome to CineConnect!</h3>
-            <p className="text-blue-500">This is a test of Tailwind CSS</p>
+        <div className="mx-auto max-w-5xl bg-black text-white">
+            <section className="px-6 py-20 text-center border-b border-zinc-800 bg-[radial-gradient(circle_at_top,rgba(220,38,38,0.2),transparent_40%),linear-gradient(to_bottom,#020202,#070707)]">
+                <div className="mx-auto max-w-3xl">
+                    <h1 className="text-5xl sm:text-6xl font-bold tracking-tight flex items-center justify-center gap-3">
+                        <Clapperboard className="text-red-500 w-12 h-12" />
+                        <span>
+                            <span className="text-red-500">Ciné</span>
+                            <span className="text-orange-400">Connect</span>
+                        </span>
+                    </h1>
+                    <p className="mt-6 text-xl text-zinc-100">
+                        La plateforme collaborative pour les passionnés de cinéma
+                    </p>
+                    <p className="mt-3 text-zinc-400">
+                        Découvrez, notez et discutez de vos films préférés avec une
+                        communauté de cinéphiles du monde entier
+                    </p>
+
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2">
+                            <Play className="w-4 h-4" />
+                            Commencer l'aventure
+                        </button>
+                        <button className="rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-6 py-3 font-semibold">
+                            Se connecter
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section className="px-6 py-16 border-b border-zinc-800">
+                <h2 className="text-4xl font-bold text-center">
+                    Pourquoi <span className="text-red-500">CinéConnect</span> ?
+                </h2>
+                <p className="text-center text-zinc-400 mt-3">
+                    Une expérience cinématographique complète et sociale
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+                    {features.map((feature) => {
+                        const Icon = feature.icon;
+                        return (
+                            <article
+                                key={feature.title}
+                                className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-6"
+                            >
+                                <Icon className={`w-7 h-7 ${feature.color}`} />
+                                <h3 className="mt-4 text-2xl font-semibold">{feature.title}</h3>
+                                <p className="mt-2 text-zinc-400">{feature.text}</p>
+                            </article>
+                        );
+                    })}
+                </div>
+            </section>
+
+            <section className="px-6 py-16 border-b border-zinc-800">
+                <h2 className="text-4xl font-bold">
+                    Une expérience <span className="text-yellow-400">immersive</span>
+                </h2>
+                <p className="mt-4 text-zinc-400">
+                    Plongez dans l'univers du cinéma avec une interface professionnelle
+                    conçue pour les vrais passionnés.
+                </p>
+
+                <ul className="mt-8 space-y-4">
+                    <li className="flex items-start gap-3">
+                        <span className="text-red-500">●</span>
+                        <span>Fiches films détaillées avec bandes-annonces et synopsis</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <span className="text-red-500">●</span>
+                        <span>Statistiques personnelles et historique de visionnage</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                        <span className="text-red-500">●</span>
+                        <span>Recommandations personnalisées basées sur vos goûts</span>
+                    </li>
+                </ul>
+
+                <button className="mt-8 rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold">
+                    Rejoindre CinéConnect
+                </button>
+            </section>
+
+            <section className="px-6 py-20 text-center border-b border-zinc-800">
+                <h2 className="text-5xl font-bold">Prêt à rejoindre la communauté ?</h2>
+                <p className="mt-4 text-zinc-400">
+                    Des milliers de cinéphiles vous attendent pour partager leur passion du 7ème art
+                </p>
+                <button className="mt-8 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-8 py-3 font-semibold inline-flex items-center gap-2">
+                    <Play className="w-4 h-4" />
+                    Commencer maintenant
+                </button>
+            </section>
+
+            <footer className="px-6 py-8 text-center text-zinc-500">
+                <p className="font-semibold text-zinc-300">CinéConnect</p>
+                <div className="mt-3">
+                    <Link
+                        to="/ancienne-page"
+                        className="text-sm text-yellow-400 hover:text-yellow-300 underline"
+                    >
+                        Voir l'ancienne page
+                    </Link>
+                </div>
+                <p className="mt-2 text-sm">
+                    © 2026 CinéConnect. La plateforme des passionnés de cinéma.
+                </p>
+            </footer>
         </div>
     )
 }
