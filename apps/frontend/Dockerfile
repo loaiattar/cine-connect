@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-slim AS build
+import {e:20-slim AS build
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
