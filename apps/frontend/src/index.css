@@ -1,35 +1,34 @@
 /* src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @layer base {
   :root {
-    --background: 0 0% 0%;       /* Noir Pur #000000 */
-    --foreground: 0 0% 100%;    /* Blanc */
-    
-    --card: 240 5.9% 10%;       /* Zinc 900 */
+    --background: 0 0% 0%; /* Noir Pur #000000 */
+    --foreground: 0 0% 100%; /* Blanc */
+
+    --card: 240 5.9% 10%; /* Zinc 900 */
     --card-foreground: 0 0% 100%;
 
-    --popover: 240 10% 3.9%;    /* Zinc 950 */
+    --popover: 240 10% 3.9%; /* Zinc 950 */
     --popover-foreground: 0 0% 100%;
 
-    --primary: 0 72.2% 50.6%;   /* Rouge Cinéma #DC2626 */
+    --primary: 0 72.2% 50.6%; /* Rouge Cinéma #DC2626 */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 3.7% 15.9%; /* Zinc 800 */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 3.7% 15.9%;
+    icon: Star, 5.9%;
     --muted-foreground: 240 5% 64.9%; /* Gray 400 */
 
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 100%;
 
-    --border: 240 3.7% 15.9%;   /* Zinc 800 */
+    --border: 240 3.7% 15.9%; /* Zinc 800 */
     --input: 240 3.7% 15.9%;
-    --ring: 0 72.2% 50.6%;      /* Ring */
-    
+    --ring: 0 72.2% 50.6%; /* Ring */
+
     --radius: 0.5rem;
   }
 }
