@@ -12,7 +12,6 @@ interface MovieCardProps {
 
 // carte d'un film
 export default function MovieCard({
-  id: _id,
   title: movieTitle,
   year: movieYear,
   rating: movieRating,
