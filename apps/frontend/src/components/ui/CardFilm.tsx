@@ -23,10 +23,12 @@ export default function MovieCard({
   // est-ce que la souris est sur la carte
   const [hovered, setHovered] = useState(false)
 
-  console.log(hovered) // temporaire
-
-  return (
-    <div className="relative rounded-xl overflow-hidden w-full h-[300px]">
+    return (
+    <div
+      className="relative rounded-xl overflow-hidden w-full h-[300px]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
 
       {/* image qui couvre toute la carte */}
       <img
@@ -34,6 +36,11 @@ export default function MovieCard({
         alt="affiche du film"
         className="w-full h-full object-cover"
       />
+
+      {/* overlay sombre au hover */}
+      {hovered && (
+        <div className="absolute inset-0 bg-black/50" />
+      )}
 
       {/* gradient sombre en bas */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
