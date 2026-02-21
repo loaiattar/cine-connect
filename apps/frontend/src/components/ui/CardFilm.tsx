@@ -15,7 +15,7 @@ export default function MovieCard({
   id: _id,
   title: movieTitle,
   year: movieYear,
-  rating: _rating,
+  rating: movieRating,
   imageUrl,
   genres: _genres,
 }: MovieCardProps) {
@@ -38,10 +38,18 @@ export default function MovieCard({
       {/* gradient sombre en bas */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
 
-      {/* titre et année en bas */}
-      <div className="absolute bottom-0 left-0 right-0 p-3">
-        <p className="font-bold text-white text-sm">{movieTitle}</p>
-        <p className="text-gray-400 text-xs">{movieYear}</p>
+      {/* titre, année et note en bas */}
+      <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
+        <div>
+          <p className="font-bold text-white text-sm">{movieTitle}</p>
+          <p className="text-gray-400 text-xs">{movieYear}</p>
+        </div>
+
+        {/* étoile + note à droite */}
+        <div className="flex items-center gap-1">
+          <span className="text-yellow-400 text-sm">★</span>
+          <span className="text-white text-sm font-bold">{movieRating}</span>
+        </div>
       </div>
 
     </div>
