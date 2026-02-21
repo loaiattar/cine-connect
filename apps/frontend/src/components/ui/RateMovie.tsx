@@ -13,6 +13,7 @@ export default function RateMovie({ onRate }: RateMovieProps) {
   function handleClick(i: number) {
     const newRating = i === rating ? 0 : i
     setRating(newRating)
+    setHovered(0) 
     onRate(newRating)
   }
 
