@@ -23,7 +23,7 @@ export default function MovieCard({
   // est-ce que la souris est sur la carte
   const [hovered, setHovered] = useState(false)
 
-    return (
+  return (
     <div
       className="relative rounded-xl overflow-hidden w-full h-[300px]"
       onMouseEnter={() => setHovered(true)}
