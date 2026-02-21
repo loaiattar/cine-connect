@@ -18,6 +18,9 @@ export default function RateMovie({ onRate: _onRate }: RateMovieProps) {
    
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: '#1e2a3a' }}>
 
+      Section Title
+      <p className="font-bold text-white mb-3">Noter ce film</p>
+
     </div>
   )
 }
