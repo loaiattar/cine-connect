@@ -9,18 +9,19 @@ export default function RateMovie({ onRate }: RateMovieProps) {
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
 
-  // quand on clique sur une étoile
+  // quand on clique : si c'est la même étoile on remet à 0
   function handleClick(i: number) {
-    setRating(i)
-    onRate(i)
+    const newRating = i === rating ? 0 : i
+    setRating(newRating)
+    onRate(newRating)
   }
 
-  // je détermine la couleur de chaque étoile
+  // quand on survole, on montre le hover, sinon on montre la note
   function getColor(i: number) {
-    if (i <= hovered || i <= rating) {
-      return "text-yellow-400"
+    if (hovered > 0) {
+      return i <= hovered ? "text-yellow-400" : "text-gray-400"
     }
-    return "text-gray-400"
+    return i <= rating ? "text-yellow-400" : "text-gray-400"
   }
 
   return (
