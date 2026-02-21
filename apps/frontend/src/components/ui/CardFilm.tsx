@@ -13,8 +13,8 @@ interface MovieCardProps {
 // carte d'un film
 export default function MovieCard({
   id: _id,
-  title: _title,
-  year: _year,
+  title: movieTitle,
+  year: movieYear,
   rating: _rating,
   imageUrl,
   genres: _genres,
@@ -35,8 +35,14 @@ export default function MovieCard({
         className="w-full h-full object-cover"
       />
 
-     
+      {/* gradient sombre en bas */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
+
+      {/* titre et année en bas */}
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <p className="font-bold text-white text-sm">{movieTitle}</p>
+        <p className="text-gray-400 text-xs">{movieYear}</p>
+      </div>
 
     </div>
   )
