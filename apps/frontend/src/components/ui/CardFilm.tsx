@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState } from "react"
 
+// props du composant
 interface MovieCardProps {
-  id: number;
-  title: string;
-  year: number;
-  rating: number;
-  imageUrl: string;
-  genres: string[]; // ex: ["Action", "Aventure"]
+  id: number
+  title: string
+  year: number
+  rating: number
+  imageUrl: string
+  genres: string[] // ex: ["Action", "Aventure"]
 }
 
 // carte d'un film
@@ -15,7 +16,7 @@ export default function MovieCard({
   title: _title,
   year: _year,
   rating: _rating,
-  imageUrl: _imageUrl,
+  imageUrl,
   genres: _genres,
 }: MovieCardProps) {
 
@@ -25,7 +26,14 @@ export default function MovieCard({
   console.log(hovered) // temporaire
 
   return (
-    <div className="relative rounded-xl overflow-hidden w-full">
+    <div className="relative rounded-xl overflow-hidden w-full h-[300px]">
+
+      {/* image qui couvre toute la carte */}
+      <img
+        src={imageUrl}
+        alt="affiche du film"
+        className="w-full h-full object-cover"
+      />
 
     </div>
   )
