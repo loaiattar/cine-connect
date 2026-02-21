@@ -5,7 +5,7 @@ interface RateMovieProps {
 }
 
 // composant pour noter un film
-export default function RateMovie({ onRate: _onRate }: RateMovieProps) {
+export default function RateMovie({ onRate }: RateMovieProps) {
 
   // note choisie par l'utilisateur (0 = pas encore noté)
   const [rating, setRating] = useState(0)
@@ -13,23 +13,27 @@ export default function RateMovie({ onRate: _onRate }: RateMovieProps) {
   // étoile survolée en ce moment
   const [hovered, setHovered] = useState(0)
 
-  console.log(rating) 
+  // quand on clique on sauvegarde la note et on appelle onRate
+  function handleClick(i: number) {
+    setRating(i)
+    onRate(i)
+  }
 
   return (
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: '#1e2a3a' }}>
 
       <p className="font-bold text-white mb-3">Noter ce film</p>
 
-   
       <div className="flex items-center gap-2">
 
-        {/* couleurs jaune si survolée, grises sinon */}
+        {/* jaune si survolée ou déjà notée, grise sinon */}
         {[1, 2, 3, 4, 5].map((i) => (
           <span
             key={i}
-            className={`text-2xl cursor-pointer ${i <= hovered ? 'text-yellow-400' : 'text-gray-400'}`}
+            className={`text-2xl cursor-pointer ${i <= (hovered || rating) ? 'text-yellow-400' : 'text-gray-400'}`}
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(0)}
+            onClick={() => handleClick(i)}
           >
             ★
           </span>
