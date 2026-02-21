@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import RateMovie from "@/components/ui/RateMovie";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -79,6 +80,11 @@ function LegacyPage() {
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
+      </div>
+
+      {/* composant pour noter un film */}
+      <div className="mt-12 w-full max-w-xl">
+        <RateMovie onRate={(note) => console.log("Note :", note)} />
       </div>
     </div>
   );
