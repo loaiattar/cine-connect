@@ -1,37 +1,37 @@
-import type { ReactElement } from "react"
-
-// Interface des props du composant ReviewCard
 interface ReviewCardProps {
   username: string
-  date: string       // ex: "Il y a 2 jours"
+  date: string
   reviewText: string
-  rating: number     // de 1 à 5
+  rating: number
 }
 
-// Composant ReviewCard - structure de base de la carte
-export default function ReviewCard({ username, date, reviewText, rating }: ReviewCardProps): ReactElement {
+// carte d'un avis utilisateur
+export default function ReviewCard({ username, date, reviewText, rating }: ReviewCardProps) {
+
+  // je crée un tableau pour afficher les étoiles
+  const stars = []
+  for (let i = 0; i < rating; i++) {
+    stars.push(<span key={i} className="text-yellow-400 text-2xl">★</span>)
+  }
+
   return (
-    // Carte avec fond bleu-gris foncé
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: '#1e2a3a' }}>
 
-      {/* Étoiles jaunes alignées en haut à droite */}
+      {/* étoiles en haut à droite */}
       <div className="flex justify-end mb-2">
-        {Array.from({ length: rating }).map((_, i) => (
-          <span key={i} className="text-yellow-400 text-2xl">★</span>
-        ))}
+        {stars}
       </div>
 
-      {/* Zone avatar + infos utilisateur */}
-      <div className="flex items-start gap-3">
+    
+      <div className="flex gap-3">
 
-        {/* Avatar circulaire gris */}
-        <div className="w-10 h-10 rounded-full bg-gray-500 shrink-0" />
+       
+        <div className="w-10 h-10 rounded-full bg-gray-500" />
 
-        {/* Nom, date et texte de l'avis */}
         <div>
           <p className="font-bold text-white">{username}</p>
-          <p className="text-sm text-gray-400 mb-1">{date}</p>
-          <p className="text-gray-200 text-sm leading-relaxed">{reviewText}</p>
+          <p className="text-sm text-gray-400">{date}</p>
+          <p className="text-gray-200 text-sm mt-1">{reviewText}</p>
         </div>
 
       </div>
