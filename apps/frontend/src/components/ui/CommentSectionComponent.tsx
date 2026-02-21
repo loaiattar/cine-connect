@@ -7,7 +7,7 @@ interface ReviewCardProps {
 }
 
 // Composant ReviewCard - structure de base de la carte
-export default function ReviewCard({ username: _username, date: _date, reviewText: _reviewText, rating }: ReviewCardProps) {
+export default function ReviewCard({ username, date, reviewText, rating }: ReviewCardProps) {
   return (
     // Carte avec fond bleu-gris foncé
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: '#1e2a3a' }}>
@@ -19,6 +19,20 @@ export default function ReviewCard({ username: _username, date: _date, reviewTex
         ))}
       </div>
 
+      {/* Zone avatar + infos utilisateur */}
+      <div className="flex items-start gap-3">
+
+        {/* Avatar circulaire gris */}
+        <div className="w-10 h-10 rounded-full bg-gray-500 shrink-0" />
+
+        {/* Nom, date et texte de l'avis */}
+        <div>
+          <p className="font-bold text-white">{username}</p>
+          <p className="text-sm text-gray-400 mb-1">{date}</p>
+          <p className="text-gray-200 text-sm leading-relaxed">{reviewText}</p>
+        </div>
+
+      </div>
     </div>
   )
 }
