@@ -17,7 +17,7 @@ export default function MovieCard({
   year: movieYear,
   rating: movieRating,
   imageUrl,
-  genres: _genres,
+  genres,
 }: MovieCardProps) {
 
   // est-ce que la souris est sur la carte
@@ -45,11 +45,25 @@ export default function MovieCard({
       {/* gradient sombre en bas */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
 
-      {/* titre, année et note en bas */}
+      {/* titre, année, note et genres en bas */}
       <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
         <div>
           <p className="font-bold text-white text-sm">{movieTitle}</p>
           <p className="text-gray-400 text-xs">{movieYear}</p>
+
+          {/* genres en pills rouges, visibles seulement au hover */}
+          {hovered && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {genres.map((genre) => (
+                <span
+                  key={genre}
+                  className="bg-red-500 text-white rounded-full px-3 py-1 text-xs"
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* étoile + note à droite */}
