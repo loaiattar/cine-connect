@@ -3,6 +3,7 @@ import { MessageSquare } from "lucide-react"
 
 type UserProfileCardCompactProps = {
   username: string
+  avatarUrl: string
   filmCount: number
   followersCount: number
   isFollowing: boolean
@@ -13,6 +14,7 @@ type UserProfileCardCompactProps = {
 export function UserProfileCardCompact(props: UserProfileCardCompactProps) {
 
   const username = props.username
+  const avatarUrl = props.avatarUrl
   const filmCount = props.filmCount
   const followersCount = props.followersCount
   const [isFollowing, setIsFollowing] = useState(props.isFollowing)
@@ -27,7 +29,11 @@ export function UserProfileCardCompact(props: UserProfileCardCompactProps) {
     <div className="flex items-center gap-5 bg-zinc-900 rounded-xl px-6 py-5 text-white">
 
       {/* avatar */}
-      <div className="w-14 h-14 rounded-full bg-zinc-700 shrink-0" />
+      {avatarUrl ? (
+        <img src={avatarUrl} alt={username} className="w-16 h-16 rounded-full object-cover shrink-0" />
+      ) : (
+        <div className="w-16 h-16 rounded-full bg-zinc-700 shrink-0" />
+      )}
 
       {/* nom + stats */}
       <div className="flex-1">

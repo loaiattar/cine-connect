@@ -62,6 +62,7 @@ function LegacyPage() {
       <div className="mt-12 w-full max-w-5xl px-4">
         <UserProfileCardCompact
           username="JohnDoe"
+          avatarUrl=""
           filmCount={142}
           followersCount={210}
           isFollowing={false}
