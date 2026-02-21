@@ -1,25 +1,16 @@
 import { useState } from "react"
 
-// props du composant
-interface MovieCardProps {
+type MovieCardProps = {
   id: number
   title: string
   year: number
   rating: number
   imageUrl: string
-  genres: string[] // ex: ["Action", "Aventure"]
+  genres: string[]
 }
 
-// carte d'un film
-export default function MovieCard({
-  title: movieTitle,
-  year: movieYear,
-  rating: movieRating,
-  imageUrl,
-  genres,
-}: MovieCardProps) {
+export default function MovieCard({ title, year, rating, imageUrl, genres }: MovieCardProps) {
 
-  // est-ce que la souris est sur la carte
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -28,36 +19,27 @@ export default function MovieCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-
-      {/* image qui couvre toute la carte */}
       <img
         src={imageUrl}
         alt="affiche du film"
         className="w-full h-full object-cover"
       />
 
-      {/* overlay sombre au hover */}
-      {hovered && (
-        <div className="absolute inset-0 bg-black/50" />
-      )}
+      {/* assombrit la carte au survol */}
+      {hovered && <div className="absolute inset-0 bg-black/50" />}
 
-      {/* gradient sombre en bas */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
 
-      {/* titre, année, note et genres en bas */}
       <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
         <div>
-          <p className="font-bold text-white text-sm">{movieTitle}</p>
-          <p className="text-gray-400 text-xs">{movieYear}</p>
+          <p className="font-bold text-white text-sm">{title}</p>
+          <p className="text-gray-400 text-xs">{year}</p>
 
-          {/* genres en pills rouges, visibles seulement au hover */}
+          {/* genres visibles au hover */}
           {hovered && (
             <div className="flex flex-wrap gap-1 mt-2">
               {genres.map((genre) => (
-                <span
-                  key={genre}
-                  className="bg-red-500 text-white rounded-full px-3 py-1 text-xs"
-                >
+                <span key={genre} className="bg-red-500 text-white rounded-full px-3 py-1 text-xs">
                   {genre}
                 </span>
               ))}
@@ -65,10 +47,9 @@ export default function MovieCard({
           )}
         </div>
 
-        {/* étoile + note à droite */}
         <div className="flex items-center gap-1">
           <span className="text-yellow-400 text-sm">★</span>
-          <span className="text-white text-sm font-bold">{movieRating}</span>
+          <span className="text-white text-sm font-bold">{rating}</span>
         </div>
       </div>
 
