@@ -25,7 +25,7 @@ export default function MovieCard({
 
   return (
     <div
-      className="relative rounded-xl overflow-hidden w-full h-[300px]"
+      className="relative rounded-xl overflow-hidden w-full h-[360px]"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
