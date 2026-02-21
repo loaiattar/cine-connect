@@ -1,3 +1,5 @@
+import type { ReactElement } from "react"
+
 // Interface des props du composant ReviewCard
 interface ReviewCardProps {
   username: string
@@ -7,7 +9,7 @@ interface ReviewCardProps {
 }
 
 // Composant ReviewCard - structure de base de la carte
-export default function ReviewCard({ username, date, reviewText, rating }: ReviewCardProps) {
+export default function ReviewCard({ username, date, reviewText, rating }: ReviewCardProps): ReactElement {
   return (
     // Carte avec fond bleu-gris foncé
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: '#1e2a3a' }}>
