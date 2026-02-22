@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar, Clapperboard } from "lucide-react";
 
 type Props = {
   title: string;
@@ -27,7 +27,7 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
           Retour
         </button>
 
-        {/* Main Flexbox */}
+        {/* Flexbox principal */}
         <div className="flex items-center gap-10">
 
           {/* Affiche */}
@@ -35,7 +35,17 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
 
           {/* Infos */}
           <div className="flex flex-col gap-4">
-            <p className="text-white">infos ici</p>
+
+            {/* Titre */}
+            <h1 className="text-white font-bold text-5xl" style={{ fontFamily: "Georgia, serif" }}>{title}</h1>
+
+            {/* Métadonnées */}
+            <div className="flex items-center gap-5 text-white text-sm">
+              <span className="flex items-center gap-1"><Calendar size={15} />{year}</span>
+              <span className="flex items-center gap-1"><Clapperboard size={15} />{director}</span>
+            </div>
+
+            <p className="text-white">genres + note ici</p>
           </div>
 
         </div>
