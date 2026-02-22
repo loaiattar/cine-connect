@@ -12,6 +12,7 @@ import {
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
+import MovieHero from "@/components/ui/MovieHero";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -160,6 +161,19 @@ function LegacyPage() {
           rating={4.6}
           imageUrl="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
           genres={["Biopic", "Drame"]}
+        />
+      </div>
+
+      {/* MovieHero */}
+      <div className="mt-12 w-full">
+        <MovieHero
+          title="Inception"
+          year={2010}
+          director="Christopher Nolan"
+          genres={["Action", "Sci-Fi", "Thriller"]}
+          rating={4.8}
+          posterUrl="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg"
+          onBack={() => console.log("Retour")}
         />
       </div>
     </div>
