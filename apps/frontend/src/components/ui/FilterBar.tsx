@@ -47,7 +47,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           </div>
         </div>
 
-        {/* Note minimale */}
+        {/* Minimal Notes */}
         <div className="flex flex-col gap-1">
           <label className="text-gray-300 text-sm">Note minimale</label>
           <div className="relative">
@@ -59,6 +59,24 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
               <option value="">Toutes les notes</option>
               {minRatings.map((rating) => (
                 <option key={rating} value={rating}>{rating}</option>
+              ))}
+            </select>
+            <span className="absolute right-2 top-2.5 text-gray-400 pointer-events-none">▼</span>
+          </div>
+        </div>
+
+        Year
+        <div className="flex flex-col gap-1">
+          <label className="text-gray-300 text-sm">Année</label>
+          <div className="relative">
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="appearance-none bg-gray-900 text-white border border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none"
+            >
+              <option value="">Toutes les années</option>
+              {years.map((year) => (
+                <option key={year} value={year}>{year}</option>
               ))}
             </select>
             <span className="absolute right-2 top-2.5 text-gray-400 pointer-events-none">▼</span>
