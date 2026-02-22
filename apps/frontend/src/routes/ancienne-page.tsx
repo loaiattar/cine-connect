@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
 
@@ -81,6 +82,28 @@ function LegacyPage() {
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
+      </div>
+
+      {/* Section des avis */}
+      <div className="mt-12 w-full max-w-xl flex flex-col gap-4">
+        <ReviewCard
+          username="Alice"
+          date="Il y a 2 jours"
+          reviewText="Un film absolument incroyable, je recommande vivement !"
+          rating={5}
+        />
+        <ReviewCard
+          username="Thomas"
+          date="Il y a 5 jours"
+          reviewText="Très bon film, mais la fin m'a laissé sur ma faim."
+          rating={3}
+        />
+        <ReviewCard
+          username="Camille"
+          date="Il y a 1 semaine"
+          reviewText="Visuellement magnifique, une expérience unique en salle."
+          rating={4}
+        />
       </div>
 
       {/* composant pour noter un film */}
