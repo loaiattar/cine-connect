@@ -25,6 +25,29 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
         </svg>
         <h2 className="text-white font-bold text-lg">Filtres</h2>
       </div>
+
+      {/* Selects */}
+      <div className="flex gap-4">
+
+        {/* Genre */}
+        <div className="flex flex-col gap-1">
+          <label className="text-gray-300 text-sm">Genre</label>
+          <div className="relative">
+            <select
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+              className="appearance-none bg-gray-900 text-white border border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none"
+            >
+              <option value="">Tous les genres</option>
+              {genres.map((genre) => (
+                <option key={genre} value={genre}>{genre}</option>
+              ))}
+            </select>
+            <span className="absolute right-2 top-2.5 text-gray-400 pointer-events-none">▼</span>
+          </div>
+        </div>
+
+      </div>
     </div>
   )
 }
