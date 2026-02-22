@@ -1,21 +1,30 @@
 import { db } from "../db";
-import { favorites, watchlists, comments } from "../db/schema";
+import { favorites, watchlists, comments, users } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-
-const API_KEY = process.env.EXTERNAL_API_KEY;
-const BASE_URL = process.env.EXTERNAL_API_URL;
+import { TmdbService } from "./tmdb.service";
 
 export const MovieService = {
     async toggleFavorite(userId: number, movieId: number) {
-        const existing = await db.query.favorites.findFirst({
-            where: and(
-                eq(favorites.userId, userId),
-                eq(favorites.externalMovieId, movieId)
-            ),
-        });
+        const existing = await db
+            .select()
+            .from(favorites)
+            .where(
+                and(
+                    eq(favorites.userId, userId),
+                    eq(favorites.externalMovieId, movieId)
+                )
+            )
+            .limit(1);
 
-        if (existing) {
-            await db.delete(favorites).where(eq(favorites.id, existing.id));
+        if (existing.length > 0) {
+            await db
+                .delete(favorites)
+                .where(
+                    and(
+                        eq(favorites.userId, userId),
+                        eq(favorites.externalMovieId, movieId)
+                    )
+                );
             return { action: "removed", movieId };
         } else {
             await db.insert(favorites).values({
@@ -27,85 +36,154 @@ export const MovieService = {
     },
 
     async getUserFavorites(userId: number) {
-        const favs = await db.query.favorites.findMany({
-            where: eq(favorites.userId, userId),
-        });
-        
-        return favs;
+        const userFavorites = await db
+            .select()
+            .from(favorites)
+            .where(eq(favorites.userId, userId));
+        return userFavorites;
     },
 
-    async addToWatchlist(userId: number, movieId: number) {
-        return await db.insert(watchlists).values({
-            userId,
-            externalMovieId: movieId,
-        }).onConflictDoNothing();
-    },
+    async toggleWatchlist(userId: number, movieId: number) {
+        const existing = await db
+            .select()
+            .from(watchlists)
+            .where(
+                and(
+                    eq(watchlists.userId, userId),
+                    eq(watchlists.externalMovieId, movieId)
+                )
+            )
+            .limit(1);
 
-    async getMovieById(movieId: number, userId?: number) {
-        const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);
-        const movieData = await response.json();
-
-        let isFavorite = false;
-        if (userId) {
-            const fav = await db.query.favorites.findFirst({
-                where: and(
-                    eq(favorites.userId, userId),
-                    eq(favorites.externalMovieId, movieId)
-                ),
+        if (existing.length > 0) {
+            await db
+                .delete(watchlists)
+                .where(
+                    and(
+                        eq(watchlists.userId, userId),
+                        eq(watchlists.externalMovieId, movieId)
+                    )
+                );
+            return { action: "removed", movieId };
+        } else {
+            await db.insert(watchlists).values({
+                userId,
+                externalMovieId: movieId,
             });
-            isFavorite = !!fav;
+            return { action: "added", movieId };
         }
-
-        const movieComments = await db.query.comments.findMany({
-            where: eq(comments.externalMovieId, movieId),
-            with: { user: true }
-        });
-
-        return {movieData, isFavorite, localComments: movieComments };
-    },
-
-    async getMovieComments(movieId: number) {
-        return await db.query.comments.findMany({
-            where: eq(comments.externalMovieId, movieId),
-            with: { user: true }
-        });
-    },
-
-    async addComment(userId: number, movieId: number, comment: string) {
-        return await db.insert(comments).values({
-            userId,
-            externalMovieId: movieId,
-            comment,
-        });
-    },
-
-    async deleteComment(userId: number, movieId: number, comment: string) {
-        return await db.delete(comments).where(and(
-            eq(comments.userId, userId),
-            eq(comments.externalMovieId, movieId),
-            eq(comments.comment, comment)
-        ));
-    },
-
-    async updateComment(userId: number, movieId: number, comment: string) {
-        return await db.update(comments).set({
-            comment,
-        }).where(and(
-            eq(comments.userId, userId),
-            eq(comments.externalMovieId, movieId)
-        ));
     },
 
     async getMovieWatchlist(userId: number) {
-        return await db.query.watchlists.findMany({
-            where: eq(watchlists.userId, userId),
-        });
+        const userWatchlist = await db
+            .select()
+            .from(watchlists)
+            .where(eq(watchlists.userId, userId));
+        return userWatchlist;
     },
 
     async deleteMovieFromWatchlist(userId: number, movieId: number) {
-        return await db.delete(watchlists).where(and(
-            eq(watchlists.userId, userId),
-            eq(watchlists.externalMovieId, movieId)
-        ));
+        const existing = await db
+            .select()
+            .from(watchlists)
+            .where(
+                and(
+                    eq(watchlists.userId, userId),
+                    eq(watchlists.externalMovieId, movieId)
+                )
+            )
+            .limit(1);
+
+        if (existing.length > 0) {
+            await db
+                .delete(watchlists)
+                .where(
+                    and(
+                        eq(watchlists.userId, userId),
+                        eq(watchlists.externalMovieId, movieId)
+                    )
+                );
+            return { action: "removed", movieId };
+        } else {
+            return { action: "not_found", movieId };
+        }
     },
-};
+
+    async addComment(userId: number, movieId: number, comment: string) {
+        const [newComment] = await db
+            .insert(comments)
+            .values({
+                userId,
+                externalMovieId: movieId,
+                comment,
+            })
+            .returning();
+
+        return newComment;
+    },
+
+    async getMovieComments(movieId: number) {
+        const movieComments = await db
+            .select({
+                id: comments.id,
+                userId: comments.userId,
+                externalMovieId: comments.externalMovieId,
+                comment: comments.comment,
+                createdAt: comments.createdAt,
+            })
+            .from(comments)
+            .leftJoin(users, eq(comments.userId, users.id))
+            .where(eq(comments.externalMovieId, movieId));
+        return movieComments;
+    },
+
+    async deleteComment(userId: number, commentId: number) {
+        const [existing] = await db
+            .select()
+            .from(comments)
+            .where(eq(comments.id, commentId))
+            .limit(1);
+
+        if (!existing) {
+            return { action: "not_found" };
+        }
+
+        if (existing.userId !== userId) {
+            return { action: "unauthorized" };
+        }
+
+        await db
+            .delete(comments)
+            .where(eq(comments.id, commentId));
+
+        return { action: "removed" };
+    },
+
+    async updateComment(userId: number, commentId: number, comment: string) {
+        const [existing] = await db
+            .select()
+            .from(comments)
+            .where(eq(comments.id, commentId))
+            .limit(1);
+
+        if (!existing) {
+            return { action: "not_found" };
+        }
+
+        if (existing.userId !== userId) {
+            return { action: "unauthorized" };
+        }
+
+        await db
+            .update(comments)
+            .set({ comment })
+            .where(eq(comments.id, commentId));
+
+        return { action: "updated" };
+    },
+
+    async getMovieById(movieId: number, userId?: number) {
+        const movie = await TmdbService.getMovieDetails(movieId);
+        return movie;
+    }
+};  

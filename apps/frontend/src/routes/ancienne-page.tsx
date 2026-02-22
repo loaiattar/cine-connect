@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import RateMovie from "@/components/ui/RateMovie";
+import MovieCard from "@/components/ui/CardFilm";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -85,6 +86,40 @@ function LegacyPage() {
       {/* composant pour noter un film */}
       <div className="mt-12 w-full max-w-3xl">
         <RateMovie onRate={(note) => console.log("Note :", note)} />
+      {/* section cartes de films */}
+      <div className="mt-12 w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <MovieCard
+          id={1}
+          title="Inception"
+          year={2010}
+          rating={4.8}
+          imageUrl="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg"
+          genres={["Action", "Sci-Fi"]}
+        />
+        <MovieCard
+          id={2}
+          title="Interstellar"
+          year={2014}
+          rating={4.7}
+          imageUrl="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
+          genres={["Aventure", "Drame"]}
+        />
+        <MovieCard
+          id={3}
+          title="The Dark Knight"
+          year={2008}
+          rating={4.9}
+          imageUrl="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+          genres={["Action", "Crime"]}
+        />
+        <MovieCard
+          id={4}
+          title="Oppenheimer"
+          year={2023}
+          rating={4.6}
+          imageUrl="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
+          genres={["Biopic", "Drame"]}
+        />
       </div>
     </div>
   );
