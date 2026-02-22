@@ -86,6 +86,7 @@ function LegacyPage() {
       {/* composant pour noter un film */}
       <div className="mt-12 w-full max-w-3xl">
         <RateMovie onRate={(note) => console.log("Note :", note)} />
+      </div>
       {/* section cartes de films */}
       <div className="mt-12 w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <MovieCard
