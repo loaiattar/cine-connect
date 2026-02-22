@@ -13,6 +13,7 @@ import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
 import ProfileCard from "@/components/ui/ProfileCard";
+import { UserProfileCardCompact } from "@/components/ui/UserProfileCardCompact";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -77,6 +78,18 @@ function LegacyPage() {
             following: 95,
           }}
           isLoading={false}
+        />
+      </div>
+
+      <div className="mt-12 w-full max-w-xl px-4">
+        <UserProfileCardCompact
+          username="JaneDoe"
+          avatarUrl=""
+          filmCount={87}
+          followersCount={134}
+          isFollowing={false}
+          onFollowToggle={() => console.log("Follow toggled")}
+          onMessage={() => console.log("Message")}
         />
       </div>
 
