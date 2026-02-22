@@ -7,7 +7,7 @@ type CineConnectNavbarProps = {
   onProfileClick?: () => void;
 };
 
-const btnClass = "w-10 h-10 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-primary";
+const btnClass = "w-10 h-10 rounded-full bg-[#1a1a1a] border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#e50914]";
 
 const CineConnectNavbar = ({ onSearch, onFriendsClick, onProfileClick }: CineConnectNavbarProps) => {
   const [query, setQuery] = useState("");
@@ -37,7 +37,7 @@ const CineConnectNavbar = ({ onSearch, onFriendsClick, onProfileClick }: CineCon
       </a>
 
       {/* Barre de recherche */}
-      <div className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-4 h-10 w-full max-w-lg focus-within:border-primary">
+      <div className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-4 h-10 w-full max-w-lg hover:border-[#e50914] focus-within:border-[#e50914]">
         <Search size={16} className="text-gray-500" />
         <input
           type="text"
