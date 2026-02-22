@@ -27,7 +27,18 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
           Retour
         </button>
 
-        <p className="text-white">contenu ici</p>
+        {/* Main Flexbox */}
+        <div className="flex items-center gap-10">
+
+          {/* Affiche */}
+          <img src={posterUrl} alt={title} className="h-[350px] w-[260px] object-cover rounded-xl shrink-0" />
+
+          {/* Infos */}
+          <div className="flex flex-col gap-4">
+            <p className="text-white">infos ici</p>
+          </div>
+
+        </div>
       </div>
 
     </div>
