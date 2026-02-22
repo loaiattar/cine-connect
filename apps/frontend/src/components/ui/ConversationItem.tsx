@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 type Props = {
   name: string;
   preview: string;
@@ -20,6 +18,15 @@ const ConversationItem = ({ name, preview, date, avatarColor = "#f59e0b" }: Prop
       >
         {initial}
       </div>
+
+      {/* Contenu */}
+      <div className="flex-1 min-w-0">
+        <p className="text-white font-semibold text-sm">{name}</p>
+        <p className="text-[#888] text-sm truncate">{preview}</p>
+      </div>
+
+      {/* Date */}
+      <span className="text-[#888] text-xs self-start shrink-0">{date}</span>
 
     </div>
   );
