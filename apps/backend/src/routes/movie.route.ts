@@ -20,9 +20,9 @@ router.delete("/watchlist/:movieId", authMiddleware, MovieController.deleteMovie
 router.get("/comments/:movieId", MovieController.getMovieComments);
 // POST /api/movies/comments
 router.post("/comments", authMiddleware, MovieController.addComment);
-// DELETE /api/movies/comments
-router.delete("/comments", authMiddleware, MovieController.deleteComment);
-// PUT /api/movies/comments
-router.put("/comments", authMiddleware, MovieController.updateComment);
+// DELETE /api/movies/comments/:commentId
+router.delete("/comments/:commentId", authMiddleware, MovieController.deleteComment);
+// PUT /api/movies/comments/:commentId
+router.put("/comments/:commentId", authMiddleware, MovieController.updateComment);
 
 export default router;

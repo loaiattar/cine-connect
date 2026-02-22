@@ -97,13 +97,21 @@ export const MovieController = {
     },
 
     async deleteComment(
-        req: Request,
+        req: Request<{ commentId: string }>,
         res: Response
     ) {
         try {
             const userId = req.user?.userId;
-            const { movieId } = req.body;
-            const result = await MovieService.deleteComment(Number(userId), Number(movieId));
+            const { commentId } = req.params;
+            const result = await MovieService.deleteComment(Number(userId), Number(commentId));
+
+            if (result.action === "unauthorized") {
+                return res.status(403).json({ error: "You can only delete your own comments" });
+            }
+            if (result.action === "not_found") {
+                return res.status(404).json({ error: "Comment not found" });
+            }
+
             return res.json(result);
         } catch (error) {
             return res.status(500).json({ error: "Failed to delete comment" });
@@ -111,13 +119,22 @@ export const MovieController = {
     },
 
     async updateComment(
-        req: Request,
+        req: Request<{ commentId: string }>,
         res: Response
     ) {
         try {
             const userId = req.user?.userId;
-            const { movieId, comment } = req.body;
-            const result = await MovieService.updateComment(Number(userId), Number(movieId), comment);
+            const { commentId } = req.params;
+            const { comment } = req.body;
+            const result = await MovieService.updateComment(Number(userId), Number(commentId), comment);
+
+            if (result.action === "unauthorized") {
+                return res.status(403).json({ error: "You can only update your own comments" });
+            }
+            if (result.action === "not_found") {
+                return res.status(404).json({ error: "Comment not found" });
+            }
+
             return res.json(result);
         } catch (error) {
             return res.status(500).json({ error: "Failed to update comment" });
@@ -145,7 +162,7 @@ export const MovieController = {
     },
 
     async deleteMovieFromWatchlist(
-        req: Request<{ movieId: string }>, 
+        req: Request<{ movieId: string }>,
         res: Response
     ) {
         try {

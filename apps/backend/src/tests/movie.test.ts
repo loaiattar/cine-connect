@@ -13,6 +13,7 @@ describe('Movie Functional Tests - Favorites', () => {
 
     let userId: number;
 
+    const movieId = 550;
 
     beforeEach(async () => {
 
@@ -26,9 +27,6 @@ describe('Movie Functional Tests - Favorites', () => {
 
 
     it('should add a movie to favorites', async () => {
-
-        const movieId = 550;
-
 
         const response = await request(app)
 
@@ -49,9 +47,6 @@ describe('Movie Functional Tests - Favorites', () => {
 
 
     it('should remove a movie from favorites if it already exists', async () => {
-
-        const movieId = 550;
-
 
         // First add it to ensure it exists
 
@@ -88,6 +83,8 @@ describe('Movie Functional Tests - Watchlist', () => {
 
     let userId: number;
 
+    const movieId = 550;
+
 
     beforeEach(async () => {
 
@@ -101,9 +98,6 @@ describe('Movie Functional Tests - Watchlist', () => {
 
 
     it('should add a movie to watchlist', async () => {
-
-        const movieId = 550;
-
 
         const response = await request(app)
 
@@ -124,11 +118,6 @@ describe('Movie Functional Tests - Watchlist', () => {
 
 
     it('should remove a movie from watchlist if it already exists', async () => {
-
-        const movieId = 550;
-
-
-        // First add it to ensure it exists
 
         await request(app)
 
@@ -157,11 +146,6 @@ describe('Movie Functional Tests - Watchlist', () => {
 
     it('should fetch the user watchlist', async () => {
 
-        const movieId = 550;
-
-
-        // First add it to ensure it exists
-
         await request(app)
 
             .post('/api/movies/watchlist')
@@ -186,11 +170,6 @@ describe('Movie Functional Tests - Watchlist', () => {
 
 
     it('should delete a movie from watchlist', async () => {
-
-        const movieId = 550;
-
-
-        // First add it to ensure it exists
 
         await request(app)
 
@@ -230,6 +209,51 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.body.error).toContain('Unauthorized');
 
+    });
+
+    it('should add a comment to a movie', async () => {
+        const commentText = "This movie is a masterpiece!";
+
+        const response = await request(app)
+            .post('/api/movies/comments')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send({ movieId, comment: commentText });
+
+        expect(response.status).toBe(200);
+        expect(response.body.comment).toBe(commentText);
+        expect(response.body.userId).toBe(userId);
+    });
+
+    it('should fetch all comments for a movie', async () => {
+        await request(app)
+            .post('/api/movies/comments')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send({ movieId, comment: "First comment" });
+
+        const response = await request(app)
+            .get(`/api/movies/comments/${movieId}`);
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body.length).toBeGreaterThan(0);
+        expect(response.body[0]).toHaveProperty('comment');
+    });
+
+    it('should NOT allow deleting another user\'s comment', async () => {
+        const commentRes = await request(app)
+            .post('/api/movies/comments')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send({ movieId, comment: "I own this comment" });
+
+        const commentId = commentRes.body.id;
+
+        const hacker = await AuthService.register('hacker', `hacker-${Date.now()}@example.com`, 'password123');
+
+        const response = await request(app)
+            .delete(`/api/movies/comments/${commentId}`)
+            .set('Authorization', `Bearer ${hacker.token}`);
+
+        expect(response.status).toBe(403);
     });
 
 });   

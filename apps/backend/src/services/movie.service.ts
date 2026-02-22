@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { favorites, watchlists, comments } from "../db/schema";
+import { favorites, watchlists, comments, users } from "../db/schema";
 import { eq, and } from "drizzle-orm";
 import { TmdbService } from "./tmdb.service";
 
@@ -110,99 +110,76 @@ export const MovieService = {
     },
 
     async addComment(userId: number, movieId: number, comment: string) {
-        const existing = await db
-            .select()
-            .from(comments)
-            .where(
-                and(
-                    eq(comments.userId, userId),
-                    eq(comments.externalMovieId, movieId)
-                )
-            )
-            .limit(1);
-
-        if (existing.length > 0) {
-            await db
-                .update(comments)
-                .set({ comment })
-                .where(
-                    and(
-                        eq(comments.userId, userId),
-                        eq(comments.externalMovieId, movieId)
-                    )
-                );
-            return { action: "updated", movieId };
-        } else {
-            await db.insert(comments).values({
+        const [newComment] = await db
+            .insert(comments)
+            .values({
                 userId,
                 externalMovieId: movieId,
                 comment,
-            });
-            return { action: "added", movieId };
-        }
+            })
+            .returning();
+
+        return newComment;
     },
 
     async getMovieComments(movieId: number) {
         const movieComments = await db
-            .select()
+            .select({
+                id: comments.id,
+                userId: comments.userId,
+                externalMovieId: comments.externalMovieId,
+                comment: comments.comment,
+                createdAt: comments.createdAt,
+            })
             .from(comments)
+            .leftJoin(users, eq(comments.userId, users.id))
             .where(eq(comments.externalMovieId, movieId));
         return movieComments;
     },
 
-    async deleteComment(userId: number, movieId: number) {
-        const existing = await db
+    async deleteComment(userId: number, commentId: number) {
+        const [existing] = await db
             .select()
             .from(comments)
-            .where(
-                and(
-                    eq(comments.userId, userId),
-                    eq(comments.externalMovieId, movieId)
-                )
-            )
+            .where(eq(comments.id, commentId))
             .limit(1);
 
-        if (existing.length > 0) {
-            await db
-                .delete(comments)
-                .where(
-                    and(
-                        eq(comments.userId, userId),
-                        eq(comments.externalMovieId, movieId)
-                    )
-                );
-            return { action: "removed", movieId };
-        } else {
-            return { action: "not_found", movieId };
+        if (!existing) {
+            return { action: "not_found" };
         }
+
+        if (existing.userId !== userId) {
+            return { action: "unauthorized" };
+        }
+
+        await db
+            .delete(comments)
+            .where(eq(comments.id, commentId));
+
+        return { action: "removed" };
     },
 
-    async updateComment(userId: number, movieId: number, comment: string) {
-        const existing = await db
+    async updateComment(userId: number, commentId: number, comment: string) {
+        const [existing] = await db
             .select()
             .from(comments)
-            .where(
-                and(
-                    eq(comments.userId, userId),
-                    eq(comments.externalMovieId, movieId)
-                )
-            )
+            .where(eq(comments.id, commentId))
             .limit(1);
 
-        if (existing.length > 0) {
-            await db
-                .update(comments)
-                .set({ comment })
-                .where(
-                    and(
-                        eq(comments.userId, userId),
-                        eq(comments.externalMovieId, movieId)
-                    )
-                );
-            return { action: "updated", movieId };
-        } else {
-            return { action: "not_found", movieId };
+        if (!existing) {
+            return { action: "not_found" };
         }
+
+        if (existing.userId !== userId) {
+            return { action: "unauthorized" };
+        }
+
+        await db
+            .update(comments)
+            .set({ comment })
+            .where(eq(comments.id, commentId));
+
+        return { action: "updated" };
     },
 
     async getMovieById(movieId: number, userId?: number) {

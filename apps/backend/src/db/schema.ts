@@ -27,7 +27,7 @@ export const ratings = pgTable("ratings", {
 
 export const comments = pgTable("comments", {
     id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id, { onDelete: 'cascade' }),
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
     externalMovieId: integer("external_movie_id").notNull(),
     comment: text("comment").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
