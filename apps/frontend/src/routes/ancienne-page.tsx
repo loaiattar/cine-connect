@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
-import { UserProfileCardCompact } from "@/components/ui/UserProfileCardCompact";
+import { UserProfileCard } from "@/components/ui/UserProfileCard";
 import {
   Carousel,
   CarouselContent,
@@ -63,13 +63,17 @@ function LegacyPage() {
       </div>
 
       <div className="mt-12 w-full max-w-5xl px-4">
-        <UserProfileCardCompact
-          username="JohnDoe"
-          avatarUrl=""
-          filmCount={142}
-          followersCount={210}
-          isFollowing={false}
-          onFollowToggle={() => {}}
+        <UserProfileCard
+          user={{
+            username: "JohnDoe",
+            memberSince: "janvier 2024",
+            bio: "Passionné de cinéma, fan de Kubrick et Nolan.",
+            filmCount: 142,
+            averageRating: 4.2,
+            reviewCount: 38,
+            followersCount: 210,
+            followingCount: 95,
+          }}
           onMessage={() => console.log("Message")}
         />
       </div>
