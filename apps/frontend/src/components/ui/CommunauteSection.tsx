@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
-
-  .communaute {
-    min-height: 100vh;
-    background-color: #0d0d0d;
-    font-family: 'DM Sans', sans-serif;
-    color: #ffffff;
-    padding: 40px 32px;
-    box-sizing: border-box;
-  }
-`;
+const fontImport = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');`;
 
 type CommunauteSectionProps = {
   membresCount?: number;
@@ -35,8 +24,8 @@ const CommunauteSection = (props: CommunauteSectionProps) => {
 
   return (
     <>
-      <style>{styles}</style>
-      <div className="communaute">
+      <style>{fontImport}</style>
+      <div className="min-h-screen bg-[#0d0d0d] text-white px-8 py-10" style={{ fontFamily: "'DM Sans', sans-serif" }}>
         {/* contenu a venir */}
       </div>
     </>
