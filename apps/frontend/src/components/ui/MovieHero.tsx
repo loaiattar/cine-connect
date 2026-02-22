@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, Clapperboard } from "lucide-react";
+import { ArrowLeft, Calendar, Clapperboard, Star } from "lucide-react";
 
 type Props = {
   title: string;
@@ -45,7 +45,22 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
               <span className="flex items-center gap-1"><Clapperboard size={15} />{director}</span>
             </div>
 
-            <p className="text-white">genres + note ici</p>
+            {/* Genres */}
+            <div className="flex flex-wrap gap-2">
+              {genres.map((g) => (
+                <span key={g} className="bg-[#e50914] text-white text-sm px-[18px] py-[6px] rounded-full">{g}</span>
+              ))}
+            </div>
+
+            {/* Note */}
+            <div>
+              <div className="flex items-center gap-2">
+                <Star size={24} className="text-yellow-400 fill-yellow-400" />
+                <span className="text-white font-bold text-4xl">{rating}</span>
+              </div>
+              <p className="text-gray-400 text-sm mt-1">Note moyenne</p>
+            </div>
+
           </div>
 
         </div>
