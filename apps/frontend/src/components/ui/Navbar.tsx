@@ -7,20 +7,22 @@ type CineConnectNavbarProps = {
   onProfileClick?: () => void;
 };
 
-cineConnectNavbar function({ onSearch, onFriendsClick, onProfileClick }: CineConnectNavbarProps) {
+const btnClass = "w-10 h-10 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-primary";
+
+const CineConnectNavbar = ({ onSearch, onFriendsClick, onProfileClick }: CineConnectNavbarProps) => {
   const [query, setQuery] = useState("");
 
-  function handleSearch() {
+  const handleSearch = () => {
     if (onSearch && query.trim() !== "") {
       onSearch(query.trim());
     }
-  }
+  };
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  }
+  };
 
   return (
     <nav className="w-full h-16 bg-[#0d0d0d] border-b border-[#2a2a2a] flex items-center px-6 gap-5">
@@ -49,25 +51,16 @@ cineConnectNavbar function({ onSearch, onFriendsClick, onProfileClick }: CineCon
 
       {/* Boutons à droite */}
       <div className="ml-auto flex items-center gap-3">
-        <button
-          onClick={onFriendsClick}
-          aria-label="Amis"
-          className="w-10 h-10 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-primary"
-        >
+        <button onClick={onFriendsClick} aria-label="Amis" className={btnClass}>
           <Users size={18} />
         </button>
-
-        <button
-          onClick={onProfileClick}
-          aria-label="Profil"
-          className="w-10 h-10 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-primary"
-        >
+        <button onClick={onProfileClick} aria-label="Profil" className={btnClass}>
           <User size={18} />
         </button>
       </div>
 
     </nav>
   );
-}
+};
 
 export default CineConnectNavbar;
