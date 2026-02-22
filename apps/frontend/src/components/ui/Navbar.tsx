@@ -1,63 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
+// Google Fonts import 
+const fontImport = `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');`;
 
-  :root {
-    --cc-bg:         #0d0d0d;
-    --cc-border:     #2a2a2a;
-    --cc-surface:    #1a1a1a;
-    --cc-accent:     #e50914;
-    --cc-white:      #ffffff;
-    --cc-muted:      #888888;
-    --cc-height:     64px;
-    --cc-transition: 0.2s ease;
-  }
 
-  .cc-navbar {
-    width: 100%;
-    height: var(--cc-height);
-    background-color: var(--cc-bg);
-    border-bottom: 1px solid var(--cc-border);
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    gap: 20px;
-    box-sizing: border-box;
-    font-family: 'DM Sans', sans-serif;
-  }
 
-  /* ── Logo ── */
-  .cc-navbar__logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    flex-shrink: 0;
-  }
+function FilmIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#DC2626" fillOpacity="0.12" />
+      <rect x="7"    y="7"    width="7.5" height="7.5" rx="1.5" fill="#DC2626" />
+      <rect x="17.5" y="7"    width="7.5" height="7.5" rx="1.5" fill="#DC2626" />
+      <rect x="7"    y="17.5" width="7.5" height="7.5" rx="1.5" fill="#DC2626" />
+      <rect x="17.5" y="17.5" width="7.5" height="7.5" rx="1.5" fill="#DC2626" />
+    </svg>
+  );
+}
 
-  .cc-navbar__logo-text {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 1;
-  }
+function SearchIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="6.5" cy="6.5" r="5" stroke="#9ca3af" strokeWidth="1.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
-  .cc-navbar__logo-cine    { color: var(--cc-white); }
-  .cc-navbar__logo-connect { color: var(--cc-accent); }
-`;
-
-// ─── FilmIcon SVG ─────────────────────────────────────────────────────────────
-
-const FilmIcon: React.FC = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <rect width="32" height="32" rx="7" fill="#e50914" fillOpacity="0.12" />
-    <rect x="7"    y="7"    width="7.5" height="7.5" rx="1.5" fill="#e50914" />
-    <rect x="17.5" y="7"    width="7.5" height="7.5" rx="1.5" fill="#e50914" />
-    <rect x="7"    y="17.5" width="7.5" height="7.5" rx="1.5" fill="#e50914" />
-    <rect x="17.5" y="17.5" width="7.5" height="7.5" rx="1.5" fill="#e50914" />
-  </svg>
-);
 
 
 interface CineConnectNavbarProps {
@@ -66,27 +34,50 @@ interface CineConnectNavbarProps {
   onProfileClick?: () => void;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────────────
 
-const CineConnectNavbar: React.FC<CineConnectNavbarProps> = (_props) => {
+function CineConnectNavbar(props: CineConnectNavbarProps) {
+  const { onSearch } = props;
+  const [query, setQuery] = useState("");
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && onSearch) {
+      onSearch(query.trim());
+    }
+  }
+
   return (
     <>
-      <style>{styles}</style>
+      <style>{fontImport}</style>
 
-      <nav className="cc-navbar" aria-label="Navigation principale">
+      <nav className="w-full h-16 bg-[#0d0d0d] border-b border-[#2a2a2a] flex items-center px-6 gap-5" aria-label="Navigation principale">
 
         {/* Logo */}
-        <a href="/" className="cc-navbar__logo" aria-label="Accueil CinéConnect">
+        <a href="/" className="flex items-center gap-2.5 no-underline shrink-0" aria-label="Accueil CinéConnect">
           <FilmIcon />
-          <span className="cc-navbar__logo-text">
-            <span className="cc-navbar__logo-cine">Ciné</span>
-            <span className="cc-navbar__logo-connect">Connect</span>
+          <span className="text-xl leading-none font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <span className="text-white">Ciné</span>
+            <span className="text-primary">Connect</span>
           </span>
         </a>
+
+        {/* Search */}
+        <div className="flex-1 max-w-[520px] flex items-center gap-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-4 h-10 transition-all duration-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+          <SearchIcon />
+          <input
+            className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-muted-foreground"
+            type="text"
+            placeholder="Rechercher un film..."
+            aria-label="Rechercher un film"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
 
       </nav>
     </>
   );
-};
+}
 
 export default CineConnectNavbar;
