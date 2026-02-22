@@ -1,9 +1,7 @@
 import { db } from "../db";
 import { favorites, watchlists, comments } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-
-const API_KEY = process.env.EXTERNAL_API_KEY;
-const BASE_URL = process.env.EXTERNAL_API_URL;
+import { TmdbService } from "./tmdb.service";
 
 export const MovieService = {
     async toggleFavorite(userId: number, movieId: number) {
@@ -42,8 +40,7 @@ export const MovieService = {
     },
 
     async getMovieById(movieId: number, userId?: number) {
-        const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`);
-        const movieData = await response.json();
+        const movieData = await TmdbService.getMovieDetails(movieId);
 
         let isFavorite = false;
         if (userId) {
@@ -61,7 +58,7 @@ export const MovieService = {
             with: { user: true }
         });
 
-        return {movieData, isFavorite, localComments: movieComments };
+        return { movieData, isFavorite, localComments: movieComments };
     },
 
     async getMovieComments(movieId: number) {
