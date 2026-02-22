@@ -3,12 +3,11 @@ import { MovieService } from "../services/movie.service";
 import { ToggleFavoriteRequest } from "@cine-connect/shared";
 
 export const MovieController = {
-    async handleToggleFavorite(
-        req: Request<{}, {}, ToggleFavoriteRequest>,
-        res: Response
-    ) {
+    async handleToggleFavorite(req: Request, res: Response) {
         try {
-            const { userId, movieId } = req.body;
+            const { movieId } = req.body;
+            const userId = (req as any).user?.userId;
+            console.log("test", userId, movieId);
 
             if (!userId || !movieId) {
                 return res.status(400).json({ error: "Missing userId or movieId" });
@@ -17,6 +16,8 @@ export const MovieController = {
             const result = await MovieService.toggleFavorite(userId, movieId);
             return res.json(result);
         } catch (error) {
+            const message = error instanceof Error ? error.message : "Unknown error";
+            console.error("test", message);
             console.error(error);
             return res.status(500).json({ error: "Internal Server Error" });
         }
@@ -54,7 +55,7 @@ export const MovieController = {
         try {
             const { userId } = req.params;
             const { movieId } = req.body;
-            const result = await MovieService.addToWatchlist(Number(userId), Number(movieId));
+            const result = await MovieService.toggleWatchlist(Number(userId), Number(movieId));
             return res.json(result);
         } catch (error) {
             return res.status(500).json({ error: "Failed to add to watchlist" });
@@ -94,8 +95,8 @@ export const MovieController = {
     ) {
         try {
             const { userId } = req.params;
-            const { movieId, comment } = req.body;
-            const result = await MovieService.deleteComment(Number(userId), Number(movieId), comment);
+            const { movieId } = req.body;
+            const result = await MovieService.deleteComment(Number(userId), Number(movieId));
             return res.json(result);
         } catch (error) {
             return res.status(500).json({ error: "Failed to delete comment" });

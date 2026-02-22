@@ -4,7 +4,7 @@ import { db } from '../db';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'fixed_test_secret_123';
 
 export const AuthService = {
   async register(name: string, email: string, password: string) {
