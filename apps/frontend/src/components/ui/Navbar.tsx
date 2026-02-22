@@ -7,7 +7,7 @@ type CineConnectNavbarProps = {
   onProfileClick?: () => void;
 };
 
-const btnClass = "w-10 h-10 rounded-full bg-[#1a1a1a] border-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#e50914]";
+const btnClass = "w-10 h-10 rounded-full bg-[#1a1a1a] ring-1 ring-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:ring-[#e50914]";
 
 const CineConnectNavbar = ({ onSearch, onFriendsClick, onProfileClick }: CineConnectNavbarProps) => {
   const [query, setQuery] = useState("");
