@@ -6,7 +6,7 @@ export const MovieController = {
     async handleToggleFavorite(req: Request, res: Response) {
         try {
             const { movieId } = req.body;
-            const userId = (req as any).user?.userId;
+            const userId = req.user?.userId;
             console.log("test", userId, movieId);
 
             if (!userId || !movieId) {
@@ -41,6 +41,13 @@ export const MovieController = {
     ) {
         try {
             const { userId } = req.params;
+            const authenticatedUserId = req.user?.userId;
+
+            if (Number(userId) !== authenticatedUserId) {
+                return res.status(403).json({
+                    error: "Unauthorized access: You can only view your own favorites"
+                });
+            }
             const favorites = await MovieService.getUserFavorites(Number(userId));
             return res.json(favorites);
         } catch (error) {
@@ -49,11 +56,11 @@ export const MovieController = {
     },
 
     async addToWatchlist(
-        req: Request<{ userId: string }>,
+        req: Request,
         res: Response
     ) {
         try {
-            const { userId } = req.params;
+            const userId = req.user?.userId;
             const { movieId } = req.body;
             const result = await MovieService.toggleWatchlist(Number(userId), Number(movieId));
             return res.json(result);
@@ -76,11 +83,11 @@ export const MovieController = {
     },
 
     async addComment(
-        req: Request<{ userId: string }>,
+        req: Request,
         res: Response
     ) {
         try {
-            const { userId } = req.params;
+            const userId = req.user?.userId;
             const { movieId, comment } = req.body;
             const result = await MovieService.addComment(Number(userId), Number(movieId), comment);
             return res.json(result);
@@ -90,11 +97,11 @@ export const MovieController = {
     },
 
     async deleteComment(
-        req: Request<{ userId: string }>,
+        req: Request,
         res: Response
     ) {
         try {
-            const { userId } = req.params;
+            const userId = req.user?.userId;
             const { movieId } = req.body;
             const result = await MovieService.deleteComment(Number(userId), Number(movieId));
             return res.json(result);
@@ -104,11 +111,11 @@ export const MovieController = {
     },
 
     async updateComment(
-        req: Request<{ userId: string }>,
+        req: Request,
         res: Response
     ) {
         try {
-            const { userId } = req.params;
+            const userId = req.user?.userId;
             const { movieId, comment } = req.body;
             const result = await MovieService.updateComment(Number(userId), Number(movieId), comment);
             return res.json(result);
@@ -123,6 +130,13 @@ export const MovieController = {
     ) {
         try {
             const { userId } = req.params;
+            const authenticatedUserId = req.user?.userId;
+
+            if (Number(userId) !== authenticatedUserId) {
+                return res.status(403).json({
+                    error: "Unauthorized access: You can only view your own watchlist"
+                });
+            }
             const watchlist = await MovieService.getMovieWatchlist(Number(userId));
             return res.json(watchlist);
         } catch (error) {
@@ -131,15 +145,22 @@ export const MovieController = {
     },
 
     async deleteMovieFromWatchlist(
-        req: Request<{ userId: string }>,
+        req: Request<{ movieId: string }>, 
         res: Response
     ) {
         try {
-            const { userId } = req.params;
-            const { movieId } = req.body;
-            const result = await MovieService.deleteMovieFromWatchlist(Number(userId), Number(movieId));
+            const { movieId } = req.params;
+            const userId = req.user?.userId;
+            if (!userId || !movieId) {
+                return res.status(400).json({ error: "Missing userId or movieId" });
+            }
+            const result = await MovieService.deleteMovieFromWatchlist(
+                Number(userId),
+                Number(movieId)
+            );
             return res.json(result);
         } catch (error) {
+            console.error("Delete Watchlist Error:", error);
             return res.status(500).json({ error: "Failed to delete movie from watchlist" });
         }
     },

@@ -12,17 +12,17 @@ router.post("/favorite", authMiddleware, MovieController.handleToggleFavorite);
 router.get("/favorites/:userId", authMiddleware, MovieController.getUserFavorites);
 // POST /api/movies/watchlist
 router.post("/watchlist", authMiddleware, MovieController.addToWatchlist);
+// GET /api/movies/watchlist/:userId
+router.get("/watchlist/:userId", authMiddleware, MovieController.getMovieWatchlist);
+// DELETE /api/movies/watchlist/:movieId
+router.delete("/watchlist/:movieId", authMiddleware, MovieController.deleteMovieFromWatchlist);
 // GET /api/movies/comments/:movieId
-router.get("/comments/:movieId", authMiddleware, MovieController.getMovieComments);
+router.get("/comments/:movieId", MovieController.getMovieComments);
 // POST /api/movies/comments
 router.post("/comments", authMiddleware, MovieController.addComment);
 // DELETE /api/movies/comments
 router.delete("/comments", authMiddleware, MovieController.deleteComment);
 // PUT /api/movies/comments
 router.put("/comments", authMiddleware, MovieController.updateComment);
-// GET /api/movies/watchlist/:userId
-router.get("/watchlist/:userId", authMiddleware, MovieController.getMovieWatchlist);
-// DELETE /api/movies/watchlist
-router.delete("/watchlist", authMiddleware, MovieController.deleteMovieFromWatchlist);
 
 export default router;
