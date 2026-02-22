@@ -41,6 +41,17 @@ function Index() {
 
     return (
         <div className="mx-auto max-w-5xl bg-black text-white">
+            <header className="flex items-center justify-between px-8 py-5 bg-gradient-to-b from-black/90 to-transparent sticky top-0 z-50 backdrop-blur-sm border-b border-zinc-800/50">
+                <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-2 font-extrabold text-2xl tracking-tight">
+                        <Clapperboard className="text-red-500 w-6 h-6" />
+                        <span><span className="text-red-500">Ciné</span><span className="text-orange-400">Connect</span></span>
+                    </div>
+                </div>
+                <button className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold">
+                    Se connecter
+                </button>
+            </header>
             <section className="px-6 py-20 text-center border-b border-zinc-800 bg-[radial-gradient(circle_at_top,rgba(220,38,38,0.2),transparent_40%),linear-gradient(to_bottom,#020202,#070707)]">
                 <div className="mx-auto max-w-3xl">
                     <h1 className="text-5xl sm:text-6xl font-bold tracking-tight flex items-center justify-center gap-3">
@@ -62,9 +73,6 @@ function Index() {
                         <button className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2">
                             <Play className="w-4 h-4" />
                             Commencer l'aventure
-                        </button>
-                        <button className="rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-6 py-3 font-semibold">
-                            Se connecter
                         </button>
                     </div>
                 </div>
