@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users } from "lucide-react";
+import { Users, Search } from "lucide-react";
 
 const fontImport = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');`;
 
@@ -23,6 +23,20 @@ const CommunauteSection = (props: CommunauteSectionProps) => {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("Plus populaires");
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    if (onSearch) {
+      onSearch(e.target.value);
+    }
+  };
+
+  const handleFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(e.target.value);
+    if (onFilterChange) {
+      onFilterChange(e.target.value);
+    }
+  };
+
   return (
     <>
       <style>{fontImport}</style>
@@ -37,6 +51,35 @@ const CommunauteSection = (props: CommunauteSectionProps) => {
           <p className="text-gray-400 text-base">
             Découvrez d'autres passionnés de cinéma et suivez leurs critiques
           </p>
+        </div>
+
+        {/* Recherche + Filtre */}
+        <div className="flex items-center gap-3 mb-8">
+
+          {/* Input recherche */}
+          <div className="flex items-center gap-2 flex-1 bg-[#1a1a1a] rounded-full px-4 h-11 hover:border-[#e50914]" style={{ border: "1px solid #2a2a2a" }}>
+            <Search size={16} className="text-gray-500 shrink-0" />
+            <input
+              type="text"
+              placeholder="Rechercher un utilisateur..."
+              value={query}
+              onChange={handleSearch}
+              className="bg-transparent outline-none text-white text-sm w-full placeholder:text-gray-500"
+            />
+          </div>
+
+          {/* Dropdown filtre */}
+          <select
+            value={filter}
+            onChange={handleFilter}
+            className="bg-[#1a1a1a] text-white text-sm px-4 h-11 rounded-lg cursor-pointer outline-none hover:border-[#e50914]"
+            style={{ border: "1px solid #2a2a2a" }}
+          >
+            <option value="Plus populaires">Plus populaires ∨</option>
+            <option value="Plus recents">Plus récents</option>
+            <option value="Alphabetique">Alphabétique</option>
+          </select>
+
         </div>
 
       </div>
