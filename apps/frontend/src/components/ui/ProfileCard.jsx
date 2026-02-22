@@ -8,12 +8,24 @@ const ProfileCard = ({
 }) => {
   return (
     <div className="bg-black text-white rounded-2xl p-6 w-full max-w-xl">
-      avatar
+      {/* Avatar + Name + Date */}
       <div className="flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
           <span className="text-white text-xl font-bold">{initials}</span>
         </div>
+        <div>
+          <h2 className="text-white font-bold text-lg">{name}</h2>
+          <div className="flex items-center gap-1 text-gray-400 text-sm mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Membre depuis {memberSince}</span>
+          </div>
+        </div>
       </div>
+
+      {/* Bio */}
+      <p className="text-gray-400 text-sm mb-4">{bio}</p>
     </div>
   );
 };
