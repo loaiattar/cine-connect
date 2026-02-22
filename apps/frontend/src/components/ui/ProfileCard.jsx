@@ -26,6 +26,30 @@ const ProfileCard = ({
 
       {/* Bio */}
       <p className="text-gray-400 text-sm mb-4">{bio}</p>
+
+      {/* Stats */}
+      <div className="bg-gray-800 rounded-xl p-4 flex justify-between text-center">
+        <div>
+          <p className="text-red-500 font-bold">{stats.filmsRated}</p>
+          <p className="text-gray-400 text-xs">Films notés</p>
+        </div>
+        <div>
+          <p className="text-yellow-400 font-bold">⭐ {stats.avgRating}</p>
+          <p className="text-gray-400 text-xs">Note moyenne</p>
+        </div>
+        <div>
+          <p className="text-blue-400 font-bold">{stats.discussions}</p>
+          <p className="text-gray-400 text-xs">Discussions</p>
+        </div>
+        <div>
+          <p className="text-purple-400 font-bold">{stats.followers}</p>
+          <p className="text-gray-400 text-xs">Abonnés</p>
+        </div>
+        <div>
+          <p className="text-green-400 font-bold">{stats.following}</p>
+          <p className="text-gray-400 text-xs">Abonnements</p>
+        </div>
+      </div>
     </div>
   );
 };
