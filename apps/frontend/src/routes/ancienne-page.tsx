@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import CineConnectNavbar from "@/components/ui/Navbar";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/UserProfileCard";
@@ -19,7 +20,9 @@ export const Route = createFileRoute("/ancienne-page")({
 
 function LegacyPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased flex flex-col items-center justify-center overflow-hidden px-4">
+    <div className="min-h-screen bg-background text-foreground antialiased flex flex-col overflow-hidden">
+      <CineConnectNavbar />
+      <div className="flex flex-col items-center justify-center px-4">
       <div className="text-center mb-10">
         <h1 className="text-6xl font-black tracking-tighter mb-4 italic">
           Ciné<span className="text-primary">Connect</span>
@@ -161,6 +164,7 @@ function LegacyPage() {
           imageUrl="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
           genres={["Biopic", "Drame"]}
         />
+      </div>
       </div>
     </div>
   );

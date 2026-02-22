@@ -49,7 +49,7 @@ const CineConnectNavbar = ({ onSearch, onFriendsClick, onProfileClick }: CineCon
         />
       </div>
 
-      {/* Boutons à droite */}
+      {/* Boutons a droite */}
       <div className="ml-auto flex items-center gap-3">
         <button onClick={onFriendsClick} aria-label="Amis" className={btnClass}>
           <Users size={18} />
