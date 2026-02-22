@@ -103,6 +103,9 @@ function LegacyPage() {
           date="Il y a 1 semaine"
           reviewText="Visuellement magnifique, une expérience unique en salle."
           rating={4}
+        />
+      </div>
+
       {/* composant pour noter un film */}
       <div className="mt-12 w-full max-w-3xl">
         <RateMovie onRate={(note) => console.log("Note :", note)} />
