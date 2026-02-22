@@ -11,7 +11,7 @@ type UserProfileCardCompactProps = {
   onMessage: () => void
 }
 
-export function UserProfileCardCompact(props: UserProfileCardCompactProps) {
+import MovieCard from "@/components/ui/CardFilm";rProfileCardCompactProps) {
 
   const username = props.username
   const avatarUrl = props.avatarUrl
