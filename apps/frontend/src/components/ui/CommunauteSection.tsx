@@ -12,7 +12,7 @@ type Props = {
 const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCount = 5, onSearch, onFilterChange }: Props) => {
   const [query, setQuery] = useState("");
 
-  return (
+    return (
     <div className="min-h-screen bg-[#0d0d0d] text-white px-8 py-10">
 
       {/* Header */}

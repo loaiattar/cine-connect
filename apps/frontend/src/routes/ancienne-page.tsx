@@ -12,6 +12,7 @@ import {
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
+import CommunauteSection from "@/components/ui/CommunauteSection";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -161,6 +162,9 @@ function LegacyPage() {
           imageUrl="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
           genres={["Biopic", "Drame"]}
         />
+      </div>
+      <div className="mt-12 w-full">
+        <CommunauteSection />
       </div>
     </div>
   );
