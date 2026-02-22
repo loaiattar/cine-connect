@@ -27,7 +27,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
       </div>
 
       {/* Selects */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 mb-4">
 
         {/* Genre */}
         <div className="flex flex-col gap-1">
@@ -47,7 +47,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           </div>
         </div>
 
-        {/* Minimal Notes */}
+        {/* Note minimale */}
         <div className="flex flex-col gap-1">
           <label className="text-gray-300 text-sm">Note minimale</label>
           <div className="relative">
@@ -65,7 +65,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           </div>
         </div>
 
-        Year
+        {/* Année */}
         <div className="flex flex-col gap-1">
           <label className="text-gray-300 text-sm">Année</label>
           <div className="relative">
@@ -84,6 +84,15 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
         </div>
 
       </div>
+
+      {/* Bouton réinitialiser */}
+      <button
+        onClick={onReset}
+        className="border border-gray-600 text-white bg-transparent rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
+      >
+        Réinitialiser les filtres
+      </button>
+
     </div>
   )
 }
