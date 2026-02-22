@@ -12,6 +12,7 @@ import {
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
+import ConversationItem from "@/components/ui/ConversationItem";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -161,6 +162,13 @@ function LegacyPage() {
           imageUrl="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg"
           genres={["Biopic", "Drame"]}
         />
+      </div>
+
+      {/* Conversations */}
+      <div className="mt-12 w-full max-w-xl flex flex-col gap-3">
+        <ConversationItem name="Alice" preview="Tu as vu Dune 2 ?" date="10:32" />
+        <ConversationItem name="Thomas" preview="Incroyable ce film !" date="Hier" avatarColor="#e50914" />
+        <ConversationItem name="Camille" preview="On se fait une séance ce soir ?" date="Lun" avatarColor="#22c55e" />
       </div>
     </div>
   );

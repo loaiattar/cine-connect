@@ -11,11 +11,8 @@ const ConversationItem = ({ name, preview, date, avatarColor = "#f59e0b" }: Prop
   return (
     <div className="flex items-center gap-3 bg-[#1a1a1a] rounded-xl px-4 py-3">
 
-      {/* Avatar */}
-      <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
-        style={{ backgroundColor: avatarColor }}
-      >
+      
+      <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0" style={{ backgroundColor: avatarColor }}>
         {initial}
       </div>
 
@@ -25,7 +22,7 @@ const ConversationItem = ({ name, preview, date, avatarColor = "#f59e0b" }: Prop
         <p className="text-[#888] text-sm truncate">{preview}</p>
       </div>
 
-      {/* Date */}
+   
       <span className="text-[#888] text-xs self-start shrink-0">{date}</span>
 
     </div>
