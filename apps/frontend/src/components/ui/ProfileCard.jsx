@@ -1,10 +1,16 @@
 const ProfileCard = ({
-  name,
-  initials,
-  memberSince,
-  bio,
-  stats,
-  isLoading,
+  name = "Utilisateur",
+  initials = "?",
+  memberSince = "...",
+  bio = "",
+  stats = {
+    filmsRated: 0,
+    avgRating: 0,
+    comments: 0,
+    followers: 0,
+    following: 0,
+  },
+  isLoading = false,
 }) => {
   if (isLoading) {
     return (
