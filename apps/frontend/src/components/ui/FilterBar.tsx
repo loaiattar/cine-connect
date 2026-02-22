@@ -1,4 +1,7 @@
 import { useState } from "react"
+import type { ChangeEvent } from "react"
+
+type SelectEvent = ChangeEvent<HTMLSelectElement>
 
 interface FilterBarProps {
   genres: string[]
@@ -13,12 +16,34 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
   const [selectedRating, setSelectedRating] = useState("")
   const [selectedYear, setSelectedYear] = useState("")
 
+  const handleGenreChange = (e: SelectEvent) => {
+    setSelectedGenre(e.target.value)
+    onFilterChange("genre", e.target.value)
+  }
+
+  const handleRatingChange = (e: SelectEvent) => {
+    setSelectedRating(e.target.value)
+    onFilterChange("minRating", e.target.value)
+  }
+
+  const handleYearChange = (e: SelectEvent) => {
+    setSelectedYear(e.target.value)
+    onFilterChange("year", e.target.value)
+  }
+
+  const handleReset = () => {
+    setSelectedGenre("")
+    setSelectedRating("")
+    setSelectedYear("")
+    onReset()
+  }
+
   return (
     <div
       className="w-full p-4 border-b-2 border-blue-500"
       style={{ backgroundColor: "#0f172a" }}
     >
-      TITLE/TITRE
+      {/* Titre */}
       <div className="flex items-center gap-2 mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -35,7 +60,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           <div className="relative">
             <select
               value={selectedGenre}
-              onChange={(e) => setSelectedGenre(e.target.value)}
+              onChange={handleGenreChange}
               className="appearance-none bg-gray-900 text-white border border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none"
             >
               <option value="">Tous les genres</option>
@@ -53,7 +78,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           <div className="relative">
             <select
               value={selectedRating}
-              onChange={(e) => setSelectedRating(e.target.value)}
+              onChange={handleRatingChange}
               className="appearance-none bg-gray-900 text-white border border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none"
             >
               <option value="">Toutes les notes</option>
@@ -71,7 +96,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
           <div className="relative">
             <select
               value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+              onChange={handleYearChange}
               className="appearance-none bg-gray-900 text-white border border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none"
             >
               <option value="">Toutes les années</option>
@@ -87,7 +112,7 @@ const FilterBar = ({ genres, minRatings, years, onFilterChange, onReset }: Filte
 
       {/* Bouton réinitialiser */}
       <button
-        onClick={onReset}
+        onClick={handleReset}
         className="border border-gray-600 text-white bg-transparent rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
       >
         Réinitialiser les filtres
