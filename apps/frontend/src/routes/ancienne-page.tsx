@@ -12,6 +12,7 @@ import {
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
+import ProfileCard from "@/components/ui/ProfileCard.tsx";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -60,6 +61,23 @@ function LegacyPage() {
         >
           Explore
         </Button>
+      </div>
+
+      <div className="mt-12 w-full max-w-xl px-4">
+        <ProfileCard
+          name="Jean Dupont"
+          initials="JD"
+          memberSince="janvier 2024"
+          bio="Passionné de cinéma, fan de Kubrick et Nolan."
+          stats={{
+            filmsRated: 142,
+            avgRating: 7.4,
+            comments: 38,
+            followers: 210,
+            following: 95,
+          }}
+          isLoading={false}
+        />
       </div>
 
       <div className="mt-12 w-full max-w-5xl px-4">

@@ -1,3 +1,18 @@
+type ProfileCardProps = {
+  name?: string;
+  initials?: string;
+  memberSince?: string;
+  bio?: string;
+  stats?: {
+    filmsRated: number;
+    avgRating: number;
+    comments: number;
+    followers: number;
+    following: number;
+  };
+  isLoading?: boolean;
+};
+
 const ProfileCard = ({
   name = "Utilisateur",
   initials = "?",
@@ -11,7 +26,7 @@ const ProfileCard = ({
     following: 0,
   },
   isLoading = false,
-}) => {
+}: ProfileCardProps) => {
   if (isLoading) {
     return (
       <div className="bg-black rounded-2xl p-6 w-full max-w-xl animate-pulse">
@@ -41,7 +56,7 @@ const ProfileCard = ({
 
   return (
     <div className="bg-black text-white rounded-2xl p-6 w-full max-w-xl">
-      {/* Avatar + Name + Date */}
+      {/* Avatar + Nom + Date */}
       <div className="flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
           <span className="text-white text-xl font-bold">{initials}</span>
