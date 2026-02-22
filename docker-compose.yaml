@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: cine-db
     environment:
       POSTGRES_USER: admin
@@ -9,17 +8,63 @@ services:
       POSTGRES_DB: cineconnect
     ports:
       - "5432:5432"
-  frontend:
-    build: ./apps/frontend
+    networks:
+      - cineconnect-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d cineconnect"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cine-db-test:
+    image: postgres:15-alpine
+    container_name: cine-db-test
+    environment:
+      POSTGRES_DB: cineconnect_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
     ports:
-      - "8080:80"
-    depends_on:
-      - backend
+      - "5433:5432"
+    networks:
+      - cineconnect-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cineconnect_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
-    build: ./apps/backend
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: cine-backend
     ports:
       - "3000:3000"
+    env_file:
+      - ./apps/backend/.env
     environment:
       DATABASE_URL: postgres://admin:password123@db:5432/cineconnect
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - cineconnect-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: cine-frontend
+    ports:
+      - "8080:80"
+    env_file:
+      - ./apps/frontend/.env
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - cineconnect-network
+
+networks:
+  cineconnect-network:
+    driver: bridge
