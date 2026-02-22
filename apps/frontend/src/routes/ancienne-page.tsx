@@ -12,6 +12,7 @@ import {
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
+import FilterBar from "@/components/ui/FilterBar";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -60,6 +61,16 @@ function LegacyPage() {
         >
           Explore
         </Button>
+      </div>
+
+      <div className="mt-12 w-full max-w-5xl">
+        <FilterBar
+          genres={["Action", "Drame", "Comédie", "Sci-Fi", "Thriller"]}
+          minRatings={["6", "7", "8", "9"]}
+          years={["2024", "2023", "2022", "2021", "2020"]}
+          onFilterChange={(name, value) => console.log(name, value)}
+          onReset={() => console.log("reset")}
+        />
       </div>
 
       <div className="mt-12 w-full max-w-5xl px-4">
