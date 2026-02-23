@@ -185,5 +185,46 @@ export const MovieService = {
     async getMovieById(movieId: number, userId?: number) {
         const movie = await TmdbService.getMovieDetails(movieId);
         return movie;
+    },
+
+    async getDetailedMovie(movieId: number, userId?: number) {
+        const movieData = await TmdbService.getMovieDetails(movieId);
+        let isFavorite = false;
+        let isOnWatchlist = false;
+
+        if (userId) {
+            const [favorite] = await db
+                .select()
+                .from(favorites)
+                .where(
+                    and(
+                        eq(favorites.userId, userId),
+                        eq(favorites.externalMovieId, movieId)
+                    )
+                )
+                .limit(1);
+            isFavorite = !!favorite;
+
+            const [watchlist] = await db
+                .select()
+                .from(watchlists)
+                .where(
+                    and(
+                        eq(watchlists.userId, userId),
+                        eq(watchlists.externalMovieId, movieId)
+                    )
+                )
+                .limit(1);
+            isOnWatchlist = !!watchlist;
+        }
+
+        const comments = await this.getMovieComments(movieId);
+
+        return {
+            ...movieData,
+            isFavorite,
+            isOnWatchlist,
+            comments,
+        };  
     }
 };  
