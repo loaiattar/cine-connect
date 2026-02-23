@@ -60,6 +60,22 @@ function LegacyPage() {
         >
           Explore
         </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="rounded-full px-8 font-bold border-[#e53e3e] text-[#e53e3e] hover:bg-[#e53e3e]/10"
+        >
+          <a href="/RegisterPage">S'inscrire</a>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="rounded-full px-8 font-bold border-[#f6ad55] text-[#f6ad55] hover:bg-[#f6ad55]/10"
+        >
+          <a href="/login1">Se connecter</a>
+        </Button>
       </div>
 
       <div className="mt-12 w-full max-w-5xl px-4">
