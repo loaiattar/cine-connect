@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
-import { UserProfileCard } from "@/components/ui/UserProfileCard";
+import { UserProfileCard } from "@/components/ui/ProfileCard1";
 import {
   Carousel,
   CarouselContent,
@@ -13,6 +13,10 @@ import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
 import CommunauteSection from "@/components/ui/CommunauteSection";
+import ConversationItem from "@/components/ui/ConversationItem";
+import MovieHero from "@/components/ui/MovieHero";
+import ProfileCard from "@/components/ui/InfoProfileCard";
+import { UserProfileCardCompact } from "@/components/ui/ProfileCardCompact";
 
 export const Route = createFileRoute("/ancienne-page")({
   component: LegacyPage,
@@ -61,6 +65,51 @@ function LegacyPage() {
         >
           Explore
         </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="rounded-full px-8 font-bold border-[#e53e3e] text-[#e53e3e] hover:bg-[#e53e3e]/10"
+        >
+          <a href="/RegisterPage">S'inscrire</a>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="rounded-full px-8 font-bold border-[#f6ad55] text-[#f6ad55] hover:bg-[#f6ad55]/10"
+        >
+          <a href="/login1">Se connecter</a>
+        </Button>
+      </div>
+
+      <div className="mt-12 w-full max-w-xl px-4">
+        <ProfileCard
+          name="Jean Dupont"
+          initials="JD"
+          memberSince="janvier 2024"
+          bio="Passionné de cinéma, fan de Kubrick et Nolan."
+          stats={{
+            filmsRated: 142,
+            avgRating: 7.4,
+            comments: 38,
+            followers: 210,
+            following: 95,
+          }}
+          isLoading={false}
+        />
+      </div>
+
+      <div className="mt-12 w-full max-w-xl px-4">
+        <UserProfileCardCompact
+          username="JaneDoe"
+          avatarUrl=""
+          filmCount={87}
+          followersCount={134}
+          isFollowing={false}
+          onFollowToggle={() => console.log("Follow toggled")}
+          onMessage={() => console.log("Message")}
+        />
       </div>
 
       <div className="mt-12 w-full max-w-5xl px-4">
@@ -128,6 +177,7 @@ function LegacyPage() {
       <div className="mt-12 w-full max-w-3xl">
         <RateMovie onRate={(note) => console.log("Note :", note)} />
       </div>
+
       {/* section cartes de films */}
       <div className="mt-12 w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <MovieCard
@@ -165,6 +215,25 @@ function LegacyPage() {
       </div>
       <div className="mt-12 w-full">
         <CommunauteSection />
+      </div>
+
+      {/* Conversations */}
+      <div className="mt-12 w-full max-w-xl flex flex-col gap-3">
+        <ConversationItem name="Alice" preview="Tu as vu Dune 2 ?" date="10:32" />
+        <ConversationItem name="Thomas" preview="Incroyable ce film !" date="Hier" avatarColor="#e50914" />
+        <ConversationItem name="Camille" preview="On se fait une séance ce soir ?" date="Lun" avatarColor="#22c55e" />
+      </div>
+      {/* MovieHero */}
+      <div className="mt-12 w-full">
+        <MovieHero
+          title="Inception"
+          year={2010}
+          director="Christopher Nolan"
+          genres={["Action", "Sci-Fi", "Thriller"]}
+          rating={4.8}
+          posterUrl="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg"
+          onBack={() => console.log("Retour")}
+        />
       </div>
     </div>
   );

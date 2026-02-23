@@ -11,7 +11,13 @@ type Props = {
 
 const filters = ["Plus populaires", "Plus recents", "Alphabetique"];
 
-const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCount = 5, onSearch, onFilterChange }: Props) => {
+const CommunauteSection = ({
+  membresCount = 7,
+  abonnementsCount = 3,
+  abonnesCount = 5,
+  onSearch,
+  onFilterChange,
+}: Props) => {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState(filters[0]);
   const [open, setOpen] = useState(false);
@@ -24,14 +30,15 @@ const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCoun
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white px-8 py-10">
-
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <Users size={28} className="text-[#e50914]" />
           <h1 className="text-3xl font-bold">Communaute</h1>
         </div>
-        <p className="text-gray-400 text-sm">Decouvrez d'autres passionnes de cinema et suivez leurs critiques</p>
+        <p className="text-gray-400 text-sm">
+          Decouvrez d'autres passionnes de cinema et suivez leurs critiques
+        </p>
       </div>
 
       {/* Recherche + Filtre */}
@@ -41,7 +48,10 @@ const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCoun
           <input
             placeholder="Rechercher un utilisateur..."
             value={query}
-            onChange={(e) => { setQuery(e.target.value); onSearch?.(e.target.value); }}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              onSearch?.(e.target.value);
+            }}
             className="bg-transparent outline-none text-white text-sm w-full placeholder:text-gray-500"
           />
         </div>
@@ -61,7 +71,10 @@ const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCoun
                 <button
                   key={f}
                   onClick={() => handleFilter(f)}
-                  className={"w-full text-left px-4 py-2 text-sm hover:bg-[#e50914] " + (f === filter ? "text-[#e50914]" : "text-white")}
+                  className={
+                    "w-full text-left px-4 py-2 text-sm hover:bg-[#e50914] " +
+                    (f === filter ? "text-[#e50914]" : "text-white")
+                  }
                 >
                   {f}
                 </button>
@@ -78,7 +91,9 @@ const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCoun
           <p className="text-sm mt-2">Membres</p>
         </div>
         <div className="flex-1 bg-[#1a1a1a] ring-1 ring-[#2a2a2a] rounded-xl py-8 text-center">
-          <p className="text-5xl font-bold text-[#f5a623]">{abonnementsCount}</p>
+          <p className="text-5xl font-bold text-[#f5a623]">
+            {abonnementsCount}
+          </p>
           <p className="text-sm mt-2">Abonnements</p>
         </div>
         <div className="flex-1 bg-[#1a1a1a] ring-1 ring-[#2a2a2a] rounded-xl py-8 text-center">
@@ -86,7 +101,6 @@ const CommunauteSection = ({ membresCount = 7, abonnementsCount = 3, abonnesCoun
           <p className="text-sm mt-2">Abonnes</p>
         </div>
       </div>
-
     </div>
   );
 };
