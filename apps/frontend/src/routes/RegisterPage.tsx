@@ -138,6 +138,15 @@ function RouteComponent() {
           </div>
         </div>
 
+        
+        <div className="mt-6 rounded-2xl bg-[#1a1a1a] p-8">
+          <div className="mb-4 text-yellow-400">★★★★★</div>
+          <p className="mb-4 italic text-white">
+            "CinéConnect a complètement changé ma façon de découvrir et d'apprécier le cinéma. La communauté est incroyable !"
+          </p>
+          <p className="text-sm text-[#9ca3af]">— Sophie, membre depuis 2024</p>
+        </div>
+
       </div>
 
     </div>
