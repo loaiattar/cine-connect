@@ -27,7 +27,7 @@ export function MagicCard({
   const reset = useCallback(() => {
     mouseX.set(-gradientSize)
     mouseY.set(-gradientSize)
-  }, [gradientSize, mouseX, mouseY])
+  }, [mouseX, mouseY])
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
