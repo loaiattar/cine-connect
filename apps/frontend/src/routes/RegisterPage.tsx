@@ -9,17 +9,16 @@ export const Route = createFileRoute("/RegisterPage")({
 function RouteComponent() {
   return (
     <div className="flex h-screen bg-[#0a0a0a]">
+
       {/* ---- Colonne gauche : formulaire ---- */}
       <div className="flex flex-1 flex-col justify-center overflow-y-auto px-12 py-10">
-        <a
-          href="/"
-          className="mb-8 w-fit text-sm text-gray-400 transition-colors hover:text-white"
-        >
+
+        <a href="/" className="mb-8 w-fit text-sm text-gray-400 transition-colors hover:text-white">
           ← Retour
         </a>
 
         <div className="mb-6 flex items-center gap-2 text-2xl font-bold">
-    --muted: 240 3.7% 15.9%;
+          <span>🎬</span>
           <span>
             <span className="text-[#e53e3e]">Ciné</span>
             <span className="text-[#f6ad55]">Connect</span>
@@ -33,9 +32,7 @@ function RouteComponent() {
         </p>
 
         <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-white">
-            Nom d'utilisateur
-          </label>
+          <label className="mb-1 block text-sm font-medium text-white">Nom d'utilisateur</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2">👤</span>
             <input
@@ -47,9 +44,7 @@ function RouteComponent() {
         </div>
 
         <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-white">
-            Email
-          </label>
+          <label className="mb-1 block text-sm font-medium text-white">Email</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2">✉️</span>
             <input
@@ -61,9 +56,7 @@ function RouteComponent() {
         </div>
 
         <div className="mb-6">
-          <label className="mb-1 block text-sm font-medium text-white">
-            Mot de passe
-          </label>
+          <label className="mb-1 block text-sm font-medium text-white">Mot de passe</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2">🔒</span>
             <input
@@ -97,17 +90,18 @@ function RouteComponent() {
             Se connecter
           </a>
         </p>
+
       </div>
 
       {/* ---- Colonne droite : panneau info ---- */}
       <div className="flex flex-1 flex-col justify-center overflow-y-auto bg-[#111111] px-12 py-10">
+
         <div className="rounded-2xl bg-[#1a1a1a] p-8">
           <h2 className="mb-4 text-3xl font-bold text-white">
             Rejoignez <span className="text-[#e53e3e]">8,547</span> cinéphiles
           </h2>
           <p className="mb-8 text-[#9ca3af]">
-            Découvrez une communauté passionnée qui partage, discute et
-            recommande les meilleurs films du monde entier.
+            Découvrez une communauté passionnée qui partage, discute et recommande les meilleurs films du monde entier.
           </p>
 
           <div className="mb-4 flex items-center gap-4">
@@ -134,12 +128,13 @@ function RouteComponent() {
         <div className="mt-6 rounded-2xl bg-[#1a1a1a] p-8">
           <div className="mb-4 text-yellow-400">★★★★★</div>
           <p className="mb-4 italic text-white">
-            "CinéConnect a complètement changé ma façon de découvrir et
-            d'apprécier le cinéma. La communauté est incroyable !"
+            "CinéConnect a complètement changé ma façon de découvrir et d'apprécier le cinéma. La communauté est incroyable !"
           </p>
           <p className="text-sm text-[#9ca3af]">— Sophie, membre depuis 2024</p>
         </div>
+
       </div>
+
     </div>
   );
 }
