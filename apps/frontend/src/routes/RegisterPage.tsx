@@ -78,6 +78,30 @@ function RouteComponent() {
           </div>
         </div>
 
+        <button className="mb-6 w-full rounded-lg bg-[#e53e3e] py-3 font-semibold text-white transition-colors hover:bg-[#c53030]">
+          Créer mon compte
+        </button>
+
+        <div className="mb-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-[#374151]" />
+          <span className="text-sm text-gray-500">Ou continuer avec</span>
+          <div className="h-px flex-1 bg-[#374151]" />
+        </div>
+
+        <div className="mb-6">
+          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#374151] bg-[#1a1a1a] py-2.5 text-white transition-colors hover:bg-[#222]">
+            <span className="font-bold">G</span>
+            <span>Google</span>
+          </button>
+        </div>
+
+        <p className="text-center text-sm text-gray-500">
+          Vous avez déjà un compte ?{' '}
+          <a href="/login" className="text-[#f6ad55] hover:underline">
+            Se connecter
+          </a>
+        </p>
+
       </div>
 
       {/* ---- Colonne droite : panneau info ---- */}
