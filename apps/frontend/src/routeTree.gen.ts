@@ -10,11 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AnciennePageRouteImport } from './routes/ancienne-page'
+import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
+import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
 
 const AnciennePageRoute = AnciennePageRouteImport.update({
   id: '/ancienne-page',
   path: '/ancienne-page',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterPageRoute = RegisterPageRouteImport.update({
+  id: '/RegisterPage',
+  path: '/RegisterPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginPageRoute = LoginPageRouteImport.update({
+  id: '/LoginPage',
+  path: '/LoginPage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,27 +37,35 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/LoginPage': typeof LoginPageRoute
+  '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/LoginPage': typeof LoginPageRoute
+  '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/LoginPage': typeof LoginPageRoute
+  '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ancienne-page'
+  fullPaths: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ancienne-page'
-  id: '__root__' | '/' | '/ancienne-page'
+  to: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page'
+  id: '__root__' | '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginPageRoute: typeof LoginPageRoute
+  RegisterPageRoute: typeof RegisterPageRoute
   AnciennePageRoute: typeof AnciennePageRoute
 }
 
@@ -56,6 +76,20 @@ declare module '@tanstack/react-router' {
       path: '/ancienne-page'
       fullPath: '/ancienne-page'
       preLoaderRoute: typeof AnciennePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/RegisterPage': {
+      id: '/RegisterPage'
+      path: '/RegisterPage'
+      fullPath: '/RegisterPage'
+      preLoaderRoute: typeof RegisterPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/LoginPage': {
+      id: '/LoginPage'
+      path: '/LoginPage'
+      fullPath: '/LoginPage'
+      preLoaderRoute: typeof LoginPageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,6 +104,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginPageRoute: LoginPageRoute,
+  RegisterPageRoute: RegisterPageRoute,
   AnciennePageRoute: AnciennePageRoute,
 }
 export const routeTree = rootRouteImport
