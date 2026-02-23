@@ -23,10 +23,35 @@ function RouteComponent() {
         </div>
 
         <h1 className="mb-2 text-4xl font-bold text-white">Se connecter</h1>
+        <p className="mb-8 text-[#9ca3af]">Bon retour parmi les cinéphiles</p>
 
-        <p className="mb-8 text-[#9ca3af]">
-          Bon retour parmi les cinéphiles
-        </p>
+        <div className="mb-4">
+          <label className="mb-1 block text-sm font-medium text-white">Email</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2">✉️</span>
+            <input
+              type="email"
+              placeholder="votre@email.com"
+              className="w-full rounded-lg border border-[#374151] bg-[#1a1a1a] py-2.5 pl-10 pr-3 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+            />
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <label className="mb-1 block text-sm font-medium text-white">Mot de passe</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2">🔒</span>
+            <input
+              type="password"
+              placeholder="••••••••"
+              className="w-full rounded-lg border border-[#374151] bg-[#1a1a1a] py-2.5 pl-10 pr-3 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+            />
+          </div>
+        </div>
+
+        <button className="mb-6 w-full rounded-lg bg-[#e53e3e] py-3 font-semibold text-white transition-colors hover:bg-[#c53030]">
+          Se connecter
+        </button>
 
       </div>
 
