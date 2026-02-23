@@ -53,6 +53,26 @@ function RouteComponent() {
           Se connecter
         </button>
 
+        <div className="mb-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-[#374151]" />
+          <span className="text-sm text-gray-500">Ou continuer avec</span>
+          <div className="h-px flex-1 bg-[#374151]" />
+        </div>
+
+        <div className="mb-6">
+          <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#374151] bg-[#1a1a1a] py-2.5 text-white transition-colors hover:bg-[#222]">
+            <span className="font-bold">G</span>
+            <span>Google</span>
+          </button>
+        </div>
+
+        <p className="text-center text-sm text-gray-500">
+          Pas encore de compte ?{' '}
+          <a href="/RegisterPage" className="text-[#f6ad55] hover:underline">
+            S'inscrire
+          </a>
+        </p>
+
       </div>
 
       <div className="flex flex-1 flex-col justify-center overflow-y-auto bg-[#111111] px-12 py-10">
