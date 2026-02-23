@@ -13,7 +13,6 @@ type UserProfileCardCompactProps = {
 
 export function UserProfileCardCompact(props: UserProfileCardCompactProps) {
 
-  const username = props.username
   const avatarUrl = props.avatarUrl
   const filmCount = props.filmCount
   const followersCount = props.followersCount
@@ -30,14 +29,14 @@ export function UserProfileCardCompact(props: UserProfileCardCompactProps) {
 
       {/* avatar */}
       {avatarUrl ? (
-        <img src={avatarUrl} alt={username} className="w-16 h-16 rounded-full object-cover shrink-0" />
+        <img src={avatarUrl} alt={props.username} className="w-16 h-16 rounded-full object-cover shrink-0" />
       ) : (
         <div className="w-16 h-16 rounded-full bg-zinc-700 shrink-0" />
       )}
 
       {/* nom + stats */}
       <div className="flex-1">
-        <p className="font-bold text-sm">{username}</p>
+        <p className="font-bold text-sm">{props.username}</p>
         <p className="text-xs text-zinc-500 mt-1">
           {filmCount} films notés · {followersCount} abonnés
         </p>

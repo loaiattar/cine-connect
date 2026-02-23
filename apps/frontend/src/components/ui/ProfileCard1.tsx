@@ -21,16 +21,16 @@ export function UserProfileCard({ user, onMessage }: Props) {
 
   const [isFollowing, setIsFollowing] = useState(false)
 
-  function handleFollow() {
-    setIsFollowing(!isFollowing)
-  }
+  const initials = user.username.slice(0, 2).toUpperCase()
 
   return (
     <div className="flex gap-8 bg-zinc-900 rounded-2xl p-8 text-white">
 
       {/* photo de profil */}
       <div>
-        <div className="w-20 h-20 rounded-full bg-zinc-800" />
+        <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center">
+          <span className="text-white font-bold text-xl">{initials}</span>
+        </div>
       </div>
 
       {/* infos */}
@@ -57,7 +57,7 @@ export function UserProfileCard({ user, onMessage }: Props) {
         </div>
 
         <div className="flex gap-4 text-xs text-zinc-500 mt-2">
-          <span><span className="font-bold text-white">{user.followersCount}</span> abonnés</span>
+          <span><span className="font-bold text-white">{user.followersCount + (isFollowing ? 1 : 0)}</span> abonnés</span>
           <span><span className="font-bold text-white">{user.followingCount}</span> abonnements</span>
         </div>
 
@@ -68,7 +68,7 @@ export function UserProfileCard({ user, onMessage }: Props) {
         {isFollowing ? (
           <div className="flex flex-col gap-2">
             <button
-              onClick={handleFollow}
+              onClick={() => setIsFollowing(!isFollowing)}
               className="rounded-lg bg-zinc-700 hover:bg-zinc-600 px-4 py-2 text-sm font-semibold transition-colors"
             >
               Ne plus suivre
@@ -83,7 +83,7 @@ export function UserProfileCard({ user, onMessage }: Props) {
           </div>
         ) : (
           <button
-            onClick={handleFollow}
+            onClick={() => setIsFollowing(!isFollowing)}
             className="rounded-lg bg-red-600 hover:bg-red-500 px-6 py-2 text-sm font-bold transition-colors"
           >
             Suivre
