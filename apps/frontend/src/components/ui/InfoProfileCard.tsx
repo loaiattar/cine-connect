@@ -105,7 +105,7 @@ const ProfileCard = ({
           <p className="text-gray-400 text-xs">Abonnés</p>
         </div>
         <div>
-          <p className="text-green-500 font-bold">{stats.following}</p>
+          <p className="text-green-400 font-bold">{stats.following}</p>
           <p className="text-gray-400 text-xs">Abonnements</p>
         </div>
       </div>
