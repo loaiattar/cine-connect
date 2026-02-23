@@ -19,7 +19,7 @@ function RouteComponent() {
         </a>
 
         <div className="mb-6 flex items-center gap-2 text-2xl font-bold">
-          <span>🎬</span>
+    --muted: 240 3.7% 15.9%;
           <span>
             <span className="text-[#e53e3e]">Ciné</span>
             <span className="text-[#f6ad55]">Connect</span>
@@ -60,7 +60,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        ButtonassName="mb-6">
+        <div className="mb-6">
           <label className="mb-1 block text-sm font-medium text-white">
             Mot de passe
           </label>

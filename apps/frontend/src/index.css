@@ -19,7 +19,7 @@
     --secondary: 240 3.7% 15.9%; /* Zinc 800 */
     --secondary-foreground: 0 0% 100%;
 
-    icon: Star, 5.9%;
+    --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%; /* Gray 400 */
 
     --accent: 240 3.7% 15.9%;
