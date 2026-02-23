@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Marquee } from "@/components/ui/Marquee";
-import { Button } from "@/components/ui/Button";
+import { Marquee } from "@/components/ui/marquee";
+import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
 import {
   Carousel,
@@ -8,7 +8,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/Carousel";
+} from "@/components/ui/carousel";
 import ReviewCard from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
