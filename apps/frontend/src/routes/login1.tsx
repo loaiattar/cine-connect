@@ -76,7 +76,44 @@ function RouteComponent() {
       </div>
 
       <div className="flex flex-1 flex-col justify-center overflow-y-auto bg-[#111111] px-12 py-10">
-        <p className="text-white">Colonne droite — infos (à venir)</p>
+
+        <div className="rounded-2xl bg-[#1a1a1a] p-8">
+          <h2 className="mb-4 text-3xl font-bold text-white">
+            Bon retour parmi <span className="text-[#e53e3e]">8,547</span> cinéphiles
+          </h2>
+          <p className="mb-8 text-[#9ca3af]">
+            Retrouvez vos critiques, vos films favoris et les recommandations de la communauté.
+          </p>
+
+          <div className="mb-4 flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e53e3e]">
+              🎬
+            </div>
+            <div>
+              <p className="font-bold text-white">+12,500 films</p>
+              <p className="text-sm text-[#9ca3af]">Dans notre catalogue</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f6ad55]">
+              👤
+            </div>
+            <div>
+              <p className="font-bold text-white">+45,000 critiques</p>
+              <p className="text-sm text-[#9ca3af]">Publiées par nos membres</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-[#1a1a1a] p-8">
+          <div className="mb-4 text-yellow-400">★★★★★</div>
+          <p className="mb-4 italic text-white">
+            "Je retrouve chaque soir mes films préférés et les avis de la communauté. CinéConnect est indispensable !"
+          </p>
+          <p className="text-sm text-[#9ca3af]">— Marc, membre depuis 2023</p>
+        </div>
+
       </div>
 
     </div>
