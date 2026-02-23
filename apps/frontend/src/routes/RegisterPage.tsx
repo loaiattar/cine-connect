@@ -1,18 +1,16 @@
 // Page d'inscription de CinéConnect
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/RegisterPage')({
+export const Route = createFileRoute("/RegisterPage")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
     <div className="flex h-screen bg-[#0a0a0a]">
-
       {/* ---- Colonne gauche : formulaire ---- */}
       <div className="flex flex-1 flex-col justify-center overflow-y-auto px-12 py-10">
-
         <a
           href="/"
           className="mb-8 w-fit text-sm text-gray-400 transition-colors hover:text-white"
@@ -28,9 +26,7 @@ function RouteComponent() {
           </span>
         </div>
 
-        <h1 className="mb-2 text-4xl font-bold text-white">
-          Créer un compte
-        </h1>
+        <h1 className="mb-2 text-4xl font-bold text-white">Créer un compte</h1>
 
         <p className="mb-8 text-[#9ca3af]">
           Rejoignez la communauté des cinéphiles
@@ -64,7 +60,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="mb-6">
+        ButtonassName="mb-6">
           <label className="mb-1 block text-sm font-medium text-white">
             Mot de passe
           </label>
@@ -96,25 +92,22 @@ function RouteComponent() {
         </div>
 
         <p className="text-center text-sm text-gray-500">
-          Vous avez déjà un compte ?{' '}
+          Vous avez déjà un compte ?{" "}
           <a href="/login" className="text-[#f6ad55] hover:underline">
             Se connecter
           </a>
         </p>
-
       </div>
 
       {/* ---- Colonne droite : panneau info ---- */}
       <div className="flex flex-1 flex-col justify-center overflow-y-auto bg-[#111111] px-12 py-10">
-
         <div className="rounded-2xl bg-[#1a1a1a] p-8">
           <h2 className="mb-4 text-3xl font-bold text-white">
-            Rejoignez{' '}
-            <span className="text-[#e53e3e]">8,547</span>
-            {' '}cinéphiles
+            Rejoignez <span className="text-[#e53e3e]">8,547</span> cinéphiles
           </h2>
           <p className="mb-8 text-[#9ca3af]">
-            Découvrez une communauté passionnée qui partage, discute et recommande les meilleurs films du monde entier.
+            Découvrez une communauté passionnée qui partage, discute et
+            recommande les meilleurs films du monde entier.
           </p>
 
           <div className="mb-4 flex items-center gap-4">
@@ -138,17 +131,15 @@ function RouteComponent() {
           </div>
         </div>
 
-        
         <div className="mt-6 rounded-2xl bg-[#1a1a1a] p-8">
           <div className="mb-4 text-yellow-400">★★★★★</div>
           <p className="mb-4 italic text-white">
-            "CinéConnect a complètement changé ma façon de découvrir et d'apprécier le cinéma. La communauté est incroyable !"
+            "CinéConnect a complètement changé ma façon de découvrir et
+            d'apprécier le cinéma. La communauté est incroyable !"
           </p>
           <p className="text-sm text-[#9ca3af]">— Sophie, membre depuis 2024</p>
         </div>
-
       </div>
-
     </div>
-  )
+  );
 }
