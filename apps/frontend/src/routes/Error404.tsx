@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-
 export function Error404() {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white px-4">
