@@ -43,12 +43,7 @@ function Index() {
   ];
 
   return (
-    <div className="mx-auto max-w-5xl bg-black text-white relative">
-      <img
-        src={bgImage}
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none z-0"
-      />
+    <div className="mx-auto max-w-5xl bg-black text-white">
       <header className="flex items-center justify-between px-8 py-5 bg-gradient-to-b from-black/90 to-transparent sticky top-0 z-50 backdrop-blur-sm border-b border-zinc-800/50">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2 font-extrabold text-2xl tracking-tight">
@@ -86,6 +81,12 @@ function Index() {
               Commencer l'aventure
             </button>
           </div>
+
+          <img
+            src={bgImage}
+            alt="CinéConnect"
+            className="mt-12 w-full rounded-xl opacity-80 object-cover"
+          />
         </div>
       </section>
 
