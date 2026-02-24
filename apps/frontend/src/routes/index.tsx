@@ -143,31 +143,34 @@ function Index() {
                 </button>
             </section>
 
-            <footer>
-                <div>
+            <footer className="border-t border-zinc-800 px-6 pt-10 pb-6 text-white">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                     <div>
-                        <p>CinéConnect</p>
-                        <p>La plateforme collaborative pour les passionnés de cinéma.</p>
+                        <p className="text-lg font-bold mb-2">
+                            <span className="text-red-500">Ciné</span>
+                            <span className="text-orange-400">Connect</span>
+                        </p>
+                        <p className="text-sm text-zinc-400">La plateforme collaborative pour les passionnés de cinéma.</p>
                     </div>
                     <div>
-                        <p>Navigation</p>
-                        <ul>
-                            <li>Accueil</li>
-                            <li>Catalogue</li>
-                            <li>Communauté</li>
-                            <li>Se connecter</li>
+                        <p className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-3">Navigation</p>
+                        <ul className="space-y-2 text-sm text-zinc-400">
+                            <li className="hover:text-white cursor-pointer transition-colors">Accueil</li>
+                            <li className="hover:text-white cursor-pointer transition-colors">Catalogue</li>
+                            <li className="hover:text-white cursor-pointer transition-colors">Communauté</li>
+                            <li className="hover:text-white cursor-pointer transition-colors">Se connecter</li>
                         </ul>
                     </div>
                     <div>
-                        <p>Légal</p>
-                        <ul>
-                            <li>Mentions légales</li>
-                            <li>Politique de confidentialité</li>
-                            <li>CGU</li>
+                        <p className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-3">Légal</p>
+                        <ul className="space-y-2 text-sm text-zinc-400">
+                            <li className="hover:text-white cursor-pointer transition-colors">Mentions légales</li>
+                            <li className="hover:text-white cursor-pointer transition-colors">Politique de confidentialité</li>
+                            <li className="hover:text-white cursor-pointer transition-colors">CGU</li>
                         </ul>
                     </div>
                 </div>
-                <div>
+                <div className="border-t border-zinc-800 pt-4 text-center text-xs text-zinc-500">
                     <p>© 2026 CinéConnect. Tous droits réservés.</p>
                 </div>
             </footer>
