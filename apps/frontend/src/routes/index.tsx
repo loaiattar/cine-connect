@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   Clapperboard,
   MessageCircle,
@@ -143,19 +143,21 @@ function Index() {
                 </button>
             </section>
 
-            <footer className="px-6 py-8 text-center text-zinc-500">
-                <p className="font-semibold text-zinc-300">CinéConnect</p>
-                <div className="mt-3">
-                    <Link
-                        to="/ancienne-page"
-                        className="text-sm text-yellow-400 hover:text-yellow-300 underline"
-                    >
-                        Voir l'ancienne page
-                    </Link>
+            <footer>
+                <div>
+                    <div>
+                        <p>CinéConnect</p>
+                    </div>
+                    <div>
+                        <p>Navigation</p>
+                    </div>
+                    <div>
+                        <p>Légal</p>
+                    </div>
                 </div>
-                <p className="mt-2 text-sm">
-                    © 2026 CinéConnect. La plateforme des passionnés de cinéma.
-                </p>
+                <div>
+                    <p>© 2026 CinéConnect</p>
+                </div>
             </footer>
         </div>
     )
