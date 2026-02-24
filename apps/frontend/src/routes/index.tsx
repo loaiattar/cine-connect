@@ -43,7 +43,7 @@ function Index() {
   ];
 
   return (
-    <div className="mx-auto max-w-5xl bg-black text-white">
+    <div className="bg-black text-white">
       <header className="flex items-center justify-between px-8 py-5 bg-gradient-to-b from-black/90 to-transparent sticky top-0 z-50 backdrop-blur-sm border-b border-zinc-800/50">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2 font-extrabold text-2xl tracking-tight">
@@ -58,8 +58,13 @@ function Index() {
           Se connecter
         </button>
       </header>
-      <section className="px-6 py-20 text-center border-b border-zinc-800 bg-[radial-gradient(circle_at_top,rgba(220,38,38,0.2),transparent_40%),linear-gradient(to_bottom,#020202,#070707)]">
-        <div className="mx-auto max-w-3xl">
+      <section className="relative px-6 py-20 text-center border-b border-zinc-800 overflow-hidden">
+        <img
+          src={bgImage}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+        />
+        <div className="relative z-10 mx-auto max-w-3xl">
           <h1 className="text-5xl sm:text-6xl font-bold tracking-tight flex items-center justify-center gap-3">
             <Clapperboard className="text-red-500 w-12 h-12" />
             <span>
@@ -81,12 +86,6 @@ function Index() {
               Commencer l'aventure
             </button>
           </div>
-
-          <img
-            src={bgImage}
-            alt="CinéConnect"
-            className="mt-12 w-full rounded-xl opacity-80 object-cover"
-          />
         </div>
       </section>
 
