@@ -5,6 +5,8 @@ import {
   Play,
   Star,
   Users,
+  Mail,
+  Heart,
 } from "lucide-react";
 
 export const Route = createFileRoute('/')({
@@ -146,11 +148,15 @@ function Index() {
             <footer className="border-t border-zinc-800 px-6 pt-10 pb-6 text-white">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                     <div>
-                        <p className="text-lg font-bold mb-2">
-                            <span className="text-red-500">Ciné</span>
-                            <span className="text-orange-400">Connect</span>
-                        </p>
+                        <div className="flex items-center gap-2 font-bold text-lg mb-2">
+                            <Clapperboard className="text-red-500 w-5 h-5" />
+                            <span><span className="text-red-500">Ciné</span><span className="text-orange-400">Connect</span></span>
+                        </div>
                         <p className="text-sm text-zinc-400">La plateforme collaborative pour les passionnés de cinéma.</p>
+                        <div className="flex items-center gap-2 mt-4 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+                            <Mail className="w-4 h-4" />
+                            <span className="text-sm">contact@cineconnect.fr</span>
+                        </div>
                     </div>
                     <div>
                         <p className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-3">Navigation</p>
@@ -170,8 +176,10 @@ function Index() {
                         </ul>
                     </div>
                 </div>
-                <div className="border-t border-zinc-800 pt-4 text-center text-xs text-zinc-500">
-                    <p>© 2026 CinéConnect. Tous droits réservés.</p>
+                <div className="border-t border-zinc-800 pt-4 text-center text-xs text-zinc-500 flex items-center justify-center gap-1">
+                    <span>© 2026 CinéConnect. Fait avec</span>
+                    <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+                    <span>par des passionnés de cinéma.</span>
                 </div>
             </footer>
         </div>
