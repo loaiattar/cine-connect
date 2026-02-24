@@ -19,7 +19,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
             return res.status(401).json({ error: "Invalid token payload" });
         }
 
-        (req as any).user = { userId: decoded.userId };
+        req.user = { userId: decoded.userId };
         next();
     } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
