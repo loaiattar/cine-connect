@@ -70,3 +70,7 @@ pnpm lint
 # Type check entire monorepo
 pnpm tsc -b
 ```
+
+## Backend environment
+
+See `apps/backend/.env.example`. In **production**, `JWT_SECRET` is required and must not be the test default; the app will fail to start if it is missing or insecure. In test, a fallback is allowed so tests can run without setting it.
