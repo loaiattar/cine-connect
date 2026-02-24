@@ -74,3 +74,19 @@ pnpm tsc -b
 ## Backend environment
 
 See `apps/backend/.env.example`. In **production**, `JWT_SECRET` is required and must not be the test default; the app will fail to start if it is missing or insecure. In test, a fallback is allowed so tests can run without setting it.
+
+### Database seed
+
+From the backend package or monorepo root, run:
+
+```bash
+pnpm --filter backend db:seed
+```
+
+or from `apps/backend`:
+
+```bash
+pnpm db:seed
+```
+
+The seed script loads `apps/backend/.env` from the backend package root (not from the current working directory), so the same env is used whether you run from the backend dir or from the repo root.

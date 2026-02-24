@@ -1,4 +1,11 @@
-import "dotenv/config";
+import path from "node:path";
+import dotenv from "dotenv";
+
+// Load .env from backend package root so seed works whether run from backend dir or monorepo root.
+// When run via ts-node: __dirname is src/db; when run via node dist/db/seed.js: __dirname is dist/db.
+const backendRoot = path.resolve(__dirname, "..", "..");
+dotenv.config({ path: path.join(backendRoot, ".env") });
+
 import { db } from "./index";
 import { users, comments, favorites } from "./schema";
 
