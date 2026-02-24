@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { MovieController } from "../controllers/movie.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { asyncHandler } from "../middlewares/errorHandler.middleware";
 import { validate } from "../middlewares/validation.middleware";
 import {
     getMovieDetailsSchema,
@@ -18,7 +19,7 @@ import {
 const router: Router = Router();
 
 // GET /api/movies/:imdbId
-router.get("/:imdbId", authMiddleware, validate(getMovieDetailsSchema), MovieController.getMovieDetails);
+router.get("/:imdbId", authMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
 // POST /api/movies/favorite
 router.post("/favorite", authMiddleware, validate(toggleFavoriteSchema), MovieController.handleToggleFavorite);
 // GET /api/movies/favorites/:userId
