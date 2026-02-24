@@ -32,3 +32,8 @@ export function forbidden(message: string = 'Forbidden'): AppError {
 export function notFound(message: string = 'Not found'): AppError {
   return new AppError(message, 404);
 }
+
+/** Create a 409 Conflict error */
+export function conflict(message: string = 'Conflict'): AppError {
+  return new AppError(message, 409);
+}
