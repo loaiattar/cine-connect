@@ -147,16 +147,28 @@ function Index() {
                 <div>
                     <div>
                         <p>CinéConnect</p>
+                        <p>La plateforme collaborative pour les passionnés de cinéma.</p>
                     </div>
                     <div>
                         <p>Navigation</p>
+                        <ul>
+                            <li>Accueil</li>
+                            <li>Catalogue</li>
+                            <li>Communauté</li>
+                            <li>Se connecter</li>
+                        </ul>
                     </div>
                     <div>
                         <p>Légal</p>
+                        <ul>
+                            <li>Mentions légales</li>
+                            <li>Politique de confidentialité</li>
+                            <li>CGU</li>
+                        </ul>
                     </div>
                 </div>
                 <div>
-                    <p>© 2026 CinéConnect</p>
+                    <p>© 2026 CinéConnect. Tous droits réservés.</p>
                 </div>
             </footer>
         </div>
