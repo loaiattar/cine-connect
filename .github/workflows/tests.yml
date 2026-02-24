@@ -1,0 +1,66 @@
+# Runs backend functional tests on every push/PR using a PostgreSQL service container.
+# Required: Add TMDB_API_KEY to repository Secrets (Settings → Secrets and variables → Actions).
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cineconnect_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
+      NODE_ENV: test
+      JWT_SECRET: test-jwt-secret-for-ci
+      FRONTEND_ORIGIN: http://localhost:5173
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build shared package
+        run: pnpm turbo run build --filter=@cine-connect/shared
+
+      - name: Run migrations
+        run: pnpm --filter backend db:push
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
+
+      - name: Run backend functional tests
+        run: pnpm --filter backend test:functional
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
