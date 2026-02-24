@@ -1,1 +1,1 @@
-export { db, validateEnv } from './db';
+export { db, validateEnv, getJwtSecret } from './db';

@@ -1,11 +1,10 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { getJwtSecret } from '../config';
 import { db } from '../db';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { conflict } from '../utils';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fixed_test_secret_123';
 
 export const AuthService = {
   async register(name: string, email: string, password: string) {
@@ -48,7 +47,7 @@ export const AuthService = {
   generateToken(userId: number, email: string) {
     const token = jwt.sign(
       { userId, email },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: '24h' }
     );
     return { token, userId, email };
