@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { favorites, watchlists, comments, users } from "../db/schema";
 import { eq, and } from "drizzle-orm";
+import { forbidden, notFound } from "../utils";
 import { TmdbService } from "./tmdb.service";
 
 export const MovieService = {
@@ -145,11 +146,11 @@ export const MovieService = {
             .limit(1);
 
         if (!existing) {
-            return { action: "not_found" };
+            throw notFound("Comment not found");
         }
 
         if (existing.userId !== userId) {
-            return { action: "unauthorized" };
+            throw forbidden("You can only delete your own comments");
         }
 
         await db
@@ -167,11 +168,11 @@ export const MovieService = {
             .limit(1);
 
         if (!existing) {
-            return { action: "not_found" };
+            throw notFound("Comment not found");
         }
 
         if (existing.userId !== userId) {
-            return { action: "unauthorized" };
+            throw forbidden("You can only update your own comments");
         }
 
         await db
