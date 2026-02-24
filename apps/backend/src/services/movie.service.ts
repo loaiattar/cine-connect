@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { favorites, watchlists, comments, users } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { forbidden, notFound } from "../utils";
+import { AppError, forbidden, notFound } from "../utils";
 import { TmdbService } from "./tmdb.service";
 
 export const MovieService = {
@@ -120,6 +120,9 @@ export const MovieService = {
             })
             .returning();
 
+        if (!newComment) {
+            throw new AppError("Failed to create comment", 500);
+        }
         return newComment;
     },
 
