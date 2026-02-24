@@ -3,11 +3,20 @@ import jwt from 'jsonwebtoken';
 import { db } from '../db';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
+import { conflict } from '../utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fixed_test_secret_123';
 
 export const AuthService = {
   async register(name: string, email: string, password: string) {
+    const existing = await db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    if (existing) {
+      throw conflict('Email already registered');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [newUser] = await db.insert(users).values({
