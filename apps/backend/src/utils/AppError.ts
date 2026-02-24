@@ -37,3 +37,8 @@ export function notFound(message: string = 'Not found'): AppError {
 export function conflict(message: string = 'Conflict'): AppError {
   return new AppError(message, 409);
 }
+
+/** Create a 502 Bad Gateway error (e.g. upstream API failure) */
+export function badGateway(message: string = 'Bad Gateway'): AppError {
+  return new AppError(message, 502);
+}
