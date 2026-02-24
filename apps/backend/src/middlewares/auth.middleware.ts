@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { getJwtSecret } from "../config";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -11,8 +12,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const token = authHeader.split(" ")[1];
 
     try {
-        const secret = process.env.JWT_SECRET || "fixed_test_secret_123";
-        const decoded = jwt.verify(token, secret) as { userId: number };
+        const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
 
         if (!decoded.userId) {
             console.error("Token decoded but userId is missing!");
