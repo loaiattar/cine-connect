@@ -24,15 +24,11 @@ export const MovieController = {
     },
 
     async getMovieDetails(req: Request<{ imdbId: string }>, res: Response) {
-        try {
-            const { imdbId } = req.params;
-            const userId = req.query.userId ? Number(req.query.userId) : undefined;
+        const { imdbId } = req.params;
+        const userId = req.query.userId ? Number(req.query.userId) : undefined;
 
-            const movie = await MovieService.getMovieById(Number(imdbId), userId);
-            return res.json(movie);
-        } catch (error) {
-            return res.status(500).json({ error: "Failed to fetch movie" });
-        }
+        const movie = await MovieService.getMovieById(Number(imdbId), userId);
+        return res.json(movie);
     },
 
     async getUserFavorites(
