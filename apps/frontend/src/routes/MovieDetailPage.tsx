@@ -91,6 +91,13 @@ function MovieDetailPage() {
           ))}
         </div>
       </div>
+
+      {/* Bloc CTA Ouvrir le chat */}
+      <div className="w-full bg-[#e50914] py-10 mt-4 flex justify-center items-center">
+        <button className="bg-white text-[#e50914] font-bold text-lg px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors">
+          Ouvrir le chat
+        </button>
+      </div>
     </div>
   );
 }
