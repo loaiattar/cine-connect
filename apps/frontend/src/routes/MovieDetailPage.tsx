@@ -7,8 +7,27 @@ export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
 });
 
+// interfaces TypeScript
+interface Film {
+  title: string;
+  year: number;
+  director: string;
+  genres: string[];
+  rating: number;
+  posterUrl: string;
+  synopsis: string;
+}
+
+interface MovieComment {
+  id: number;
+  username: string;
+  date: string;
+  reviewText: string;
+  rating: number;
+}
+
 // données mockées du film
-const mockMovie = {
+const mockMovie: Film = {
   title: "Inception",
   year: 2010,
   director: "Christopher Nolan",
@@ -20,7 +39,7 @@ const mockMovie = {
 };
 
 // données mockées des commentaires
-const mockComments = [
+const mockComments: MovieComment[] = [
   {
     id: 1,
     username: "Alice",
@@ -73,7 +92,7 @@ function MovieDetailPage() {
 
         {/* Section RateMovie */}
         <section className="py-8 border-b border-gray-700">
-          <RateMovie onRate={(note) => console.log("Note :", note)} />
+          <RateMovie onRate={(_note) => {}} />
         </section>
 
         {/* Section Commentaires */}

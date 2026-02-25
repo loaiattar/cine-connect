@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Login1RouteImport } from './routes/login1'
 import { Route as AnciennePageRouteImport } from './routes/ancienne-page'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
+import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const RegisterPageRoute = RegisterPageRouteImport.update({
   path: '/RegisterPage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
+  id: '/MovieDetailPage',
+  path: '/MovieDetailPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginPageRoute = LoginPageRouteImport.update({
   id: '/LoginPage',
   path: '/LoginPage',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
+  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
+  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
+  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1'
+  fullPaths:
+    | '/'
+    | '/LoginPage'
+    | '/MovieDetailPage'
+    | '/RegisterPage'
+    | '/ancienne-page'
+    | '/login1'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1'
+  to:
+    | '/'
+    | '/LoginPage'
+    | '/MovieDetailPage'
+    | '/RegisterPage'
+    | '/ancienne-page'
+    | '/login1'
   id:
     | '__root__'
     | '/'
     | '/LoginPage'
+    | '/MovieDetailPage'
     | '/RegisterPage'
     | '/ancienne-page'
     | '/login1'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginPageRoute: typeof LoginPageRoute
+  MovieDetailPageRoute: typeof MovieDetailPageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   AnciennePageRoute: typeof AnciennePageRoute
   Login1Route: typeof Login1Route
@@ -108,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterPageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/MovieDetailPage': {
+      id: '/MovieDetailPage'
+      path: '/MovieDetailPage'
+      fullPath: '/MovieDetailPage'
+      preLoaderRoute: typeof MovieDetailPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/LoginPage': {
       id: '/LoginPage'
       path: '/LoginPage'
@@ -128,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginPageRoute: LoginPageRoute,
+  MovieDetailPageRoute: MovieDetailPageRoute,
   RegisterPageRoute: RegisterPageRoute,
   AnciennePageRoute: AnciennePageRoute,
   Login1Route: Login1Route,

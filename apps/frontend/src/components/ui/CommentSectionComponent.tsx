@@ -22,10 +22,8 @@ export default function ReviewCard({ username, date, reviewText, rating }: Revie
         {stars}
       </div>
 
-    
       <div className="flex gap-3">
 
-       
         <div className="w-10 h-10 rounded-full bg-gray-500" />
 
         <div>
@@ -38,4 +36,3 @@ export default function ReviewCard({ username, date, reviewText, rating }: Revie
     </div>
   )
 }
-      {/* Main content centé */}

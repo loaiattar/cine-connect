@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
@@ -22,9 +22,17 @@ export const Route = createFileRoute("/ancienne-page")({
 });
 
 function LegacyPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background text-foreground antialiased flex flex-col items-center justify-center overflow-hidden px-4">
       <div className="text-center mb-10">
+        <button
+          onClick={() => navigate({ to: "/MovieDetailPage" })}
+          className="mb-6 bg-[#e50914] text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition-colors"
+        >
+          Voir la page film →
+        </button>
         <h1 className="text-6xl font-black tracking-tighter mb-4 italic">
           Ciné<span className="text-primary">Connect</span>
         </h1>
