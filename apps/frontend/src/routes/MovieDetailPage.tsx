@@ -71,7 +71,7 @@ function MovieDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-950">
       {/* MovieHero */}
       <MovieHero
         title={mockMovie.title}
@@ -83,29 +83,29 @@ function MovieDetailPage() {
         onBack={() => navigate({ to: "/" })}
       />
 
-      {/* Contenu principal centré */}
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Contenu principal — format mobile centré */}
+      <div className="w-full max-w-lg mx-auto px-4 space-y-6 py-6">
 
         {/* Section Synopsis */}
-        <section className="py-8 border-b border-gray-700">
-          <h2 className="text-white font-bold text-2xl mb-3">Synopsis</h2>
-          <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+        <section className="bg-gray-800/50 border border-gray-700 rounded-2xl p-5">
+          <h2 className="text-white font-bold text-lg mb-3">Synopsis</h2>
+          <p className="text-gray-300 leading-relaxed text-sm">
             {mockMovie.synopsis}
           </p>
         </section>
 
         {/* Section RateMovie */}
-        <section className="py-8 border-b border-gray-700">
+        <section className="bg-gray-800/50 border border-gray-700 rounded-2xl p-5">
           <RateMovie onRate={(_note) => {}} />
         </section>
 
         {/* Section Commentaires */}
-        <section className="py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <h2 className="text-white font-bold text-2xl">Commentaires</h2>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-white font-bold text-lg">Commentaires</h2>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto"
+              className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
               {showForm ? "Annuler" : "Ajouter un commentaire"}
             </button>
@@ -113,27 +113,26 @@ function MovieDetailPage() {
 
           {/* Formulaire d'ajout */}
           {showForm && (
-            <div className="bg-gray-800 rounded-xl p-4 mb-6 flex flex-col gap-3">
+            <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4 flex flex-col gap-3">
               <input
                 type="text"
                 placeholder="Votre nom"
                 value={formUsername}
                 onChange={(e) => setFormUsername(e.target.value)}
-                className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500"
+                className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition-colors"
               />
               <textarea
                 placeholder="Votre commentaire..."
                 value={formText}
                 onChange={(e) => setFormText(e.target.value)}
                 rows={3}
-                className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 resize-none"
+                className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition-colors resize-none"
               />
-              {/* Sélecteur d'étoiles */}
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <span
                     key={i}
-                    className={`text-2xl cursor-pointer ${i <= (hoveredStar || formRating) ? "text-yellow-400" : "text-gray-500"}`}
+                    className={`text-2xl cursor-pointer transition-colors ${i <= (hoveredStar || formRating) ? "text-yellow-400" : "text-gray-600"}`}
                     onMouseEnter={() => setHoveredStar(i)}
                     onMouseLeave={() => setHoveredStar(0)}
                     onClick={() => setFormRating(i)}
@@ -144,16 +143,16 @@ function MovieDetailPage() {
               </div>
               <button
                 onClick={handleSubmit}
-                className="bg-[#e50914] text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                className="bg-red-600 text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
               >
                 Publier
               </button>
             </div>
           )}
 
-          {/* Liste des commentaires — visible seulement s'il y en a */}
+          {/* Liste commentaires — visible seulement s'il y en a */}
           {comments.length > 0 && (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {comments.map((comment) => (
                 <ReviewCard
                   key={comment.id}
@@ -170,8 +169,8 @@ function MovieDetailPage() {
       </div>
 
       {/* Bloc CTA Ouvrir le chat */}
-      <div className="w-full bg-[#e50914] py-12 mt-4 flex justify-center items-center">
-        <button className="bg-white text-[#e50914] font-bold text-lg px-10 py-3 rounded-xl hover:bg-gray-100 transition-colors">
+      <div className="w-full bg-red-950 py-12 mt-4 flex justify-center items-center">
+        <button className="bg-red-600 text-white font-bold text-lg px-10 py-3 rounded-xl hover:bg-red-700 transition-colors">
           Ouvrir le chat
         </button>
       </div>
