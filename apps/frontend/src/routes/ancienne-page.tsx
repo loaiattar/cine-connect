@@ -55,7 +55,7 @@ function LegacyPage() {
               key={title}
               className="bg-card px-8 py-4 rounded-2xl border border-border text-card-foreground text-xl font-bold shadow-2xl"
             >
-              {title}
+    setComments(prev => [...prev, newComment])
             </div>
           ))}
         </Marquee>

@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
@@ -40,18 +39,7 @@ function MovieDetailPage() {
   return (
     <div className="min-h-screen bg-gray-950">
 
-      {/* Bouton Retour au-dessus du hero */}
-      <div className="max-w-md mx-auto px-4 pt-4">
-        <button
-          onClick={() => navigate({ to: "/" })}
-          className="flex items-center gap-2 bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
-        >
-          <ArrowLeft size={14} />
-          Retour
-        </button>
-      </div>
-
-      {/* MovieHero */}
+      {/* MovieHero — bouton Retour intégré via onBack */}
       <MovieHero
         title={mockMovie.title}
         year={mockMovie.year}
@@ -62,11 +50,11 @@ function MovieDetailPage() {
         onBack={() => navigate({ to: "/" })}
       />
 
-      {/* Contenu principal — format mobile centré */}
-      <div className="w-full max-w-md mx-auto space-y-6 py-6">
+      {/* Contenu principal — pleine largeur */}
+      <div className="w-full space-y-6 py-6 px-4">
 
         {/* Section Synopsis */}
-        <section className="px-4">
+        <section>
           <h2 className="text-white font-bold text-lg mb-3">Synopsis</h2>
           <p className="text-gray-300 leading-relaxed text-sm">
             {mockMovie.synopsis}
@@ -79,16 +67,19 @@ function MovieDetailPage() {
         </section>
 
         {/* Section Commentaires */}
-        <section className="px-4">
+        <section>
           <CommentSection currentUser={currentUser} />
         </section>
 
       </div>
 
       {/* Bloc CTA Ouvrir le chat */}
-      <div className="max-w-md mx-auto px-4 pb-8">
+      <div className="px-4 pb-8">
         <div className="bg-red-950 border border-red-800 rounded-xl p-8">
-          <button className="bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg px-6 py-2 mx-auto block transition-colors">
+          <button
+            type="button"
+            className="bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg px-6 py-2 mx-auto block transition-colors"
+          >
             Ouvrir le chat
           </button>
         </div>

@@ -55,7 +55,7 @@ export default function CommentSection({ currentUser }: CommentSectionProps) {
       rating: formRating,
     }
 
-    setComments([...comments, newComment])
+    setComments(prev => [...prev, newComment])
     setFormText("")
     setFormRating(0)
     setShowForm(false)
