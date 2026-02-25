@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie from "@/components/ui/RateMovie";
 import ReviewCard from "@/components/ui/CommentSectionComponent";
@@ -7,7 +8,7 @@ export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
 });
 
-//TypeScript interfaces
+// TypeScript interfaces
 interface Film {
   title: string;
   year: number;
@@ -38,37 +39,40 @@ const mockMovie: Film = {
     "Dom Cobb est un voleur spécialisé dans l'art de s'introduire dans les rêves des autres pour leur subtiliser les secrets de leur subconscient. Ce talent rare en a fait un joueur très recherché dans le monde trouble de l'espionnage industriel. Mais cette activité lui a coûté cher : il a perdu tout ce qu'il aimait. On lui offre une chance de se racheter : accomplir une mission en apparence impossible, l'inception.",
 };
 
-// données mockées des commentaires
-const mockComments: MovieComment[] = [
-  {
-    id: 1,
-    username: "Alice",
-    date: "Il y a 2 jours",
-    reviewText: "Un film absolument incroyable, je recommande vivement !",
-    rating: 5,
-  },
-  {
-    id: 2,
-    username: "Bob",
-    date: "Il y a 5 jours",
-    reviewText: "Scénario complexe mais brillant. DiCaprio est parfait.",
-    rating: 4,
-  },
-  {
-    id: 3,
-    username: "Clara",
-    date: "Il y a 1 semaine",
-    reviewText: "Un chef-d'œuvre du cinéma moderne. À voir absolument.",
-    rating: 5,
-  },
-];
-
 function MovieDetailPage() {
   const navigate = useNavigate();
 
+  // liste des commentaires — vide au départ
+  const [comments, setComments] = useState<MovieComment[]>([]);
+  const [showForm, setShowForm] = useState(false);
+
+  // champs du formulaire
+  const [formUsername, setFormUsername] = useState("");
+  const [formText, setFormText] = useState("");
+  const [formRating, setFormRating] = useState(0);
+  const [hoveredStar, setHoveredStar] = useState(0);
+
+  function handleSubmit() {
+    if (!formUsername.trim() || !formText.trim() || formRating === 0) return;
+
+    const newComment: MovieComment = {
+      id: Date.now(),
+      username: formUsername.trim(),
+      date: "À l'instant",
+      reviewText: formText.trim(),
+      rating: formRating,
+    };
+
+    setComments([...comments, newComment]);
+    setFormUsername("");
+    setFormText("");
+    setFormRating(0);
+    setShowForm(false);
+  }
+
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* MovieHero avec toutes les props du film */}
+      {/* MovieHero */}
       <MovieHero
         title={mockMovie.title}
         year={mockMovie.year}
@@ -99,21 +103,68 @@ function MovieDetailPage() {
         <section className="py-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <h2 className="text-white font-bold text-2xl">Commentaires</h2>
-            <button className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto">
-              Ajouter un commentaire
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto"
+            >
+              {showForm ? "Annuler" : "Ajouter un commentaire"}
             </button>
           </div>
-          <div className="flex flex-col gap-4">
-            {mockComments.map((comment) => (
-              <ReviewCard
-                key={comment.id}
-                username={comment.username}
-                date={comment.date}
-                reviewText={comment.reviewText}
-                rating={comment.rating}
+
+          {/* Formulaire d'ajout */}
+          {showForm && (
+            <div className="bg-gray-800 rounded-xl p-4 mb-6 flex flex-col gap-3">
+              <input
+                type="text"
+                placeholder="Votre nom"
+                value={formUsername}
+                onChange={(e) => setFormUsername(e.target.value)}
+                className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500"
               />
-            ))}
-          </div>
+              <textarea
+                placeholder="Votre commentaire..."
+                value={formText}
+                onChange={(e) => setFormText(e.target.value)}
+                rows={3}
+                className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 resize-none"
+              />
+              {/* Sélecteur d'étoiles */}
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <span
+                    key={i}
+                    className={`text-2xl cursor-pointer ${i <= (hoveredStar || formRating) ? "text-yellow-400" : "text-gray-500"}`}
+                    onMouseEnter={() => setHoveredStar(i)}
+                    onMouseLeave={() => setHoveredStar(0)}
+                    onClick={() => setFormRating(i)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="bg-[#e50914] text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Publier
+              </button>
+            </div>
+          )}
+
+          {/* Liste des commentaires — visible seulement s'il y en a */}
+          {comments.length > 0 && (
+            <div className="flex flex-col gap-4">
+              {comments.map((comment) => (
+                <ReviewCard
+                  key={comment.id}
+                  username={comment.username}
+                  date={comment.date}
+                  reviewText={comment.reviewText}
+                  rating={comment.rating}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
       </div>
