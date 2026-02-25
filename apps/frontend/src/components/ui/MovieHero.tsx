@@ -7,7 +7,7 @@ type Props = {
   genres: string[];
   rating: number;
   posterUrl: string;
-  onBack?: () => void;
+    "Dom Cobb est un voleur spécialisé dans l'art de s 'introiredans les rêves des autres pour leur subtiliser les secrets de leur subconscient. Ce talent rare en a fait un joueur très recherché dans le monde trouble de l 'espionnage industriel. Mais cette activité lui a coûté cher : il a perdu tout ce qu 'il aimait. On lui offre une chance de se racheter : accomplir une mission en apparence impossible, l 'inception.",
 };
 
 const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }: Props) => {
