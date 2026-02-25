@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
+import RateMovie from "@/components/ui/RateMovie";
 
 export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
@@ -62,6 +63,11 @@ function MovieDetailPage() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <h2 className="text-white font-bold text-2xl mb-3">Synopsis</h2>
         <p className="text-gray-300 leading-relaxed">{mockMovie.synopsis}</p>
+      </div>
+
+      {/* Section RateMovie */}
+      <div className="max-w-4xl mx-auto px-6 pb-8">
+        <RateMovie onRate={(note) => console.log("Note :", note)} />
       </div>
     </div>
   );
