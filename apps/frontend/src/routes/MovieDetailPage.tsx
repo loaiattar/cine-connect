@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie from "@/components/ui/RateMovie";
 import ReviewCard from "@/components/ui/CommentSectionComponent";
@@ -42,11 +43,8 @@ const mockMovie: Film = {
 function MovieDetailPage() {
   const navigate = useNavigate();
 
-  // liste des commentaires — vide au départ
   const [comments, setComments] = useState<MovieComment[]>([]);
   const [showForm, setShowForm] = useState(false);
-
-  // champs du formulaire
   const [formUsername, setFormUsername] = useState("");
   const [formText, setFormText] = useState("");
   const [formRating, setFormRating] = useState(0);
@@ -72,6 +70,18 @@ function MovieDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-950">
+
+      {/* Bouton Retour au-dessus du hero */}
+      <div className="max-w-md mx-auto px-4 pt-4">
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="flex items-center gap-2 bg-gray-900 border border-gray-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
+        >
+          <ArrowLeft size={14} />
+          Retour
+        </button>
+      </div>
+
       {/* MovieHero */}
       <MovieHero
         title={mockMovie.title}
@@ -84,10 +94,10 @@ function MovieDetailPage() {
       />
 
       {/* Contenu principal — format mobile centré */}
-      <div className="w-full max-w-lg mx-auto px-4 space-y-6 py-6">
+      <div className="w-full max-w-md mx-auto space-y-6 py-6">
 
         {/* Section Synopsis */}
-        <section className="bg-gray-800/50 border border-gray-700 rounded-2xl p-5">
+        <section className="px-4">
           <h2 className="text-white font-bold text-lg mb-3">Synopsis</h2>
           <p className="text-gray-300 leading-relaxed text-sm">
             {mockMovie.synopsis}
@@ -95,12 +105,12 @@ function MovieDetailPage() {
         </section>
 
         {/* Section RateMovie */}
-        <section className="bg-gray-800/50 border border-gray-700 rounded-2xl p-5">
+        <section className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-4">
           <RateMovie onRate={(_note) => {}} />
         </section>
 
         {/* Section Commentaires */}
-        <section className="space-y-4">
+        <section className="px-4 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-white font-bold text-lg">Commentaires</h2>
             <button
@@ -111,7 +121,6 @@ function MovieDetailPage() {
             </button>
           </div>
 
-          {/* Formulaire d'ajout */}
           {showForm && (
             <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4 flex flex-col gap-3">
               <input
@@ -150,7 +159,6 @@ function MovieDetailPage() {
             </div>
           )}
 
-          {/* Liste commentaires — visible seulement s'il y en a */}
           {comments.length > 0 && (
             <div className="flex flex-col gap-3">
               {comments.map((comment) => (
@@ -169,11 +177,14 @@ function MovieDetailPage() {
       </div>
 
       {/* Bloc CTA Ouvrir le chat */}
-      <div className="w-full bg-red-950 py-12 mt-4 flex justify-center items-center">
-        <button className="bg-red-600 text-white font-bold text-lg px-10 py-3 rounded-xl hover:bg-red-700 transition-colors">
-          Ouvrir le chat
-        </button>
+      <div className="max-w-md mx-auto px-4 pb-8">
+        <div className="bg-red-950 border border-red-800 rounded-xl p-8">
+          <button className="bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg px-6 py-2 mx-auto block transition-colors">
+            Ouvrir le chat
+          </button>
+        </div>
       </div>
+
     </div>
   );
 }
