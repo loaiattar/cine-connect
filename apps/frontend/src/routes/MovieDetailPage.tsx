@@ -63,7 +63,7 @@ function MovieDetailPage() {
 
         {/* Section RateMovie */}
         <section className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-4">
-          <RateMovie onRate={(_note) => {}} />
+          <RateMovie onRate={() => {}} />
         </section>
 
         {/* Section Commentaires */}

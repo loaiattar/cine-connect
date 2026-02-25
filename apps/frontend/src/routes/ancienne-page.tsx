@@ -63,7 +63,7 @@ function LegacyPage() {
 
       <div className="flex gap-4 mt-12">
         <Button size="lg" className="rounded-full px-8 font-bold">
-          Watch Now
+          Watch now
         </Button>
         <Button
           variant="outline"
