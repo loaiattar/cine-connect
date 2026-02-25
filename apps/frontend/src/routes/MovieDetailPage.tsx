@@ -7,7 +7,7 @@ export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
 });
 
-// interfaces TypeScript
+//TypeScript interfaces
 interface Film {
   title: string;
   year: number;

@@ -223,9 +223,23 @@ function LegacyPage() {
 
       {/* Conversations */}
       <div className="mt-12 w-full max-w-xl flex flex-col gap-3">
-        <ConversationItem name="Alice" preview="Tu as vu Dune 2 ?" date="10:32" />
-        <ConversationItem name="Thomas" preview="Incroyable ce film !" date="Hier" avatarColor="#e50914" />
-        <ConversationItem name="Camille" preview="On se fait une séance ce soir ?" date="Lun" avatarColor="#22c55e" />
+        <ConversationItem
+          name="Alice"
+          preview="Tu as vu Dune 2 ?"
+          date="10:32"
+        />
+        <ConversationItem
+          name="Thomas"
+          preview="Incroyable ce film !"
+          date="Hier"
+          avatarColor="#e50914"
+        />
+        <ConversationItem
+          name="Camille"
+          preview="On se fait une séance ce soir ?"
+          date="Lun"
+          avatarColor="#22c55e"
+        />
       </div>
       {/* MovieHero */}
       <div className="mt-12 w-full">
