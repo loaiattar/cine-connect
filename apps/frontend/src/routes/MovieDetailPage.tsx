@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie from "@/components/ui/RateMovie";
+import ReviewCard from "@/components/ui/CommentSectionComponent";
 
 export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
@@ -68,6 +69,27 @@ function MovieDetailPage() {
       {/* Section RateMovie */}
       <div className="max-w-4xl mx-auto px-6 pb-8">
         <RateMovie onRate={(note) => console.log("Note :", note)} />
+      </div>
+
+      {/* Section Commentaires */}
+      <div className="max-w-4xl mx-auto px-6 pb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-white font-bold text-2xl">Commentaires</h2>
+          <button className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+            Ajouter un commentaire
+          </button>
+        </div>
+        <div className="flex flex-col gap-4">
+          {mockComments.map((comment) => (
+            <ReviewCard
+              key={comment.id}
+              username={comment.username}
+              date={comment.date}
+              reviewText={comment.reviewText}
+              rating={comment.rating}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
