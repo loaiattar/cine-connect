@@ -7,7 +7,6 @@ export const Route = createFileRoute("/MovieDetailPage")({
 
 // données mockées du film
 const mockMovie = {
-  id: 1,
   title: "Inception",
   year: 2010,
   director: "Christopher Nolan",
