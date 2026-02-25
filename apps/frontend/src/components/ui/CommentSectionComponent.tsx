@@ -38,3 +38,4 @@ export default function ReviewCard({ username, date, reviewText, rating }: Revie
     </div>
   )
 }
+      {/* Main content centé */}

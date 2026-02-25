@@ -60,41 +60,48 @@ function MovieDetailPage() {
         onBack={() => navigate({ to: "/" })}
       />
 
-      {/* Section Synopsis */}
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <h2 className="text-white font-bold text-2xl mb-3">Synopsis</h2>
-        <p className="text-gray-300 leading-relaxed">{mockMovie.synopsis}</p>
-      </div>
+      {/* Contenu principal centré */}
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      {/* Section RateMovie */}
-      <div className="max-w-4xl mx-auto px-6 pb-8">
-        <RateMovie onRate={(note) => console.log("Note :", note)} />
-      </div>
+        {/* Section Synopsis */}
+        <section className="py-8 border-b border-gray-700">
+          <h2 className="text-white font-bold text-2xl mb-3">Synopsis</h2>
+          <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+            {mockMovie.synopsis}
+          </p>
+        </section>
 
-      {/* Section Commentaires */}
-      <div className="max-w-4xl mx-auto px-6 pb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-white font-bold text-2xl">Commentaires</h2>
-          <button className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-            Ajouter un commentaire
-          </button>
-        </div>
-        <div className="flex flex-col gap-4">
-          {mockComments.map((comment) => (
-            <ReviewCard
-              key={comment.id}
-              username={comment.username}
-              date={comment.date}
-              reviewText={comment.reviewText}
-              rating={comment.rating}
-            />
-          ))}
-        </div>
+        {/* Section RateMovie */}
+        <section className="py-8 border-b border-gray-700">
+          <RateMovie onRate={(note) => console.log("Note :", note)} />
+        </section>
+
+        {/* Section Commentaires */}
+        <section className="py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <h2 className="text-white font-bold text-2xl">Commentaires</h2>
+            <button className="bg-[#e50914] text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto">
+              Ajouter un commentaire
+            </button>
+          </div>
+          <div className="flex flex-col gap-4">
+            {mockComments.map((comment) => (
+              <ReviewCard
+                key={comment.id}
+                username={comment.username}
+                date={comment.date}
+                reviewText={comment.reviewText}
+                rating={comment.rating}
+              />
+            ))}
+          </div>
+        </section>
+
       </div>
 
       {/* Bloc CTA Ouvrir le chat */}
-      <div className="w-full bg-[#e50914] py-10 mt-4 flex justify-center items-center">
-        <button className="bg-white text-[#e50914] font-bold text-lg px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors">
+      <div className="w-full bg-[#e50914] py-12 mt-4 flex justify-center items-center">
+        <button className="bg-white text-[#e50914] font-bold text-lg px-10 py-3 rounded-xl hover:bg-gray-100 transition-colors">
           Ouvrir le chat
         </button>
       </div>
