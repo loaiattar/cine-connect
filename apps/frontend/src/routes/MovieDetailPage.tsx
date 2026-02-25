@@ -57,6 +57,12 @@ function MovieDetailPage() {
         posterUrl={mockMovie.posterUrl}
         onBack={() => navigate({ to: "/" })}
       />
+
+      {/* Section Synopsis */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <h2 className="text-white font-bold text-2xl mb-3">Synopsis</h2>
+        <p className="text-gray-300 leading-relaxed">{mockMovie.synopsis}</p>
+      </div>
     </div>
   );
 }
