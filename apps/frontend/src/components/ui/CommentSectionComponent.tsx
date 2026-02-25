@@ -13,7 +13,7 @@ interface MovieComment {
 }
 
 // carte d'affichage d'un commentaire
-function ReviewCard({ username, date, reviewText, rating }: Omit<MovieComment, "id">) {
+export function ReviewCard({ username, date, reviewText, rating }: Omit<MovieComment, "id">) {
   const stars = []
   for (let i = 0; i < rating; i++) {
     stars.push(<span key={i} className="text-yellow-400 text-2xl">★</span>)

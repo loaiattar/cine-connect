@@ -9,7 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ReviewCard from "@/components/ui/CommentSectionComponent";
+import { ReviewCard } from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
 import ConversationItem from "@/components/ui/ConversationItem";
