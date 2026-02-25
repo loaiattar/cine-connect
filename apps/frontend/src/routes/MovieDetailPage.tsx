@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
@@ -43,9 +44,20 @@ const mockComments = [
 ];
 
 function MovieDetailPage() {
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <p>MovieDetailPage</p>
+    <div className="min-h-screen bg-gray-900">
+      {/* Bouton Retour */}
+      <div className="px-6 pt-6">
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="flex items-center gap-2 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Retour
+        </button>
+      </div>
     </div>
   );
 }
