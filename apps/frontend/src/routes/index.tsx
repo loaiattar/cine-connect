@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import bgImage from "../../image/BackGround.png";
 import {
   Clapperboard,
@@ -85,6 +85,12 @@ function Index() {
               <Play className="w-4 h-4" />
               Commencer l'aventure
             </button>
+            <Link
+              to="/ancienne-page"
+              className="rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center"
+            >
+              Voir l'ancienne page
+            </Link>
           </div>
         </div>
       </section>
