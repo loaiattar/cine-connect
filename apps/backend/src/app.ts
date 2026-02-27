@@ -3,6 +3,7 @@ import cors from 'cors';
 import { notFound } from './utils';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import movieRoutes from './routes/movie.route';
+import authRoutes from './routes/auth.route';
 
 /**
  * CORS allowlist from env. When set, only these origins are allowed.
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
     res.send('CinéConnect Backend is running');
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/movies', movieRoutes);
 
 // 404: no route matched
