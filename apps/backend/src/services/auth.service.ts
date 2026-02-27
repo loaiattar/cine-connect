@@ -4,7 +4,7 @@ import { getJwtSecret } from '../config';
 import { db } from '../db';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
-import { conflict } from '../utils';
+import { conflict, unauthorized } from '../utils';
 
 export const AuthService = {
   async register(name: string, email: string, password: string) {
@@ -33,12 +33,12 @@ export const AuthService = {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw unauthorized('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new Error('Invalid password');
+      throw unauthorized('Invalid credentials');
     }
 
     return this.generateToken(user.id, user.email);
