@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
@@ -9,7 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ReviewCard from "@/components/ui/CommentSectionComponent";
+import { ReviewCard } from "@/components/ui/CommentSectionComponent";
 import RateMovie from "@/components/ui/RateMovie";
 import MovieCard from "@/components/ui/CardFilm";
 import ConversationItem from "@/components/ui/ConversationItem";
@@ -22,9 +22,17 @@ export const Route = createFileRoute("/ancienne-page")({
 });
 
 function LegacyPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background text-foreground antialiased flex flex-col items-center justify-center overflow-hidden px-4">
       <div className="text-center mb-10">
+        <button
+          onClick={() => navigate({ to: "/MovieDetailPage" })}
+          className="mb-6 bg-[#e50914] text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition-colors"
+        >
+          Voir la page film →
+        </button>
         <h1 className="text-6xl font-black tracking-tighter mb-4 italic">
           Ciné<span className="text-primary">Connect</span>
         </h1>
@@ -55,7 +63,7 @@ function LegacyPage() {
 
       <div className="flex gap-4 mt-12">
         <Button size="lg" className="rounded-full px-8 font-bold">
-          Watch Now
+          Watch now
         </Button>
         <Button
           variant="outline"
@@ -215,9 +223,23 @@ function LegacyPage() {
 
       {/* Conversations */}
       <div className="mt-12 w-full max-w-xl flex flex-col gap-3">
-        <ConversationItem name="Alice" preview="Tu as vu Dune 2 ?" date="10:32" />
-        <ConversationItem name="Thomas" preview="Incroyable ce film !" date="Hier" avatarColor="#e50914" />
-        <ConversationItem name="Camille" preview="On se fait une séance ce soir ?" date="Lun" avatarColor="#22c55e" />
+        <ConversationItem
+          name="Alice"
+          preview="Tu as vu Dune 2 ?"
+          date="10:32"
+        />
+        <ConversationItem
+          name="Thomas"
+          preview="Incroyable ce film !"
+          date="Hier"
+          avatarColor="#e50914"
+        />
+        <ConversationItem
+          name="Camille"
+          preview="On se fait une séance ce soir ?"
+          date="Lun"
+          avatarColor="#22c55e"
+        />
       </div>
       {/* MovieHero */}
       <div className="mt-12 w-full">
