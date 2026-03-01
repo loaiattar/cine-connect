@@ -116,6 +116,30 @@ export const openApiSpec = {
           movieId: { type: "integer" },
         },
       },
+      ChatMessage: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          senderId: { type: "integer", nullable: true },
+          roomId: { type: "string" },
+          content: { type: "string" },
+          createdAt: { type: "string", format: "date-time" },
+          senderEmail: { type: "string", nullable: true },
+        },
+      },
+      MessageHistoryResponse: {
+        type: "object",
+        properties: {
+          messages: {
+            type: "array",
+            items: { $ref: "#/components/schemas/ChatMessage" },
+          },
+          total: { type: "integer", description: "Total count of messages in the room" },
+          limit: { type: "integer" },
+          offset: { type: "integer" },
+        },
+        required: ["messages", "total", "limit", "offset"],
+      },
     },
   },
   paths: {
@@ -186,6 +210,57 @@ export const openApiSpec = {
           },
           "401": {
             description: "Invalid credentials",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+            },
+          },
+        },
+      },
+    },
+    "/api/messages": {
+      get: {
+        tags: ["Messages"],
+        summary: "Get message history for a room",
+        description: "Returns paginated chat messages for the given room (e.g. global, film:550). Requires authentication.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: "room",
+            in: "query",
+            required: true,
+            schema: { type: "string" },
+            description: "Room id (e.g. global, film:550)",
+          },
+          {
+            name: "limit",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 1, maximum: 100, default: 50 },
+          },
+          {
+            name: "offset",
+            in: "query",
+            required: false,
+            schema: { type: "integer", minimum: 0, default: 0 },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated message history",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/MessageHistoryResponse" },
+              },
+            },
+          },
+          "400": {
+            description: "Validation failed (e.g. missing room)",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+            },
+          },
+          "401": {
+            description: "Unauthorized",
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/Error" } },
             },
