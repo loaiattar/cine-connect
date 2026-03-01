@@ -67,3 +67,20 @@ export const updateCommentSchema = z.object({
         comment: z.string().min(1).max(1000),
     }),
 });
+
+/** Rating scale 1–10 (one per user per film, upsert). */
+const RATING_MIN = 1;
+const RATING_MAX = 10;
+
+export const submitRatingSchema = z.object({
+    body: z.object({
+        movieId: z.number().int().positive(),
+        rating: z.number().int().min(RATING_MIN).max(RATING_MAX),
+    }),
+});
+
+export const getMovieRatingSchema = z.object({
+    params: z.object({
+        movieId: movieIdSchema,
+    }),
+});
