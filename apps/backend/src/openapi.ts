@@ -109,6 +109,32 @@ export const openApiSpec = {
           movieId: { type: "integer" },
         },
       },
+      SubmitRatingBody: {
+        type: "object",
+        required: ["movieId", "rating"],
+        properties: {
+          movieId: { type: "integer", minimum: 1, description: "Movie ID (e.g. TMDB id)" },
+          rating: { type: "integer", minimum: 1, maximum: 10, description: "Rating 1–10" },
+        },
+      },
+      SubmitRatingResponse: {
+        type: "object",
+        properties: {
+          movieId: { type: "integer" },
+          rating: { type: "integer" },
+        },
+        required: ["movieId", "rating"],
+      },
+      MovieRatingResponse: {
+        type: "object",
+        description: "Aggregate and optionally the authenticated user's rating",
+        properties: {
+          userRating: { type: "integer", nullable: true, description: "Current user's rating (only when authenticated)" },
+          average: { type: "number", description: "Average rating for the film" },
+          count: { type: "integer", description: "Number of ratings" },
+        },
+        required: ["average", "count"],
+      },
       WatchlistDeleteResponse: {
         type: "object",
         properties: {
@@ -550,7 +576,64 @@ export const openApiSpec = {
         },
       },
     },
-    // Placeholder for future rating endpoints (issue #05)
-    // "/api/movies/{movieId}/rating": { ... }
+    "/api/movies/rate": {
+      post: {
+        tags: ["Movies"],
+        summary: "Submit or update rating",
+        description: "Upsert the authenticated user's rating for a film (1–10). One rating per user per film.",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": { schema: { $ref: "#/components/schemas/SubmitRatingBody" } },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Rating saved",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/SubmitRatingResponse" } },
+            },
+          },
+          "400": {
+            description: "Validation failed (e.g. rating out of 1–10)",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+          },
+          "401": {
+            description: "Unauthorized",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+        },
+      },
+    },
+    "/api/movies/rating/{movieId}": {
+      get: {
+        tags: ["Movies"],
+        summary: "Get rating for a film",
+        description: "Returns aggregate (average, count) for the film. When authenticated, also returns the current user's rating.",
+        security: [],
+        parameters: [
+          {
+            name: "movieId",
+            in: "path",
+            required: true,
+            schema: { type: "integer" },
+            description: "Movie ID (e.g. TMDB id)",
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Rating data",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/MovieRatingResponse" } },
+            },
+          },
+          "400": {
+            description: "Validation failed",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+          },
+        },
+      },
+    },
   },
 } as const;
