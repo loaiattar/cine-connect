@@ -114,4 +114,19 @@ export const MovieController = {
         );
         return success(res, result);
     },
+
+    async submitRating(req: Request, res: Response) {
+        const userId = req.user?.userId;
+        const { movieId, rating } = req.body;
+        if (!userId) throw badRequest("Missing authentication");
+        const result = await MovieService.submitRating(userId, movieId, rating);
+        return success(res, result);
+    },
+
+    async getMovieRating(req: Request<{ movieId: string }>, res: Response) {
+        const { movieId } = req.params;
+        const userId = req.user?.userId;
+        const result = await MovieService.getMovieRating(Number(movieId), userId);
+        return success(res, result);
+    },
 };
