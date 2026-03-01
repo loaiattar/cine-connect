@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, unique } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, unique, index } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
     id: serial("id").primaryKey(),
@@ -63,3 +63,14 @@ export const profiles = pgTable("profiles", {
     location: text("location"),
     favoriteGenre: text("favorite_genre"),
 });
+
+/** Chat messages (real-time discussion rooms). roomId matches Socket.io rooms (e.g. "global", "film:550"). */
+export const messages = pgTable("messages", {
+    id: serial("id").primaryKey(),
+    senderId: integer("sender_id").references(() => users.id, { onDelete: "set null" }),
+    roomId: text("room_id").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+    index("messages_room_id_created_at_idx").on(t.roomId, t.createdAt),
+]);
