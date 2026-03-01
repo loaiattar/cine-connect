@@ -5,21 +5,7 @@ import { errorHandler } from './middlewares/errorHandler.middleware';
 import movieRoutes from './routes/movie.route';
 import authRoutes from './routes/auth.route';
 import { openApiSpec } from './openapi';
-
-/**
- * CORS allowlist from env. When set, only these origins are allowed.
- * In production with no origins set, no origin is allowed.
- * In non-production with no origins set, default cors() allows localhost etc.
- */
-function getCorsAllowlist(): string[] {
-  const fromList =
-    process.env.CORS_ORIGINS?.split(',')
-      .map((s) => s.trim())
-      .filter(Boolean) ?? [];
-  const single = process.env.FRONTEND_ORIGIN?.trim();
-  const allowlist = fromList.length > 0 ? fromList : single ? [single] : [];
-  return [...new Set(allowlist)];
-}
+import { getCorsAllowlist } from './config';
 
 function applyCors(app: Express): void {
   const allowlist = getCorsAllowlist();
