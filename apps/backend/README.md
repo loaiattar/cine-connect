@@ -8,6 +8,7 @@ REST API and real-time discussion (Socket.io) for CinéConnect.
 - **Docs:** `/docs` or `/?docs=1`
 - **OpenAPI spec:** `/openapi.json`
 - **Auth:** `POST /api/auth/register`, `POST /api/auth/login` — use the returned JWT in `Authorization: Bearer <token>` for protected routes.
+- **Chat history:** `GET /api/messages?room=<roomId>&limit=50&offset=0` — paginated message history for a room (requires auth).
 
 ## WebSocket (Socket.io) — real-time discussion
 
@@ -39,7 +40,8 @@ The same server exposes a Socket.io endpoint for real-time chat. Use the **same 
 
 | Event        | Payload                                                                 |
 |-------------|-------------------------------------------------------------------------|
-| `message`   | `{ roomId, text, userId?, email?, timestamp }`                         |
+| `message`   | `{ roomId, text, userId?, email?, timestamp }` — also persisted to DB   |
+| `message_history` | `{ roomId, messages }` — sent to the joining client when they join a room |
 | `user_joined` | `{ roomId, userId?, email?, socketId }`                              |
 | `user_left` | `{ roomId, userId?, socketId }`                                        |
 
@@ -54,8 +56,9 @@ const socket = io("http://localhost:3000", {
 
 socket.emit("join_room", "global");
 socket.on("message", (msg) => console.log("message", msg));
+socket.on("message_history", (data) => console.log("message_history", data)); // recent messages for the room
 socket.on("user_joined", (data) => console.log("user_joined", data));
-socket.emit("message", { roomId: "global", text: "Hello!" });
+socket.emit("message", { roomId: "global", text: "Hello!" }); // persisted to DB and broadcast to room
 ```
 
 ## Environment
