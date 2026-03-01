@@ -19,7 +19,8 @@
  * - message: (payload: { roomId: string; text: string }) — send a chat message to the room.
  *
  * Events (server -> client)
- * - message: { userId?: number; email?: string; text: string; roomId: string; timestamp: string }
+ * - message: { userId?: number; email?: string; text: string; roomId: string; timestamp: string } — also persisted to DB
+ * - message_history: { roomId: string; messages: Array<{ id, senderId, roomId, content, createdAt, senderEmail? }> } — sent on join_room
  * - user_joined: { roomId: string; userId?: number; socketId: string }
  * - user_left: { roomId: string; userId?: number; socketId: string }
  */
@@ -28,6 +29,7 @@ import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { getCorsAllowlist, getJwtSecret } from './config';
+import { MessageService } from './services/message.service';
 
 const ROOM_PREFIX_FILM = 'film:';
 
@@ -65,7 +67,7 @@ export function createSocketServer(httpServer: HttpServer): Server {
   });
 
   io.on('connection', (socket: Socket) => {
-    socket.on('join_room', (roomId: string) => {
+    socket.on('join_room', async (roomId: string) => {
       if (typeof roomId !== 'string' || !roomId.trim()) return;
       const id = roomId.trim();
       socket.join(id);
@@ -75,6 +77,12 @@ export function createSocketServer(httpServer: HttpServer): Server {
         email: socket.data.email,
         socketId: socket.id,
       });
+      try {
+        const { messages: history } = await MessageService.getByRoom(id, 50, 0);
+        socket.emit('message_history', { roomId: id, messages: history });
+      } catch {
+        // ignore DB errors (e.g. DB not running)
+      }
     });
 
     socket.on('leave_room', (roomId: string) => {
@@ -88,16 +96,23 @@ export function createSocketServer(httpServer: HttpServer): Server {
       });
     });
 
-    socket.on('message', (payload: { roomId?: string; text?: string }) => {
+    socket.on('message', async (payload: { roomId?: string; text?: string }) => {
       const roomId = typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
       const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
       if (!roomId || !text) return;
+      let createdAt: string = new Date().toISOString();
+      try {
+        const row = await MessageService.create(socket.data.userId ?? null, roomId, text);
+        if (row?.createdAt) createdAt = row.createdAt.toISOString();
+      } catch {
+        // persist failed; still broadcast so clients see the message
+      }
       const message = {
         roomId,
         text,
         userId: socket.data.userId,
         email: socket.data.email,
-        timestamp: new Date().toISOString(),
+        timestamp: createdAt,
       };
       io.to(roomId).emit('message', message);
     });
