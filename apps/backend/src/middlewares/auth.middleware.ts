@@ -27,3 +27,21 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         return res.status(401).json({ error: `Unauthorized: ${message}` });
     }
 };
+
+/** Same as authMiddleware but does not return 401: if no/invalid token, continues without req.user. */
+export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return next();
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
+        if (decoded.userId) {
+            req.user = { userId: decoded.userId };
+        }
+    } catch {
+        // ignore invalid token
+    }
+    next();
+};
