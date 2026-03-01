@@ -4,6 +4,7 @@ import { notFound } from './utils';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import movieRoutes from './routes/movie.route';
 import authRoutes from './routes/auth.route';
+import messageRoutes from './routes/message.route';
 import { openApiSpec } from './openapi';
 import { getCorsAllowlist } from './config';
 
@@ -89,6 +90,7 @@ app.get("/swagger/", sendSwaggerHtml);
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/movies', movieRoutes);
 
 // 404: no route matched
