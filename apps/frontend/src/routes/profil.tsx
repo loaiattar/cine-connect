@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import ProfileCard from "@/components/ui/InfoProfileCard";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
 import MovieCard from "@/components/ui/CardFilm";
@@ -6,8 +7,6 @@ import MovieCard from "@/components/ui/CardFilm";
 export const Route = createFileRoute("/profil")({
   component: ProfilPage,
 });
-
-// Types
 
 type FollowUser = {
   username: string;
@@ -29,13 +28,12 @@ type FavoriteFilm = {
   genres: string[];
 };
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
+// TODO: remplacer par -> GET /api/users/:id
 const userProfile = {
   name: "Marie Dupont",
   initials: "MD",
   memberSince: "janvier 2023",
-  bio: "Passionnée de cinéma indépendant et de films noirs. Toujours à la recherche de la prochaine pépite.",
+  bio: "Passionnée de cinéma indépendant et de films noirs.",
   stats: {
     filmsRated: 142,
     avgRating: 7.4,
@@ -45,6 +43,7 @@ const userProfile = {
   },
 };
 
+// TODO: remplacer par -> GET /api/users/:id/followers
 const followers: FollowUser[] = [
   {
     username: "Lucas Martin",
@@ -78,6 +77,7 @@ const followers: FollowUser[] = [
   },
 ];
 
+// TODO: remplacer par -> GET /api/users/:id/following
 const following: FollowUser[] = [
   {
     username: "Camille Noir",
@@ -101,6 +101,7 @@ const following: FollowUser[] = [
   },
 ];
 
+// TODO: remplacer par -> GET /api/users/:id/favorites
 const favorites: FavoriteFilm[] = [
   {
     id: 1,
@@ -136,16 +137,32 @@ const favorites: FavoriteFilm[] = [
   },
 ];
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 function ProfilPage() {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-2xl font-bold">Profil utilisateur</h1>
-      {/* composants vérifiés — non rendus */}
-      {false && <ProfileCard {...userProfile} />}
+    <div className="min-h-screen bg-black text-white p-6 max-w-3xl mx-auto">
+
+      <button
+        onClick={() => navigate({ to: "/" })}
+        className="flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Retour
+      </button>
+
+      <ProfileCard
+        name={userProfile.name}
+        initials={userProfile.initials}
+        memberSince={userProfile.memberSince}
+        bio={userProfile.bio}
+        stats={userProfile.stats}
+      />
+
       {false && <UserProfileCard user={followers[0]} />}
       {false && <MovieCard {...favorites[0]} />}
+      {false && following.length}
+
     </div>
   );
 }
