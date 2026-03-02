@@ -26,8 +26,8 @@ router.get("/rating/:movieId", optionalAuthMiddleware, validate(getMovieRatingSc
 // POST /api/movies/rate — submit or update rating (upsert)
 router.post("/rate", authMiddleware, validate(submitRatingSchema), asyncHandler(MovieController.submitRating));
 
-// GET /api/movies/:imdbId
-router.get("/:imdbId", authMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
+// GET /api/movies/:imdbId — public; optional auth adds isFavorite, isOnWatchlist, comments
+router.get("/:imdbId", optionalAuthMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
 // POST /api/movies/favorite
 router.post("/favorite", authMiddleware, validate(toggleFavoriteSchema), asyncHandler(MovieController.handleToggleFavorite));
 // GET /api/movies/favorites/:userId

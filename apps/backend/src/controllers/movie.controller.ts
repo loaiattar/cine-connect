@@ -17,9 +17,9 @@ export const MovieController = {
 
     async getMovieDetails(req: Request<{ imdbId: string }>, res: Response) {
         const { imdbId } = req.params;
-        const userId = req.query.userId ? Number(req.query.userId) : undefined;
+        const userId = req.user?.userId ?? (req.query.userId ? Number(req.query.userId) : undefined);
 
-        const movie = await MovieService.getMovieById(Number(imdbId), userId);
+        const movie = await MovieService.getDetailedMovie(Number(imdbId), userId);
         return success(res, movie);
     },
 
