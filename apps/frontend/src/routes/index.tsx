@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import bgImage from "../../image/BackGround.png";
 import {
   Clapperboard,
@@ -54,9 +54,17 @@ function Index() {
             </span>
           </div>
         </div>
-        <button className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold">
-          Se connecter
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/ancienne-page"
+            className="rounded bg-zinc-800 hover:bg-zinc-700 text-white transition-colors px-5 py-2 text-sm font-bold"
+          >
+            Démo composants
+          </Link>
+          <button className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold">
+            Se connecter
+          </button>
+        </div>
       </header>
       <section className="relative px-6 py-20 text-center border-b border-zinc-800 overflow-hidden">
         <img
