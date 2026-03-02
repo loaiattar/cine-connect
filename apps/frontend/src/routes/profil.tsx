@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import ProfileCard from "@/components/ui/InfoProfileCard";
@@ -139,6 +140,7 @@ const favorites: FavoriteFilm[] = [
 
 function ProfilPage() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"abonnes" | "abonnements">("abonnes");
 
   return (
     <div className="min-h-screen bg-black text-white p-6 max-w-3xl mx-auto">
@@ -159,9 +161,32 @@ function ProfilPage() {
         stats={userProfile.stats}
       />
 
+      {/* Onglets */}
+      <div className="flex gap-2 mt-8 mb-6">
+        <button
+          onClick={() => setActiveTab("abonnes")}
+          className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
+            activeTab === "abonnes"
+              ? "bg-red-600 text-white"
+              : "bg-zinc-800 text-zinc-400 hover:text-white"
+          }`}
+        >
+          Abonnés ({followers.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("abonnements")}
+          className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
+            activeTab === "abonnements"
+              ? "bg-red-600 text-white"
+              : "bg-zinc-800 text-zinc-400 hover:text-white"
+          }`}
+        >
+          Abonnements ({following.length})
+        </button>
+      </div>
+
       {false && <UserProfileCard user={followers[0]} />}
       {false && <MovieCard {...favorites[0]} />}
-      {false && following.length}
 
     </div>
   );
