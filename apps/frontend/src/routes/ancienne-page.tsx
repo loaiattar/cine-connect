@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
@@ -31,6 +31,12 @@ function LegacyPage() {
         <p className="text-muted-foreground text-lg italic">
           Experience cinema like never before.
         </p>
+        <Link
+          to="/profil"
+          className="inline-block mt-4 px-5 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors"
+        >
+          Voir page Profil
+        </Link>
       </div>
 
       <div className="w-full max-w-5xl">

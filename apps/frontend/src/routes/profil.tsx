@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import ProfileCard from "@/components/ui/InfoProfileCard";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
 import MovieCard from "@/components/ui/CardFilm";
@@ -146,13 +147,14 @@ function ProfilPage() {
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-3xl mx-auto px-4 py-8">
 
-        <button
+        <Button
+          variant="ghost"
           onClick={() => navigate({ to: "/" })}
-          className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors text-sm"
+          className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 text-sm px-0"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour
-        </button>
+        </Button>
 
         <div className="rounded-2xl border border-zinc-800 overflow-hidden">
           <ProfileCard
@@ -165,26 +167,26 @@ function ProfilPage() {
         </div>
 
         <div className="flex gap-2 mt-8 border-b border-zinc-800 pb-4">
-          <button
+          <Button
             onClick={() => setActiveTab("followers")}
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
               activeTab === "followers"
-                ? "bg-red-600 text-white"
-                : "bg-zinc-800 text-zinc-400 hover:text-white"
+                ? "bg-red-600 text-white hover:bg-red-500"
+                : "bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700"
             }`}
           >
             Abonnés ({followers.length})
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab("following")}
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
               activeTab === "following"
-                ? "bg-red-600 text-white"
-                : "bg-zinc-800 text-zinc-400 hover:text-white"
+                ? "bg-red-600 text-white hover:bg-red-500"
+                : "bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700"
             }`}
           >
             Abonnements ({following.length})
-          </button>
+          </Button>
         </div>
 
         {activeTab === "followers" && (
