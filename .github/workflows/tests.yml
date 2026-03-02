@@ -59,8 +59,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
 
-      - name: Run backend functional tests
-        run: pnpm --filter backend test:functional
+      - name: Run backend tests
+        run: pnpm --filter backend test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}

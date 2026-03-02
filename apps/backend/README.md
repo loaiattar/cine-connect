@@ -61,6 +61,11 @@ socket.on("user_joined", (data) => console.log("user_joined", data));
 socket.emit("message", { roomId: "global", text: "Hello!" }); // persisted to DB and broadcast to room
 ```
 
+## Tests
+
+- **Run tests:** `pnpm test` (runs Vitest; requires PostgreSQL and `TMDB_API_KEY` in test env).
+- **Coverage:** `pnpm test:coverage` — generates a coverage report (requires `@vitest/coverage-v8`). Coverage includes auth, movies (favorites, watchlist, comments), and rating endpoints.
+
 ## Environment
 
 - `DATABASE_URL` — PostgreSQL connection string.
