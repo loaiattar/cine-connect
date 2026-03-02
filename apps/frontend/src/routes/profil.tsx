@@ -146,7 +146,6 @@ function ProfilPage() {
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-3xl mx-auto px-4 py-8">
 
-        {/* Bouton retour */}
         <button
           onClick={() => navigate({ to: "/" })}
           className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors text-sm"
@@ -155,7 +154,6 @@ function ProfilPage() {
           Retour
         </button>
 
-        {/* Carte profil */}
         <div className="rounded-2xl border border-zinc-800 overflow-hidden">
           <ProfileCard
             name={userProfile.name}
@@ -166,7 +164,6 @@ function ProfilPage() {
           />
         </div>
 
-        {/* Onglets */}
         <div className="flex gap-2 mt-8 border-b border-zinc-800 pb-4">
           <button
             onClick={() => setActiveTab("followers")}
@@ -190,7 +187,6 @@ function ProfilPage() {
           </button>
         </div>
 
-        {/* Section abonnés */}
         {activeTab === "followers" && (
           <div className="mt-6">
             <h2 className="text-base font-semibold text-zinc-300 mb-4">
@@ -204,7 +200,6 @@ function ProfilPage() {
           </div>
         )}
 
-        {/* Section abonnements */}
         {activeTab === "following" && (
           <div className="mt-6">
             <h2 className="text-base font-semibold text-zinc-300 mb-4">
@@ -218,7 +213,6 @@ function ProfilPage() {
           </div>
         )}
 
-        {/* Section favoris */}
         <div className="mt-10 border-t border-zinc-800 pt-8">
           <h2 className="text-base font-semibold text-zinc-300 mb-4">
             Favoris ({favorites.length})
