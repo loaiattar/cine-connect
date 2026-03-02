@@ -145,7 +145,7 @@ function ProfilPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="w-full px-6 py-8">
 
         <Button
           variant="ghost"
