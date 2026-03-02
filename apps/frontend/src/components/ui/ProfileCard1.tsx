@@ -16,11 +16,12 @@ type Props = {
   user: User
   onMessage?: () => void
   onFollowToggle?: (user: User, isFollowing: boolean) => void
+  initialIsFollowing?: boolean
 }
 
-export function UserProfileCard({ user, onMessage, onFollowToggle }: Props) {
+export function UserProfileCard({ user, onMessage, onFollowToggle, initialIsFollowing = false }: Props) {
 
-  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
 
   function handleFollowToggle() {
     const next = !isFollowing
