@@ -2,24 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
+import type { MovieDisplay } from "@/lib/movie-adapter";
 
 export const Route = createFileRoute("/MovieDetailPage")({
   component: MovieDetailPage,
 });
 
-// TypeScript interfaces
-interface Film {
-  title: string;
-  year: number;
-  director: string;
-  genres: string[];
-  rating: number;
-  posterUrl: string;
-  synopsis: string;
-}
-
-// données mockées du film
-const mockMovie: Film = {
+// Mock data (same shape as apiMovieToDisplay(Movie) for when we wire the API)
+const mockMovie: MovieDisplay = {
   title: "Inception",
   year: 2010,
   director: "Christopher Nolan",
