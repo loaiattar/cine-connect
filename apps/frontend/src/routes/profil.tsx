@@ -206,7 +206,22 @@ function ProfilPage() {
         </div>
       )}
 
-      {false && <MovieCard {...favorites[0]} />}
+      <div className="mt-10">
+        <h2 className="text-lg font-bold mb-4">Favoris ({favorites.length})</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {favorites.map((film) => (
+            <MovieCard
+              key={film.id}
+              id={film.id}
+              title={film.title}
+              year={film.year}
+              rating={film.rating}
+              imageUrl={film.imageUrl}
+              genres={film.genres}
+            />
+          ))}
+        </div>
+      </div>
 
     </div>
   );
