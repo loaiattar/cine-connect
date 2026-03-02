@@ -1,5 +1,5 @@
 /* eslint-disable */
-import ProfileCard from "@/components/ui/InfoProfileCard";
+
 // @ts-nocheck
 
 // noinspection JSUnusedGlobalSymbols
