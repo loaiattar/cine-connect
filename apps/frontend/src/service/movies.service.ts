@@ -14,9 +14,9 @@ export interface Movie {
 }
 
 export const moviesService = {
-    getMovies: () => apiClient.get<Movie[]>('/movies'),
-    getMovieById: (id: number) => apiClient.get<Movie>(`/movies/${id}`),
-    createMovie: (movie: Movie) => apiClient.post<Movie>('/movies', movie),
-    updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/movies/${id}`, movie),
-    deleteMovie: (id: number) => apiClient.delete<Movie>(`/movies/${id}`),
+    getMovies: () => apiClient.get<Movie[]>('/api/movies'),
+    getMovieById: (id: number) => apiClient.get<Movie>(`/api/movies/${id}`),
+    createMovie: (movie: Movie) => apiClient.post<Movie>('/api/movies', movie),
+    updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/api/movies/${id}`, movie),
+    deleteMovie: (id: number) => apiClient.delete<Movie>(`/api/movies/${id}`),
 };
