@@ -195,6 +195,17 @@ function ProfilPage() {
         </div>
       )}
 
+      {activeTab === "following" && (
+        <div>
+          <h2 className="text-lg font-bold mb-4">Mes Abonnements ({following.length})</h2>
+          <div className="flex flex-col gap-4">
+            {following.map((user) => (
+              <UserProfileCard key={user.username} user={user} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {false && <MovieCard {...favorites[0]} />}
 
     </div>
