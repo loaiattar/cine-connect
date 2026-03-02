@@ -210,6 +210,7 @@ function ProfilPage() {
                 <UserProfileCard
                   key={user.username}
                   user={user}
+                  initialIsFollowing={following.some((f) => f.username === user.username)}
                   onFollowToggle={handleFollowToggle}
                 />
               ))}
