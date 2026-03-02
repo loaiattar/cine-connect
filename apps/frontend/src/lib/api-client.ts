@@ -3,6 +3,7 @@ export const ApiClientConfig = {
 } as const;
 
 import type { ApiResponse } from '@cine-connect/shared';
+import { useAuthStore } from '../stores/auth.store';
 
 export const HttpMethod = {
     GET: 'GET',
@@ -29,11 +30,14 @@ export class ApiClient {
 
     async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
         const url = `${this.baseUrl}${endpoint}`;
+        const token = useAuthStore.getState().token;
+        const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
         const config: RequestInit = {
             method,
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders,
                 ...headers,
             },
             body: body ? JSON.stringify(body) : undefined,
