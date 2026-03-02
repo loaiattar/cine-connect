@@ -55,7 +55,7 @@ const ProfileCard = ({
   }
 
   return (
-    <div className="bg-black text-white rounded-2xl p-6 w-full max-w-xl">
+    <div className="bg-black text-white rounded-2xl p-6 w-full">
       {/* Avatar + Nom + Date */}
       <div className="flex items-center gap-4 mb-4">
         <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">

@@ -46,7 +46,7 @@ const userProfile = {
 };
 
 // TODO: remplacer par -> GET /api/users/:id/followers
-const followers: FollowUser[] = [
+const initialFollowers: FollowUser[] = [
   {
     username: "Lucas Martin",
     memberSince: "mars 2022",
@@ -80,7 +80,7 @@ const followers: FollowUser[] = [
 ];
 
 // TODO: remplacer par -> GET /api/users/:id/following
-const following: FollowUser[] = [
+const initialFollowing: FollowUser[] = [
   {
     username: "Camille Noir",
     memberSince: "février 2020",
@@ -143,6 +143,17 @@ function ProfilPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"followers" | "following">("followers");
 
+  // TODO: remplacer par -> POST /api/users/:id/follow et DELETE /api/users/:id/follow
+  const [following, setFollowing] = useState<FollowUser[]>(initialFollowing);
+
+  function handleFollowToggle(user: FollowUser, isNowFollowing: boolean) {
+    if (isNowFollowing) {
+      setFollowing((prev) => [...prev, user]);
+    } else {
+      setFollowing((prev) => prev.filter((u) => u.username !== user.username));
+    }
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="w-full px-6 py-8">
@@ -175,7 +186,7 @@ function ProfilPage() {
                 : "bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700"
             }`}
           >
-            Abonnés ({followers.length})
+            Abonnés ({initialFollowers.length})
           </Button>
           <Button
             onClick={() => setActiveTab("following")}
@@ -192,11 +203,15 @@ function ProfilPage() {
         {activeTab === "followers" && (
           <div className="mt-6">
             <h2 className="text-base font-semibold text-zinc-300 mb-4">
-              Mes Abonnés ({followers.length})
+              Mes Abonnés ({initialFollowers.length})
             </h2>
             <div className="flex flex-col gap-3">
-              {followers.map((user) => (
-                <UserProfileCard key={user.username} user={user} />
+              {initialFollowers.map((user) => (
+                <UserProfileCard
+                  key={user.username}
+                  user={user}
+                  onFollowToggle={handleFollowToggle}
+                />
               ))}
             </div>
           </div>
@@ -209,7 +224,11 @@ function ProfilPage() {
             </h2>
             <div className="flex flex-col gap-3">
               {following.map((user) => (
-                <UserProfileCard key={user.username} user={user} />
+                <UserProfileCard
+                  key={user.username}
+                  user={user}
+                  onFollowToggle={handleFollowToggle}
+                />
               ))}
             </div>
           </div>

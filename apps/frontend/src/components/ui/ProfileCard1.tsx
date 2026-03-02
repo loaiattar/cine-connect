@@ -15,11 +15,18 @@ type User = {
 type Props = {
   user: User
   onMessage?: () => void
+  onFollowToggle?: (user: User, isFollowing: boolean) => void
 }
 
-export function UserProfileCard({ user, onMessage }: Props) {
+export function UserProfileCard({ user, onMessage, onFollowToggle }: Props) {
 
   const [isFollowing, setIsFollowing] = useState(false)
+
+  function handleFollowToggle() {
+    const next = !isFollowing
+    setIsFollowing(next)
+    onFollowToggle?.(user, next)
+  }
 
   const initials = user.username.slice(0, 2).toUpperCase()
 
@@ -68,7 +75,7 @@ export function UserProfileCard({ user, onMessage }: Props) {
         {isFollowing ? (
           <div className="flex flex-col gap-2">
             <button
-              onClick={() => setIsFollowing(!isFollowing)}
+              onClick={handleFollowToggle}
               className="rounded-lg bg-zinc-700 hover:bg-zinc-600 px-4 py-2 text-sm font-semibold transition-colors"
             >
               Ne plus suivre
@@ -83,7 +90,7 @@ export function UserProfileCard({ user, onMessage }: Props) {
           </div>
         ) : (
           <button
-            onClick={() => setIsFollowing(!isFollowing)}
+            onClick={handleFollowToggle}
             className="rounded-lg bg-red-600 hover:bg-red-500 px-6 py-2 text-sm font-bold transition-colors"
           >
             Suivre
