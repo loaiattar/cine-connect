@@ -1,0 +1,41 @@
+import { ApiClientConfig } from "../lib/api-client";
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  userId: number;
+  email: string;
+}
+
+export interface AuthError {
+  status: number;
+  message: string;
+}
+
+const baseUrl = ApiClientConfig.BASE_URL;
+
+export const authService = {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const res = await fetch(`${baseUrl}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    });
+
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const message =
+        res.status === 401
+          ? "Identifiants incorrects"
+          : (body.error as string) || `Erreur ${res.status}`;
+      throw { status: res.status, message } as AuthError;
+    }
+
+    return body as AuthResponse;
+  },
+};
