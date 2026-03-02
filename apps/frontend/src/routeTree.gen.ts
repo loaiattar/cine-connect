@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as Login1RouteImport } from './routes/login1'
 import { Route as AnciennePageRouteImport } from './routes/ancienne-page'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Login1Route = Login1RouteImport.update({
   id: '/login1',
   path: '/login1',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
+  '/profil': typeof ProfilRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
+  '/profil': typeof ProfilRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,13 @@ export interface FileRoutesById {
   '/RegisterPage': typeof RegisterPageRoute
   '/ancienne-page': typeof AnciennePageRoute
   '/login1': typeof Login1Route
+  '/profil': typeof ProfilRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1'
+  fullPaths: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1' | '/profil'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1'
+  to: '/' | '/LoginPage' | '/RegisterPage' | '/ancienne-page' | '/login1' | '/profil'
   id:
     | '__root__'
     | '/'
@@ -75,6 +84,7 @@ export interface FileRouteTypes {
     | '/RegisterPage'
     | '/ancienne-page'
     | '/login1'
+    | '/profil'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,10 +93,18 @@ export interface RootRouteChildren {
   RegisterPageRoute: typeof RegisterPageRoute
   AnciennePageRoute: typeof AnciennePageRoute
   Login1Route: typeof Login1Route
+  ProfilRoute: typeof ProfilRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login1': {
       id: '/login1'
       path: '/login1'
@@ -131,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterPageRoute: RegisterPageRoute,
   AnciennePageRoute: AnciennePageRoute,
   Login1Route: Login1Route,
+  ProfilRoute: ProfilRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
