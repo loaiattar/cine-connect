@@ -143,86 +143,102 @@ function ProfilPage() {
   const [activeTab, setActiveTab] = useState<"followers" | "following">("followers");
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="max-w-3xl mx-auto px-4 py-8">
 
-      <button
-        onClick={() => navigate({ to: "/" })}
-        className="flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Retour
-      </button>
-
-      <ProfileCard
-        name={userProfile.name}
-        initials={userProfile.initials}
-        memberSince={userProfile.memberSince}
-        bio={userProfile.bio}
-        stats={userProfile.stats}
-      />
-
-      <div className="flex gap-2 mt-8 mb-6">
+        {/* Bouton retour */}
         <button
-          onClick={() => setActiveTab("followers")}
-          className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
-            activeTab === "followers"
-              ? "bg-red-600 text-white"
-              : "bg-zinc-800 text-zinc-400 hover:text-white"
-          }`}
+          onClick={() => navigate({ to: "/" })}
+          className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors text-sm"
         >
-          Abonnés ({followers.length})
+          <ArrowLeft className="w-4 h-4" />
+          Retour
         </button>
-        <button
-          onClick={() => setActiveTab("following")}
-          className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
-            activeTab === "following"
-              ? "bg-red-600 text-white"
-              : "bg-zinc-800 text-zinc-400 hover:text-white"
-          }`}
-        >
-          Abonnements ({following.length})
-        </button>
-      </div>
 
-      {activeTab === "followers" && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Mes Abonnés ({followers.length})</h2>
-          <div className="flex flex-col gap-4">
-            {followers.map((user) => (
-              <UserProfileCard key={user.username} user={user} />
+        {/* Carte profil */}
+        <div className="rounded-2xl border border-zinc-800 overflow-hidden">
+          <ProfileCard
+            name={userProfile.name}
+            initials={userProfile.initials}
+            memberSince={userProfile.memberSince}
+            bio={userProfile.bio}
+            stats={userProfile.stats}
+          />
+        </div>
+
+        {/* Onglets */}
+        <div className="flex gap-2 mt-8 border-b border-zinc-800 pb-4">
+          <button
+            onClick={() => setActiveTab("followers")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
+              activeTab === "followers"
+                ? "bg-red-600 text-white"
+                : "bg-zinc-800 text-zinc-400 hover:text-white"
+            }`}
+          >
+            Abonnés ({followers.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("following")}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
+              activeTab === "following"
+                ? "bg-red-600 text-white"
+                : "bg-zinc-800 text-zinc-400 hover:text-white"
+            }`}
+          >
+            Abonnements ({following.length})
+          </button>
+        </div>
+
+        {/* Section abonnés */}
+        {activeTab === "followers" && (
+          <div className="mt-6">
+            <h2 className="text-base font-semibold text-zinc-300 mb-4">
+              Mes Abonnés ({followers.length})
+            </h2>
+            <div className="flex flex-col gap-3">
+              {followers.map((user) => (
+                <UserProfileCard key={user.username} user={user} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Section abonnements */}
+        {activeTab === "following" && (
+          <div className="mt-6">
+            <h2 className="text-base font-semibold text-zinc-300 mb-4">
+              Mes Abonnements ({following.length})
+            </h2>
+            <div className="flex flex-col gap-3">
+              {following.map((user) => (
+                <UserProfileCard key={user.username} user={user} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Section favoris */}
+        <div className="mt-10 border-t border-zinc-800 pt-8">
+          <h2 className="text-base font-semibold text-zinc-300 mb-4">
+            Favoris ({favorites.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {favorites.map((film) => (
+              <MovieCard
+                key={film.id}
+                id={film.id}
+                title={film.title}
+                year={film.year}
+                rating={film.rating}
+                imageUrl={film.imageUrl}
+                genres={film.genres}
+              />
             ))}
           </div>
         </div>
-      )}
 
-      {activeTab === "following" && (
-        <div>
-          <h2 className="text-lg font-bold mb-4">Mes Abonnements ({following.length})</h2>
-          <div className="flex flex-col gap-4">
-            {following.map((user) => (
-              <UserProfileCard key={user.username} user={user} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="mt-10">
-        <h2 className="text-lg font-bold mb-4">Favoris ({favorites.length})</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {favorites.map((film) => (
-            <MovieCard
-              key={film.id}
-              id={film.id}
-              title={film.title}
-              year={film.year}
-              rating={film.rating}
-              imageUrl={film.imageUrl}
-              genres={film.genres}
-            />
-          ))}
-        </div>
       </div>
-
     </div>
   );
 }
