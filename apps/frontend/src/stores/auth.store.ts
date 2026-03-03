@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { updateSocketAuth } from "@/lib/socket";
 
 const AUTH_STORAGE_KEY = "cineconnect-auth";
 
@@ -21,8 +22,14 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
-      setAuth: (token, user) => set({ token, user }),
-      clearAuth: () => set({ token: null, user: null }),
+      setAuth: (token, user) => {
+        set({ token, user });
+        updateSocketAuth();
+      },
+      clearAuth: () => {
+        set({ token: null, user: null });
+        updateSocketAuth();
+      },
       isAuthenticated: () => !!get().token,
     }),
     { name: AUTH_STORAGE_KEY }
