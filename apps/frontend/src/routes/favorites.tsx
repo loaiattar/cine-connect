@@ -117,7 +117,8 @@ function FavoritesPage() {
                   Film #<span className="font-mono text-white">{fav.externalMovieId}</span>
                 </span>
                 <Link
-                  to="/MovieDetailPage"
+                  to="/movie/$movieId"
+                  params={{ movieId: String(fav.externalMovieId) }}
                   className="text-sm font-medium text-red-500 hover:text-red-400 transition-colors"
                 >
                   Voir la fiche →
