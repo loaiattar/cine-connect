@@ -33,6 +33,13 @@ import { MessageService } from './services/message.service';
 
 const ROOM_PREFIX_FILM = 'film:';
 
+let socketIoInstance: Server | null = null;
+
+/** Used by REST handlers (e.g. movie comments) to broadcast to film rooms. */
+export function getSocketIo(): Server | null {
+  return socketIoInstance;
+}
+
 function getCorsOptions(): { origin: string[] | boolean } {
   const allowlist = getCorsAllowlist();
   if (allowlist.length > 0) return { origin: allowlist };
@@ -118,6 +125,7 @@ export function createSocketServer(httpServer: HttpServer): Server {
     });
   });
 
+  socketIoInstance = io;
   return io;
 }
 

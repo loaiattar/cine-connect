@@ -138,7 +138,11 @@ function MovieDetailPage() {
         </section>
 
         <section>
-          <CommentSection currentUser={currentUser ?? ""} />
+          <CommentSection
+            movieId={movieIdNum}
+            isLoggedIn={isLoggedIn}
+            currentUser={currentUser ?? ""}
+          />
         </section>
       </div>
 

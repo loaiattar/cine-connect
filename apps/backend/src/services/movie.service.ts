@@ -128,7 +128,21 @@ export const MovieService = {
         if (!newComment) {
             throw new AppError("Failed to create comment", 500);
         }
-        return newComment;
+        const [withUser] = await db
+            .select({
+                id: comments.id,
+                userId: comments.userId,
+                externalMovieId: comments.externalMovieId,
+                comment: comments.comment,
+                createdAt: comments.createdAt,
+                userEmail: users.email,
+                userName: users.name,
+            })
+            .from(comments)
+            .leftJoin(users, eq(comments.userId, users.id))
+            .where(eq(comments.id, newComment.id))
+            .limit(1);
+        return withUser ?? newComment;
     },
 
     async getMovieComments(movieId: number) {
@@ -139,6 +153,8 @@ export const MovieService = {
                 externalMovieId: comments.externalMovieId,
                 comment: comments.comment,
                 createdAt: comments.createdAt,
+                userEmail: users.email,
+                userName: users.name,
             })
             .from(comments)
             .leftJoin(users, eq(comments.userId, users.id))
