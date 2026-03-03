@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MovieHero from "@/components/ui/MovieHero";
-import RateMovie from "@/components/ui/RateMovie";
+import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
 import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
@@ -113,15 +113,17 @@ function MovieDetailPage() {
 
         <section className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-4">
           <RateMovie
-            average={ratingPayload?.average}
-            count={ratingPayload?.count}
-            userRating={ratingPayload?.userRating ?? null}
-            canRate={isLoggedIn}
-            onRate={(stars) => {
-              if (stars < 1) return;
-              const rating = Math.min(10, Math.max(1, stars * 2));
-              submitRatingMutation.mutate({ movieId: movieIdNum, rating });
-            }}
+            {...({
+              average: ratingPayload?.average,
+              count: ratingPayload?.count,
+              userRating: ratingPayload?.userRating ?? null,
+              canRate: isLoggedIn,
+              onRate: (stars: number) => {
+                if (stars < 1) return;
+                const rating = Math.min(10, Math.max(1, stars * 2));
+                submitRatingMutation.mutate({ movieId: movieIdNum, rating });
+              },
+            } satisfies RateMovieProps)}
           />
           {submitRatingMutation.isPending && (
             <p className="text-gray-400 text-sm mt-2">Enregistrement…</p>
