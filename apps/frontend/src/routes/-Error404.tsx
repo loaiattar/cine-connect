@@ -16,7 +16,7 @@ export function Error404() {
         <h2 className="text-2xl font-semibold mb-2">Oops, cette page n'existe pas</h2>
 
         <p className="text-zinc-400 mb-8">
-          Le film que tu cherches n'est pas au programme 😅
+          Le film que tu cherches n'est pas au programme
         </p>
 
         <Link
