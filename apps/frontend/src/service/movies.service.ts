@@ -10,6 +10,19 @@ export interface FavoriteEntry {
     addedAt: string | null;
 }
 
+/** GET /api/movies/rating/:movieId response */
+export interface MovieRatingResponse {
+    average: number;
+    count: number;
+    userRating?: number | null;
+}
+
+/** POST /api/movies/rate body & response */
+export interface SubmitRatingPayload {
+    movieId: number;
+    rating: number;
+}
+
 /** TMDB trending response shape */
 export interface TrendingResponse {
     results?: Array<{
@@ -25,6 +38,10 @@ export interface TrendingResponse {
 export const moviesService = {
     getMovies: () => apiClient.get<Movie[]>("/api/movies"),
     getMovieById: (id: number) => apiClient.get<Movie>(`/api/movies/${id}`),
+    getMovieRating: (movieId: number) =>
+        apiClient.get<MovieRatingResponse>(`/api/movies/rating/${movieId}`),
+    submitRating: (movieId: number, rating: number) =>
+        apiClient.post<SubmitRatingPayload>("/api/movies/rate", { movieId, rating }),
     getTrending: () => apiClient.get<TrendingResponse>("/api/movies/trending"),
     getFavorites: (userId: number) =>
         apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
