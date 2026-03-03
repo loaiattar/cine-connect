@@ -46,10 +46,14 @@ export class ApiClient {
         const response = await fetch(url, config);
 
         if (!response.ok) {
+            if (response.status === 401) {
+                useAuthStore.getState().clearAuth();
+                window.location.href = '/LoginPage';
+            }
             const errorBody = await response.json().catch(() => ({}));
             throw {
                 status: response.status,
-                message: errorBody.message || `API Error: ${response.statusText}`,
+                message: errorBody.message || errorBody.error || `API Error: ${response.statusText}`,
                 data: errorBody
             } as ApiRequestError;
         }
