@@ -23,6 +23,17 @@ export interface SubmitRatingPayload {
     rating: number;
 }
 
+/** GET /api/movies/comments/:movieId — single comment with optional user info */
+export interface MovieCommentRow {
+    id: number;
+    userId: number | null;
+    externalMovieId: number;
+    comment: string;
+    createdAt: string | null;
+    userEmail?: string | null;
+    userName?: string | null;
+}
+
 /** TMDB trending response shape */
 export interface TrendingResponse {
     results?: Array<{
@@ -42,6 +53,10 @@ export const moviesService = {
         apiClient.get<MovieRatingResponse>(`/api/movies/rating/${movieId}`),
     submitRating: (movieId: number, rating: number) =>
         apiClient.post<SubmitRatingPayload>("/api/movies/rate", { movieId, rating }),
+    getMovieComments: (movieId: number) =>
+        apiClient.get<MovieCommentRow[]>(`/api/movies/comments/${movieId}`),
+    addComment: (movieId: number, comment: string) =>
+        apiClient.post<MovieCommentRow>("/api/movies/comments", { movieId, comment }),
     getTrending: () => apiClient.get<TrendingResponse>("/api/movies/trending"),
     getFavorites: (userId: number) =>
         apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
