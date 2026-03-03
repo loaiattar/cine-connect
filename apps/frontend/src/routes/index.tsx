@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import bgImage from "../../image/BackGround.png";
 import {
   Clapperboard,
@@ -8,8 +9,12 @@ import {
   Users,
   Mail,
   Heart,
+  Loader2,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
+import { moviesService, type TrendingResponse } from "@/service/movies.service";
+import MovieCard from "@/components/ui/CardFilm";
+import { getMovieImageUrl } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -18,6 +23,18 @@ export const Route = createFileRoute("/")({
 function Index() {
   const token = useAuthStore((s) => s.token);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+
+  const { data: trendingData, isLoading: trendingLoading } = useQuery({
+    queryKey: ["movies", "trending"],
+    queryFn: () => moviesService.getTrending(),
+  });
+  const payload = (trendingData != null && typeof trendingData === "object" && "results" in trendingData)
+    ? (trendingData as TrendingResponse)
+    : (trendingData != null && typeof trendingData === "object" && "data" in trendingData && (trendingData as { data: TrendingResponse }).data?.results)
+    ? (trendingData as { data: TrendingResponse }).data
+    : null;
+  const trendingMovies = payload?.results ?? [];
+
   const features = [
     {
       icon: Clapperboard,
@@ -131,6 +148,43 @@ function Index() {
             </Link>
           </div>
         </div>
+      </section>
+
+      <section className="px-6 py-16 border-b border-zinc-800">
+        <h2 className="text-4xl font-bold text-center mb-2">
+          Découvrir les films du moment
+        </h2>
+        <p className="text-center text-zinc-400 mb-8">
+          Cliquez sur un film pour voir sa fiche
+        </p>
+        {trendingLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-10 w-10 animate-spin text-red-500" aria-hidden />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+            {trendingMovies.slice(0, 10).map((m) => {
+              const year = m.release_date ? new Date(m.release_date).getFullYear() : 0;
+              return (
+                <Link
+                  key={m.id}
+                  to="/movie/$movieId"
+                  params={{ movieId: String(m.id) }}
+                  className="block focus:outline-none focus:ring-2 focus:ring-red-500 rounded-xl overflow-hidden"
+                >
+                  <MovieCard
+                    id={m.id}
+                    title={m.title ?? "Sans titre"}
+                    year={Number.isNaN(year) ? 0 : year}
+                    rating={typeof m.vote_average === "number" ? Math.round(m.vote_average * 10) / 10 : 0}
+                    imageUrl={getMovieImageUrl(m.poster_path ?? "")}
+                    genres={[]}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section className="px-6 py-16 border-b border-zinc-800">

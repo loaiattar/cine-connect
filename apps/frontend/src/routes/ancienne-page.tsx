@@ -28,7 +28,7 @@ function LegacyPage() {
     <div className="min-h-screen bg-background text-foreground antialiased flex flex-col items-center justify-center overflow-hidden px-4">
       <div className="text-center mb-10">
         <button
-          onClick={() => navigate({ to: "/MovieDetailPage" })}
+          onClick={() => navigate({ to: "/movie/$movieId", params: { movieId: "550" } })}
           className="mb-6 bg-[#e50914] text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition-colors"
         >
           Voir la page film →
