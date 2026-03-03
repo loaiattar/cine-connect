@@ -6,7 +6,7 @@ const commentIdSchema = z.string().regex(/^\d+$/).transform(Number);
 
 export const getMovieDetailsSchema = z.object({
     params: z.object({
-        imdbId: z.string().regex(/^\d+$/).transform(Number),
+        movieId: z.string().regex(/^\d+$/).transform(Number),
     }),
 });
 

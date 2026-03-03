@@ -15,11 +15,11 @@ export const MovieController = {
         return success(res, result);
     },
 
-    async getMovieDetails(req: Request<{ imdbId: string }>, res: Response) {
-        const { imdbId } = req.params;
+    async getMovieDetails(req: Request<{ movieId: string }>, res: Response) {
+        const { movieId } = req.params;
         const userId = req.user?.userId ?? (req.query.userId ? Number(req.query.userId) : undefined);
 
-        const movie = await MovieService.getDetailedMovie(Number(imdbId), userId);
+        const movie = await MovieService.getDetailedMovie(Number(movieId), userId);
         return success(res, movie);
     },
 

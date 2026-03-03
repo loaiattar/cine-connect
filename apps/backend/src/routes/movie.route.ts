@@ -20,14 +20,14 @@ import {
 
 const router: Router = Router();
 
-// Rating: more specific routes first so /rating/:movieId is not matched by /:imdbId
+// More specific routes first so /rating/:movieId is not matched by /:movieId (details)
 // GET /api/movies/rating/:movieId — aggregate (public) + user's rating when authenticated
 router.get("/rating/:movieId", optionalAuthMiddleware, validate(getMovieRatingSchema), asyncHandler(MovieController.getMovieRating));
 // POST /api/movies/rate — submit or update rating (upsert)
 router.post("/rate", authMiddleware, validate(submitRatingSchema), asyncHandler(MovieController.submitRating));
 
-// GET /api/movies/:imdbId — public; optional auth adds isFavorite, isOnWatchlist, comments
-router.get("/:imdbId", optionalAuthMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
+// GET /api/movies/:movieId — public; optional auth adds isFavorite, isOnWatchlist, comments
+router.get("/:movieId", optionalAuthMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
 // POST /api/movies/favorite
 router.post("/favorite", authMiddleware, validate(toggleFavoriteSchema), asyncHandler(MovieController.handleToggleFavorite));
 // GET /api/movies/favorites/:userId

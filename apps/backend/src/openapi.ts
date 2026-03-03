@@ -294,7 +294,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/{imdbId}": {
+    "/api/movies/{movieId}": {
       get: {
         tags: ["Movies"],
         summary: "Get movie details",
@@ -302,7 +302,7 @@ export const openApiSpec = {
         security: [{ bearerAuth: [] }],
         parameters: [
           {
-            name: "imdbId",
+            name: "movieId",
             in: "path",
             required: true,
             schema: { type: "integer" },
