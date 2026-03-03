@@ -9,12 +9,15 @@ import {
   Mail,
   Heart,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/auth.store";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const token = useAuthStore((s) => s.token);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   const features = [
     {
       icon: Clapperboard,
@@ -55,18 +58,39 @@ function Index() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            to="/RegisterPage"
-            className="rounded border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-4 py-2 text-sm font-bold"
-          >
-            S'inscrire
-          </Link>
-          <Link
-            to="/LoginPage"
-            className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold"
-          >
-            Se connecter
-          </Link>
+          {token ? (
+            <>
+              <Link
+                to={"/favorites" as "/" | "/favorites"}
+                className="rounded border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <Heart className="w-4 h-4" />
+                Mes favoris
+              </Link>
+              <button
+                type="button"
+                onClick={() => clearAuth()}
+                className="rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors px-4 py-2 text-sm font-bold"
+              >
+                Se déconnecter
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/RegisterPage"
+                className="rounded border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-4 py-2 text-sm font-bold"
+              >
+                S'inscrire
+              </Link>
+              <Link
+                to="/LoginPage"
+                className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold"
+              >
+                Se connecter
+              </Link>
+            </>
+          )}
         </div>
       </header>
       <section className="relative px-6 py-20 text-center border-b border-zinc-800 overflow-hidden">
@@ -214,6 +238,9 @@ function Index() {
               </li>
               <li className="hover:text-white cursor-pointer transition-colors">
                 Communauté
+              </li>
+              <li>
+                <Link to={"/favorites" as "/" | "/favorites"} className="hover:text-white transition-colors">Mes favoris</Link>
               </li>
               <li>
                 <Link to="/RegisterPage" className="hover:text-white transition-colors">S'inscrire</Link>
