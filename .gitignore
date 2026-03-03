@@ -11,3 +11,9 @@ coverage/
 Thumbs.db
 *.log
 .vscode/
+
+# Generated coverage (run pnpm test:coverage)
+coverage/
+
+# Local env (do not commit secrets)
+.env.test
