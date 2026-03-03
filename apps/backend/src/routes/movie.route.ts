@@ -20,6 +20,9 @@ import {
 
 const router: Router = Router();
 
+// GET /api/movies/trending — list trending movies (TMDB)
+router.get("/trending", asyncHandler(MovieController.getTrending));
+
 // More specific routes first so /rating/:movieId is not matched by /:movieId (details)
 // GET /api/movies/rating/:movieId — aggregate (public) + user's rating when authenticated
 router.get("/rating/:movieId", optionalAuthMiddleware, validate(getMovieRatingSchema), asyncHandler(MovieController.getMovieRating));
