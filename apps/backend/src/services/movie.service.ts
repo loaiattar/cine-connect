@@ -5,6 +5,11 @@ import { AppError, forbidden, notFound } from "../utils";
 import { TmdbService } from "./tmdb.service";
 
 export const MovieService = {
+    async getTrending() {
+        const data = await TmdbService.getTrendingMovies();
+        return data;
+    },
+
     async toggleFavorite(userId: number, movieId: number) {
         const existing = await db
             .select()
@@ -241,40 +246,45 @@ export const MovieService = {
         const movieData = await TmdbService.getMovieDetails(movieId);
         let isFavorite = false;
         let isOnWatchlist = false;
+        let comments: Awaited<ReturnType<typeof this.getMovieComments>> = [];
 
-        if (userId) {
-            const [favorite] = await db
-                .select()
-                .from(favorites)
-                .where(
-                    and(
-                        eq(favorites.userId, userId),
-                        eq(favorites.externalMovieId, movieId)
+        try {
+            if (userId) {
+                const [favorite] = await db
+                    .select()
+                    .from(favorites)
+                    .where(
+                        and(
+                            eq(favorites.userId, userId),
+                            eq(favorites.externalMovieId, movieId)
+                        )
                     )
-                )
-                .limit(1);
-            isFavorite = !!favorite;
+                    .limit(1);
+                isFavorite = !!favorite;
 
-            const [watchlist] = await db
-                .select()
-                .from(watchlists)
-                .where(
-                    and(
-                        eq(watchlists.userId, userId),
-                        eq(watchlists.externalMovieId, movieId)
+                const [watchlist] = await db
+                    .select()
+                    .from(watchlists)
+                    .where(
+                        and(
+                            eq(watchlists.userId, userId),
+                            eq(watchlists.externalMovieId, movieId)
+                        )
                     )
-                )
-                .limit(1);
-            isOnWatchlist = !!watchlist;
+                    .limit(1);
+                isOnWatchlist = !!watchlist;
+            }
+            comments = await this.getMovieComments(movieId);
+        } catch (err) {
+            // DB unreachable (e.g. ECONNREFUSED): return TMDB data only; no favorites/watchlist/comments
+            console.warn('Database unavailable for getDetailedMovie, returning TMDB data only:', (err as Error)?.message ?? err);
         }
-
-        const comments = await this.getMovieComments(movieId);
 
         return {
             ...movieData,
             isFavorite,
             isOnWatchlist,
             comments,
-        };  
+        };
     }
 };  
