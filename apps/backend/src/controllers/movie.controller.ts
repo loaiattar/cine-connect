@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { badRequest, forbidden, success } from "../utils";
 import { MovieService } from "../services/movie.service";
+import { getSocketIo, filmRoomId } from "../socket";
 
 export const MovieController = {
     async getTrending(_req: Request, res: Response) {
@@ -63,6 +64,10 @@ export const MovieController = {
         const userId = req.user?.userId;
         const { movieId, comment } = req.body;
         const result = await MovieService.addComment(Number(userId), Number(movieId), comment);
+        const io = getSocketIo();
+        if (io) {
+            io.to(filmRoomId(Number(movieId))).emit("movie_comment", result);
+        }
         return success(res, result);
     },
 
