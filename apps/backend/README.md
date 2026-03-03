@@ -9,6 +9,7 @@ REST API and real-time discussion (Socket.io) for CinéConnect.
 - **OpenAPI spec:** `/openapi.json`
 - **Auth:** `POST /api/auth/register`, `POST /api/auth/login` — use the returned JWT in `Authorization: Bearer <token>` for protected routes.
 - **Profile:** `GET /api/users/me` — current user and profile (requires auth); `PUT /api/users/me` — update profile (bio, avatarUrl, location, favoriteGenre; body validated with Zod; requires auth).
+- **Follows:** `POST /api/follows` — follow a user (body: `{ followingId }`; requires auth); `DELETE /api/follows/:userId` — unfollow (requires auth); `GET /api/users/:userId/followers` and `GET /api/users/:userId/following` — paginated lists (public; optional `limit`, `offset`).
 - **Chat history:** `GET /api/messages?room=<roomId>&limit=50&offset=0` — paginated message history for a room (requires auth).
 
 ## WebSocket (Socket.io) — real-time discussion
