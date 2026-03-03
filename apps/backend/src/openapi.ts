@@ -112,6 +112,41 @@ export const openApiSpec = {
           favoriteGenre: { type: "string", maxLength: 100 },
         },
       },
+      FollowBody: {
+        type: "object",
+        required: ["followingId"],
+        properties: {
+          followingId: { type: "integer", minimum: 1, description: "User ID to follow" },
+        },
+      },
+      FollowRow: {
+        type: "object",
+        properties: {
+          followerId: { type: "integer" },
+          followingId: { type: "integer" },
+          createdAt: { type: "string", format: "date-time" },
+        },
+      },
+      FollowListUser: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          name: { type: "string", nullable: true },
+          email: { type: "string" },
+          createdAt: { type: "string", format: "date-time", nullable: true },
+          followedAt: { type: "string", format: "date-time" },
+        },
+      },
+      FollowersResponse: {
+        type: "object",
+        properties: {
+          users: { type: "array", items: { $ref: "#/components/schemas/FollowListUser" } },
+          total: { type: "integer" },
+          limit: { type: "integer" },
+          offset: { type: "integer" },
+        },
+        required: ["users", "total", "limit", "offset"],
+      },
       ToggleFavoriteBody: {
         type: "object",
         required: ["movieId"],
@@ -337,6 +372,121 @@ export const openApiSpec = {
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/Error" } },
             },
+          },
+        },
+      },
+    },
+    "/api/follows": {
+      post: {
+        tags: ["Follows"],
+        summary: "Follow a user",
+        description: "Authenticated user follows the user with the given ID. Cannot follow yourself. Returns 409 if already following.",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": { schema: { $ref: "#/components/schemas/FollowBody" } },
+          },
+        },
+        responses: {
+          "201": {
+            description: "Follow created",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/FollowRow" } },
+            },
+          },
+          "400": {
+            description: "Validation failed or cannot follow yourself",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+          "401": {
+            description: "Unauthorized",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+          "404": {
+            description: "User not found",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+          "409": {
+            description: "Already following this user",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+        },
+      },
+    },
+    "/api/follows/{userId}": {
+      delete: {
+        tags: ["Follows"],
+        summary: "Unfollow a user",
+        description: "Authenticated user unfollows the user with the given ID.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "integer" }, description: "User ID to unfollow" },
+        ],
+        responses: {
+          "200": {
+            description: "Unfollowed (or was not following)",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { unfollowed: { type: "boolean" } },
+                  required: ["unfollowed"],
+                },
+              },
+            },
+          },
+          "401": {
+            description: "Unauthorized",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+        },
+      },
+    },
+    "/api/users/{userId}/followers": {
+      get: {
+        tags: ["Users"],
+        summary: "List followers",
+        description: "Returns users who follow the given user. Paginated. Public (no auth required).",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "integer" } },
+          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
+          { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated list of followers",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/FollowersResponse" } },
+            },
+          },
+          "404": {
+            description: "User not found",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+          },
+        },
+      },
+    },
+    "/api/users/{userId}/following": {
+      get: {
+        tags: ["Users"],
+        summary: "List following",
+        description: "Returns users that the given user is following. Paginated. Public (no auth required).",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "integer" } },
+          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
+          { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated list of following",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/FollowersResponse" } },
+            },
+          },
+          "404": {
+            description: "User not found",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
           },
         },
       },
