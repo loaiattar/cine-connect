@@ -54,9 +54,20 @@ function Index() {
             </span>
           </div>
         </div>
-        <button className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold">
-          Se connecter
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/RegisterPage"
+            className="rounded border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-4 py-2 text-sm font-bold"
+          >
+            S'inscrire
+          </Link>
+          <Link
+            to="/LoginPage"
+            className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold"
+          >
+            Se connecter
+          </Link>
+        </div>
       </header>
       <section className="relative px-6 py-20 text-center border-b border-zinc-800 overflow-hidden">
         <img
@@ -81,10 +92,13 @@ function Index() {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2">
+            <Link
+              to="/RegisterPage"
+              className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2"
+            >
               <Play className="w-4 h-4" />
               Commencer l'aventure
-            </button>
+            </Link>
             <Link
               to="/ancienne-page"
               className="rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center"
@@ -146,9 +160,12 @@ function Index() {
           </li>
         </ul>
 
-        <button className="mt-8 rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold">
+        <Link
+          to="/RegisterPage"
+          className="mt-8 inline-block rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold"
+        >
           Rejoindre CinéConnect
-        </button>
+        </Link>
       </section>
 
       <section className="px-6 py-20 text-center border-b border-zinc-800">
@@ -157,10 +174,13 @@ function Index() {
           Des milliers de cinéphiles vous attendent pour partager leur passion
           du 7ème art
         </p>
-        <button className="mt-8 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-8 py-3 font-semibold inline-flex items-center gap-2">
+        <Link
+          to="/RegisterPage"
+          className="mt-8 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-8 py-3 font-semibold inline-flex items-center gap-2"
+        >
           <Play className="w-4 h-4" />
           Commencer maintenant
-        </button>
+        </Link>
       </section>
 
       <footer className="border-t border-zinc-800 px-6 pt-10 pb-6 text-white">
@@ -186,8 +206,8 @@ function Index() {
               Navigation
             </p>
             <ul className="space-y-2 text-sm text-zinc-400">
-              <li className="hover:text-white cursor-pointer transition-colors">
-                Accueil
+              <li>
+                <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
               </li>
               <li className="hover:text-white cursor-pointer transition-colors">
                 Catalogue
@@ -195,8 +215,11 @@ function Index() {
               <li className="hover:text-white cursor-pointer transition-colors">
                 Communauté
               </li>
-              <li className="hover:text-white cursor-pointer transition-colors">
-                Se connecter
+              <li>
+                <Link to="/RegisterPage" className="hover:text-white transition-colors">S'inscrire</Link>
+              </li>
+              <li>
+                <Link to="/LoginPage" className="hover:text-white transition-colors">Se connecter</Link>
               </li>
             </ul>
           </div>
