@@ -56,9 +56,9 @@ function MovieDetailPage() {
           <RateMovie onRate={() => {}} />
         </section>
 
-        {/* Section Commentaires */}
+        {/* Section Commentaires (mock page: movieId 550) */}
         <section>
-          <CommentSection currentUser={currentUser} />
+          <CommentSection movieId={550} isLoggedIn={false} currentUser={currentUser} />
         </section>
 
       </div>
