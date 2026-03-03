@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getJwtSecret } from '../config';
 import { db } from '../db';
-import { users } from '../db/schema';
+import { users, profiles } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { conflict, unauthorized } from '../utils';
 
@@ -23,6 +23,12 @@ export const AuthService = {
       email,
       password: hashedPassword,
     }).returning();
+
+    if (!newUser) throw new Error('Failed to create user');
+
+    await db.insert(profiles).values({
+      userId: newUser.id,
+    });
 
     return this.generateToken(newUser.id, newUser.email);
   },
