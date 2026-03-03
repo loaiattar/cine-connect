@@ -19,8 +19,7 @@ function normalizeFavorites(
   return [];
 }
 
-// Path asserted until routeTree.gen.ts is regenerated (run dev to include /favorites)
-export const Route = createFileRoute("/favorites" as any)({
+export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
   component: FavoritesPage,
 });
