@@ -38,7 +38,9 @@ export function useMovieCommentSocket(
   onNewComment: () => void
 ): void {
   const onNewCommentRef = useRef(onNewComment);
-  onNewCommentRef.current = onNewComment;
+  useEffect(() => {
+    onNewCommentRef.current = onNewComment;
+  }, [onNewComment]);
   const stableCb = useCallback(() => {
     onNewCommentRef.current();
   }, []);
