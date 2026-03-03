@@ -73,6 +73,45 @@ export const openApiSpec = {
           password: { type: "string", minLength: 1 },
         },
       },
+      UserProfile: {
+        type: "object",
+        description: "Profile for the current user",
+        properties: {
+          id: { type: "integer" },
+          userId: { type: "integer" },
+          bio: { type: "string", nullable: true },
+          avatarUrl: { type: "string", nullable: true },
+          location: { type: "string", nullable: true },
+          favoriteGenre: { type: "string", nullable: true },
+        },
+      },
+      UserMeResponse: {
+        type: "object",
+        description: "Current user and profile",
+        properties: {
+          user: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              name: { type: "string", nullable: true },
+              email: { type: "string" },
+              createdAt: { type: "string", format: "date-time", nullable: true },
+            },
+          },
+          profile: { oneOf: [{ $ref: "#/components/schemas/UserProfile" }, { type: "null" }] },
+        },
+        required: ["user"],
+      },
+      UpdateProfileBody: {
+        type: "object",
+        description: "Optional profile fields to update",
+        properties: {
+          bio: { type: "string", maxLength: 500 },
+          avatarUrl: { type: "string", format: "uri" },
+          location: { type: "string", maxLength: 255 },
+          favoriteGenre: { type: "string", maxLength: 100 },
+        },
+      },
       ToggleFavoriteBody: {
         type: "object",
         required: ["movieId"],
@@ -236,6 +275,65 @@ export const openApiSpec = {
           },
           "401": {
             description: "Invalid credentials",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+            },
+          },
+        },
+      },
+    },
+    "/api/users/me": {
+      get: {
+        tags: ["Users"],
+        summary: "Get current user and profile",
+        description: "Returns the authenticated user and their profile. Requires JWT.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "User and profile",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/UserMeResponse" },
+              },
+            },
+          },
+          "401": {
+            description: "Unauthorized",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+            },
+          },
+        },
+      },
+      put: {
+        tags: ["Users"],
+        summary: "Update current user profile",
+        description: "Updates the authenticated user's profile (bio, avatarUrl, location, favoriteGenre). All fields optional.",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/UpdateProfileBody" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Updated profile",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/UserProfile" },
+              },
+            },
+          },
+          "400": {
+            description: "Validation failed",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+            },
+          },
+          "401": {
+            description: "Unauthorized",
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/Error" } },
             },
