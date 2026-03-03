@@ -3,6 +3,11 @@ import { badRequest, forbidden, success } from "../utils";
 import { MovieService } from "../services/movie.service";
 
 export const MovieController = {
+    async getTrending(_req: Request, res: Response) {
+        const data = await MovieService.getTrending();
+        return success(res, data);
+    },
+
     async handleToggleFavorite(req: Request, res: Response) {
         const { movieId } = req.body;
         const userId = req.user?.userId;
