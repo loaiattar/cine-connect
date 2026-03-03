@@ -12,8 +12,14 @@ const tmdbClient = axios.create({
 });
 
 function handleTmdbError(error: unknown, context: string): never {
-  if (axios.isAxiosError(error) && error.response?.status === 404) {
-    throw notFound('Movie not found');
+  if (axios.isAxiosError(error)) {
+    if (error.response?.status === 404) {
+      throw notFound('Movie not found');
+    }
+    if (error.response?.status === 401) {
+      console.error(`${context}: TMDB returned 401 — check TMDB_API_KEY is set and valid.`);
+      throw badGateway('Movie database API key invalid or missing. Set a valid TMDB_API_KEY in .env.');
+    }
   }
   console.error(`${context}:`, error);
   throw badGateway('Failed to fetch from movie database');
