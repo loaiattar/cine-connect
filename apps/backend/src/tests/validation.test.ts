@@ -33,13 +33,13 @@ describe('Validation Error Handling', () => {
         expect(response.body.errors[0].path).toBe('body.movieId');
     });
 
-    it('should return 400 when imdbId is not numeric in get movie details', async () => {
+    it('should return 400 when movieId is not numeric in get movie details', async () => {
         const response = await request(app)
             .get('/api/movies/abc')
             .set('Authorization', `Bearer ${userToken}`);
 
         expect(response.status).toBe(400);
-        expect(response.body.errors[0].path).toBe('params.imdbId');
+        expect(response.body.errors[0].path).toBe('params.movieId');
     });
 
     it('should return 400 when comment is too short', async () => {
