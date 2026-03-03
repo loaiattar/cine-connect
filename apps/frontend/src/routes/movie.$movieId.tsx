@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MovieHero from "@/components/ui/MovieHero";
-import RateMovie from "@/components/ui/RateMovie";
+import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
 import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
-import { moviesService } from "@/service/movies.service";
+import { moviesService, type MovieRatingResponse } from "@/service/movies.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { Loader2 } from "lucide-react";
 
@@ -21,9 +21,11 @@ export const Route = createFileRoute("/movie/$movieId")({
 
 function MovieDetailPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { movieId } = Route.useParams();
   const movieIdNum = Number(movieId);
   const user = useAuthStore((s) => s.user);
+  const isLoggedIn = !!useAuthStore((s) => s.token);
 
   const {
     data: rawMovie,
@@ -34,6 +36,31 @@ function MovieDetailPage() {
     queryKey: ["movie", movieIdNum],
     queryFn: () => moviesService.getMovieById(movieIdNum),
     enabled: Number.isInteger(movieIdNum) && movieIdNum > 0,
+  });
+
+  const {
+    data: ratingData,
+  } = useQuery({
+    queryKey: ["movie", "rating", movieIdNum],
+    queryFn: () => moviesService.getMovieRating(movieIdNum),
+    enabled: Number.isInteger(movieIdNum) && movieIdNum > 0,
+  });
+
+  const ratingPayload: MovieRatingResponse | null =
+    ratingData != null && typeof ratingData === "object"
+      ? "average" in ratingData
+        ? (ratingData as unknown as MovieRatingResponse)
+        : "data" in ratingData && (ratingData as { data: unknown }).data != null
+          ? ((ratingData as { data: MovieRatingResponse }).data)
+          : null
+      : null;
+
+  const submitRatingMutation = useMutation({
+    mutationFn: ({ movieId: id, rating }: { movieId: number; rating: number }) =>
+      moviesService.submitRating(id, rating),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["movie", "rating", movieIdNum] });
+    },
   });
 
   const payload = rawMovie != null ? getMoviePayload<Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }>(rawMovie) : null;
@@ -85,7 +112,29 @@ function MovieDetailPage() {
         </section>
 
         <section className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-4">
-          <RateMovie onRate={() => {}} />
+          <RateMovie
+            {...({
+              average: ratingPayload?.average,
+              count: ratingPayload?.count,
+              userRating: ratingPayload?.userRating ?? null,
+              canRate: isLoggedIn,
+              onRate: (stars: number) => {
+                if (stars < 1) return;
+                const rating = Math.min(10, Math.max(1, stars * 2));
+                submitRatingMutation.mutate({ movieId: movieIdNum, rating });
+              },
+            } satisfies RateMovieProps)}
+          />
+          {submitRatingMutation.isPending && (
+            <p className="text-gray-400 text-sm mt-2">Enregistrement…</p>
+          )}
+          {submitRatingMutation.isError && (
+            <p className="text-red-400 text-sm mt-2">
+              {submitRatingMutation.error && typeof submitRatingMutation.error === "object" && "message" in submitRatingMutation.error
+                ? String((submitRatingMutation.error as { message: string }).message)
+                : "Erreur lors de l'enregistrement de la note"}
+            </p>
+          )}
         </section>
 
         <section>
