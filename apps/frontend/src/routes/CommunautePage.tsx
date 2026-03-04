@@ -29,6 +29,10 @@ const CommunautePage = () => {
     ));
   };
 
+  const utilisateursFiltres = utilisateurs.filter((u) =>
+    u.username.toLowerCase().includes(recherche.toLowerCase())
+  );
+
   useEffect(() => {
     setChargement(true);
     fetch("/api/users/community")
