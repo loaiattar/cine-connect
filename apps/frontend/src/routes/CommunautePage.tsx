@@ -75,7 +75,6 @@ const mockUtilisateurs: Utilisateur[] = [
 function CommunautePage() {
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>(mockUtilisateurs);
   const [chargement, setChargement] = useState(false);
-  const [erreur, setErreur] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
 
   const utilisateursFiltres = utilisateurs.filter((u) =>
@@ -101,10 +100,8 @@ function CommunautePage() {
   return (
     <div style={{ backgroundColor: "#0d0d0d", minHeight: "100vh", color: "white" }}>
 
-      {/* NavBar collée en haut */}
       <CineConnectNavbar />
 
-      {/* Section stats + recherche */}
       <CommunauteSection
         membresCount={utilisateurs.length}
         abonnementsCount={utilisateurs.filter((u) => u.estSuivi).length}
@@ -113,7 +110,6 @@ function CommunautePage() {
         onFilterChange={() => {}}
       />
 
-      {/* Liste des cartes membres */}
       <div style={{
         maxWidth: "860px",
         margin: "0 auto",
@@ -125,17 +121,11 @@ function CommunautePage() {
 
         {chargement && (
           <p style={{ color: "#888", textAlign: "center", paddingTop: "3rem" }}>
-          Linkrgement...
+            Chargement...
           </p>
         )}
 
-        {erreur && (
-          <p style={{ color: "#e50914", textAlign: "center", paddingTop: "3rem" }}>
-            {erreur}
-          </p>
-        )}
-
-        {!chargement && !erreur && utilisateursFiltres.map((u) => (
+        {!chargement && utilisateursFiltres.map((u) => (
           <div
             key={u.id}
             style={{
@@ -149,7 +139,7 @@ function CommunautePage() {
           </div>
         ))}
 
-        {!chargement && !erreur && utilisateursFiltres.length === 0 && (
+        {!chargement && utilisateursFiltres.length === 0 && (
           <p style={{ color: "#888", textAlign: "center", paddingTop: "3rem" }}>
             Aucun membre trouvé pour "{recherche}"
           </p>

@@ -29,7 +29,7 @@ const CommunauteSection = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white px-8 py-10">
+    <div className="bg-[#0d0d0d] text-white px-8 pt-10 pb-4">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
@@ -85,7 +85,7 @@ const CommunauteSection = ({
       </div>
 
       {/* Cartes de stats */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 w-full">
         <div className="flex-1 bg-[#1a1a1a] ring-1 ring-[#2a2a2a] rounded-xl py-8 text-center">
           <p className="text-5xl font-bold text-[#e50914]">{membresCount}</p>
           <p className="text-sm mt-2">Membres</p>
