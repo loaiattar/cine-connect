@@ -62,11 +62,33 @@ const CommunautePage = () => {
         onFilterChange={(f) => setTri(f)}
       />
 
-      {chargement && <p style={{ padding: "2rem", color: "#888" }}>Chargement...</p>}
-      {erreur && <p style={{ padding: "2rem", color: "#e50914" }}>{erreur}</p>}
-      {!chargement && !erreur && utilisateurs.map((u) => (
-        <UserProfileCard key={u.id} user={u} />
-      ))}
+      <div style={{ padding: "0 2rem 2rem" }}>
+
+        {chargement && (
+          <p style={{ color: "#888", textAlign: "center", paddingTop: "2rem" }}>
+            Chargement...
+          </p>
+        )}
+
+        {erreur && (
+          <p style={{ color: "#e50914", textAlign: "center", paddingTop: "2rem" }}>
+            {erreur}
+          </p>
+        )}
+
+        {!chargement && !erreur && utilisateursFiltres.map((u) => (
+          <div key={u.id} style={{ marginBottom: "1rem" }}>
+            <UserProfileCard user={u} />
+          </div>
+        ))}
+
+        {!chargement && !erreur && utilisateursFiltres.length === 0 && (
+          <p style={{ color: "#888", textAlign: "center", paddingTop: "2rem" }}>
+            Aucun membre trouvé pour "{recherche}"
+          </p>
+        )}
+
+      </div>
     </div>
   );
 };
