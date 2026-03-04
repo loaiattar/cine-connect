@@ -13,6 +13,7 @@ type Utilisateur = {
   reviewCount: number;
   followersCount: number;
   followingCount: number;
+  estSuivi: boolean;
 };
 
 const CommunautePage = () => {
@@ -21,6 +22,12 @@ const CommunautePage = () => {
   const [erreur, setErreur] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
   const [tri, setTri] = useState("Plus populaires");
+
+  const toggleSuivi = (id: number) => {
+    setUtilisateurs(utilisateurs.map((u) =>
+      u.id === id ? { ...u, estSuivi: !u.estSuivi } : u
+    ));
+  };
 
   useEffect(() => {
     setChargement(true);
