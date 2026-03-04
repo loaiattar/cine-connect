@@ -19,6 +19,8 @@ const CommunautePage = () => {
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [recherche, setRecherche] = useState("");
+  const [tri, setTri] = useState("Plus populaires");
 
   useEffect(() => {
     setChargement(true);
