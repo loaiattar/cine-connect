@@ -30,7 +30,7 @@ const mockUtilisateurs: Utilisateur[] = [
 
 function CommunautePage() {
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>(mockUtilisateurs);
-  const [chargement, setChargement] = useState(false);
+  const [chargement, setChargement] = useState(true);
   const [recherche, setRecherche] = useState("");
 
   const utilisateursFiltres = utilisateurs.filter((u) =>
@@ -38,7 +38,6 @@ function CommunautePage() {
   );
 
   useEffect(() => {
-    setChargement(true);
     fetch("/api/users/community")
       .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
       .then((data) => { setUtilisateurs(data); setChargement(false); })
