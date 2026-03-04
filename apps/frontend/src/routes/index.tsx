@@ -141,10 +141,10 @@ function Index() {
               Commencer l'aventure
             </Link>
             <Link
-              to="/ancienne-page"
+              to="/LoginPage"
               className="rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center"
             >
-              Voir l'ancienne page
+              Se connecter
             </Link>
           </div>
         </div>

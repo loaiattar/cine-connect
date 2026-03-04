@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Marquee } from "@/components/ui/marquee";
 import { Button } from "@/components/ui/button";
 import { UserProfileCard } from "@/components/ui/ProfileCard1";
@@ -78,7 +78,7 @@ function LegacyPage() {
           size="lg"
           className="rounded-full px-8 font-bold border-[#e53e3e] text-[#e53e3e] hover:bg-[#e53e3e]/10"
         >
-          <a href="/RegisterPage">S'inscrire</a>
+          <Link to="/RegisterPage">S'inscrire</Link>
         </Button>
         <Button
           asChild
@@ -86,7 +86,7 @@ function LegacyPage() {
           size="lg"
           className="rounded-full px-8 font-bold border-[#f6ad55] text-[#f6ad55] hover:bg-[#f6ad55]/10"
         >
-          <a href="/login1">Se connecter</a>
+          <Link to="/LoginPage">Se connecter</Link>
         </Button>
       </div>
 
