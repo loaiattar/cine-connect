@@ -29,7 +29,7 @@ const CommunauteSection = ({
   };
 
   return (
-    <div className="bg-[#0d0d0d] text-white px-8 pt-10 pb-4">
+    <div className="bg-[#0d0d0d] text-white w-full pt-10 pb-8 px-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
