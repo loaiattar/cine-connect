@@ -52,8 +52,11 @@ const CommunautePage = () => {
 
   return (
     <div style={{ backgroundColor: "#0d0d0d", minHeight: "100vh", color: "white" }}>
+
+      {/* NavBar collée en haut */}
       <CineConnectNavbar />
 
+      {/* Section stats + recherche */}
       <CommunauteSection
         membresCount={utilisateurs.length}
         abonnementsCount={utilisateurs.filter((u) => u.estSuivi).length}
@@ -62,28 +65,44 @@ const CommunautePage = () => {
         onFilterChange={(f) => setTri(f)}
       />
 
-      <div style={{ padding: "0 2rem 2rem" }}>
+      {/* Liste des cartes membres */}
+      <div style={{
+        maxWidth: "860px",
+        margin: "0 auto",
+        padding: "0 1.5rem 4rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+      }}>
 
         {chargement && (
-          <p style={{ color: "#888", textAlign: "center", paddingTop: "2rem" }}>
+          <p style={{ color: "#888", textAlign: "center", paddingTop: "3rem" }}>
             Chargement...
           </p>
         )}
 
         {erreur && (
-          <p style={{ color: "#e50914", textAlign: "center", paddingTop: "2rem" }}>
+          <p style={{ color: "#e50914", textAlign: "center", paddingTop: "3rem" }}>
             {erreur}
           </p>
         )}
 
         {!chargement && !erreur && utilisateursFiltres.map((u) => (
-          <div key={u.id} style={{ marginBottom: "1rem" }}>
+          <div
+            key={u.id}
+            style={{
+              backgroundColor: "#1a1a1a",
+              border: "1px solid #2a2a2a",
+              borderRadius: "12px",
+              overflow: "hidden",
+            }}
+          >
             <UserProfileCard user={u} />
           </div>
         ))}
 
         {!chargement && !erreur && utilisateursFiltres.length === 0 && (
-          <p style={{ color: "#888", textAlign: "center", paddingTop: "2rem" }}>
+          <p style={{ color: "#888", textAlign: "center", paddingTop: "3rem" }}>
             Aucun membre trouvé pour "{recherche}"
           </p>
         )}
