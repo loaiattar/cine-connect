@@ -9,28 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Login1RouteImport } from './routes/login1'
 import { Route as FavoritesRouteImport } from './routes/favorites'
-import { Route as AnciennePageRouteImport } from './routes/ancienne-page'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 
-const Login1Route = Login1RouteImport.update({
-  id: '/login1',
-  path: '/login1',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AnciennePageRoute = AnciennePageRouteImport.update({
-  id: '/ancienne-page',
-  path: '/ancienne-page',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterPageRoute = RegisterPageRouteImport.update({
@@ -64,9 +52,7 @@ export interface FileRoutesByFullPath {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
-  '/ancienne-page': typeof AnciennePageRoute
   '/favorites': typeof FavoritesRoute
-  '/login1': typeof Login1Route
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +60,7 @@ export interface FileRoutesByTo {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
-  '/ancienne-page': typeof AnciennePageRoute
   '/favorites': typeof FavoritesRoute
-  '/login1': typeof Login1Route
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
 export interface FileRoutesById {
@@ -85,9 +69,7 @@ export interface FileRoutesById {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
-  '/ancienne-page': typeof AnciennePageRoute
   '/favorites': typeof FavoritesRoute
-  '/login1': typeof Login1Route
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
 export interface FileRouteTypes {
@@ -97,9 +79,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
-    | '/ancienne-page'
     | '/favorites'
-    | '/login1'
     | '/movie/$movieId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -107,9 +87,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
-    | '/ancienne-page'
     | '/favorites'
-    | '/login1'
     | '/movie/$movieId'
   id:
     | '__root__'
@@ -117,9 +95,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
-    | '/ancienne-page'
     | '/favorites'
-    | '/login1'
     | '/movie/$movieId'
   fileRoutesById: FileRoutesById
 }
@@ -128,33 +104,17 @@ export interface RootRouteChildren {
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
   RegisterPageRoute: typeof RegisterPageRoute
-  AnciennePageRoute: typeof AnciennePageRoute
   FavoritesRoute: typeof FavoritesRoute
-  Login1Route: typeof Login1Route
   MovieMovieIdRoute: typeof MovieMovieIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login1': {
-      id: '/login1'
-      path: '/login1'
-      fullPath: '/login1'
-      preLoaderRoute: typeof Login1RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/favorites': {
       id: '/favorites'
       path: '/favorites'
       fullPath: '/favorites'
       preLoaderRoute: typeof FavoritesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ancienne-page': {
-      id: '/ancienne-page'
-      path: '/ancienne-page'
-      fullPath: '/ancienne-page'
-      preLoaderRoute: typeof AnciennePageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/RegisterPage': {
@@ -200,9 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
   RegisterPageRoute: RegisterPageRoute,
-  AnciennePageRoute: AnciennePageRoute,
   FavoritesRoute: FavoritesRoute,
-  Login1Route: Login1Route,
   MovieMovieIdRoute: MovieMovieIdRoute,
 }
 export const routeTree = rootRouteImport
