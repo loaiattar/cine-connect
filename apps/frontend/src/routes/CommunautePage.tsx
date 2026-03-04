@@ -53,6 +53,15 @@ const CommunautePage = () => {
   return (
     <div style={{ backgroundColor: "#0d0d0d", minHeight: "100vh", color: "white" }}>
       <CineConnectNavbar />
+
+      <CommunauteSection
+        membresCount={utilisateurs.length}
+        abonnementsCount={utilisateurs.filter((u) => u.estSuivi).length}
+        abonnesCount={utilisateurs.filter((u) => u.estSuivi).length}
+        onSearch={(q) => setRecherche(q)}
+        onFilterChange={(f) => setTri(f)}
+      />
+
       {chargement && <p style={{ padding: "2rem", color: "#888" }}>Chargement...</p>}
       {erreur && <p style={{ padding: "2rem", color: "#e50914" }}>{erreur}</p>}
       {!chargement && !erreur && utilisateurs.map((u) => (
