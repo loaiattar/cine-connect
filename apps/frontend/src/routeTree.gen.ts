@@ -13,6 +13,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
+import { Route as CommunautePageRouteImport } from './routes/CommunautePage'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 
@@ -36,6 +37,11 @@ const LoginPageRoute = LoginPageRouteImport.update({
   path: '/LoginPage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunautePageRoute = CommunautePageRouteImport.update({
+  id: '/CommunautePage',
+  path: '/CommunautePage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const MovieMovieIdRoute = MovieMovieIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommunautePageRoute: typeof CommunautePageRoute
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
   RegisterPageRoute: typeof RegisterPageRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginPageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/CommunautePage': {
+      id: '/CommunautePage'
+      path: '/CommunautePage'
+      fullPath: '/CommunautePage'
+      preLoaderRoute: typeof CommunautePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommunautePageRoute: CommunautePageRoute,
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
   RegisterPageRoute: RegisterPageRoute,

@@ -1,5 +1,4 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import bgImage from "../../image/BackGround.png";
 import {
   Clapperboard,
@@ -11,6 +10,7 @@ import {
   Heart,
   Loader2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth.store";
 import { moviesService, type TrendingResponse } from "@/service/movies.service";
 import MovieCard from "@/components/ui/CardFilm";
@@ -75,6 +75,13 @@ function Index() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            to={"/CommunautePage" as "/"}
+            className="rounded border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+          >
+            <Users className="w-4 h-4" />
+            Communauté
+          </Link>
           {token ? (
             <>
               <Link

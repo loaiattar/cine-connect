@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import CineConnectNavbar from "../components/ui/Navbar";
 import CommunauteSection from "../components/ui/CommunauteSection";
 import { UserProfileCard } from "../components/ui/ProfileCard1";
+
+export const Route = createFileRoute("/CommunautePage")({
+  component: CommunautePage,
+});
 
 type Utilisateur = {
   id: number;
@@ -16,18 +21,62 @@ type Utilisateur = {
   estSuivi: boolean;
 };
 
-const CommunautePage = () => {
-  const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([]);
-  const [chargement, setChargement] = useState(true);
+const mockUtilisateurs: Utilisateur[] = [
+  {
+    id: 1,
+    username: "Alice Martin",
+    memberSince: "janvier 2023",
+    bio: "Passionnée de cinéma français et de films d'auteur.",
+    filmCount: 142,
+    averageRating: 4.2,
+    reviewCount: 38,
+    followersCount: 210,
+    followingCount: 95,
+    estSuivi: false,
+  },
+  {
+    id: 2,
+    username: "Tom Dubois",
+    memberSince: "mars 2022",
+    bio: "Fan de science-fiction et de thrillers psychologiques.",
+    filmCount: 89,
+    averageRating: 3.8,
+    reviewCount: 21,
+    followersCount: 134,
+    followingCount: 60,
+    estSuivi: false,
+  },
+  {
+    id: 3,
+    username: "Sara Benali",
+    memberSince: "juin 2024",
+    bio: "J'adore les comédies romantiques et les films d'animation.",
+    filmCount: 57,
+    averageRating: 4.5,
+    reviewCount: 14,
+    followersCount: 78,
+    followingCount: 42,
+    estSuivi: true,
+  },
+  {
+    id: 4,
+    username: "Karim Leroy",
+    memberSince: "septembre 2021",
+    bio: "Cinéphile averti, spécialiste des films noirs des années 50.",
+    filmCount: 315,
+    averageRating: 3.6,
+    reviewCount: 102,
+    followersCount: 489,
+    followingCount: 180,
+    estSuivi: false,
+  },
+];
+
+function CommunautePage() {
+  const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>(mockUtilisateurs);
+  const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
-  const [tri, setTri] = useState("Plus populaires");
-
-  const toggleSuivi = (id: number) => {
-    setUtilisateurs(utilisateurs.map((u) =>
-      u.id === id ? { ...u, estSuivi: !u.estSuivi } : u
-    ));
-  };
 
   const utilisateursFiltres = utilisateurs.filter((u) =>
     u.username.toLowerCase().includes(recherche.toLowerCase())
@@ -45,7 +94,6 @@ const CommunautePage = () => {
         setChargement(false);
       })
       .catch(() => {
-        setErreur("Impossible de charger les membres.");
         setChargement(false);
       });
   }, []);
@@ -62,7 +110,7 @@ const CommunautePage = () => {
         abonnementsCount={utilisateurs.filter((u) => u.estSuivi).length}
         abonnesCount={utilisateurs.filter((u) => u.estSuivi).length}
         onSearch={(q) => setRecherche(q)}
-        onFilterChange={(f) => setTri(f)}
+        onFilterChange={() => {}}
       />
 
       {/* Liste des cartes membres */}
@@ -77,7 +125,7 @@ const CommunautePage = () => {
 
         {chargement && (
           <p style={{ color: "#888", textAlign: "center", paddingTop: "3rem" }}>
-            Chargement...
+          Linkrgement...
           </p>
         )}
 
@@ -110,6 +158,6 @@ const CommunautePage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default CommunautePage;
