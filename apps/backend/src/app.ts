@@ -9,6 +9,7 @@ import followRoutes from './routes/follow.route';
 import messageRoutes from './routes/message.route';
 import { openApiSpec } from './openapi';
 import { getCorsAllowlist } from './config';
+import { authRateLimiter } from './middlewares/rateLimit.middleware';
 
 function applyCors(app: Express): void {
   const allowlist = getCorsAllowlist();
@@ -91,7 +92,7 @@ app.get("/swagger", sendSwaggerHtml);
 app.get("/swagger/", sendSwaggerHtml);
 
 app.use(express.json());
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/follows', followRoutes);
 app.use('/api/messages', messageRoutes);
