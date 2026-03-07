@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
+import { Route as ProfilePageRouteImport } from './routes/ProfilePage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ const FavoritesRoute = FavoritesRouteImport.update({
 const RegisterPageRoute = RegisterPageRouteImport.update({
   id: '/RegisterPage',
   path: '/RegisterPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilePageRoute = ProfilePageRouteImport.update({
+  id: '/ProfilePage',
+  path: '/ProfilePage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/users': typeof UsersRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/users': typeof UsersRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/users': typeof UsersRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/users'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/users'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/users'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
+  ProfilePageRoute: typeof ProfilePageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   FavoritesRoute: typeof FavoritesRoute
   UsersRoute: typeof UsersRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/RegisterPage'
       fullPath: '/RegisterPage'
       preLoaderRoute: typeof RegisterPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ProfilePage': {
+      id: '/ProfilePage'
+      path: '/ProfilePage'
+      fullPath: '/ProfilePage'
+      preLoaderRoute: typeof ProfilePageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/MovieDetailPage': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
+  ProfilePageRoute: ProfilePageRoute,
   RegisterPageRoute: RegisterPageRoute,
   FavoritesRoute: FavoritesRoute,
   UsersRoute: UsersRoute,
