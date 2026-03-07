@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
+import { Route as ProfilePageRouteImport } from './routes/ProfilePage'
+import { Route as CommunautePageRouteImport } from './routes/CommunautePage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,6 +26,16 @@ const FavoritesRoute = FavoritesRouteImport.update({
 const RegisterPageRoute = RegisterPageRouteImport.update({
   id: '/RegisterPage',
   path: '/RegisterPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilePageRoute = ProfilePageRouteImport.update({
+  id: '/ProfilePage',
+  path: '/ProfilePage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunautePageRoute = CommunautePageRouteImport.update({
+  id: '/CommunautePage',
+  path: '/CommunautePage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
@@ -51,6 +63,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/CommunautePage': typeof CommunautePageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -59,6 +73,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/CommunautePage': typeof CommunautePageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -68,6 +84,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/CommunautePage': typeof CommunautePageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
@@ -78,6 +96,8 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/CommunautePage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/movie/$movieId'
@@ -86,6 +106,8 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/CommunautePage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/movie/$movieId'
@@ -94,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/CommunautePage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/favorites'
     | '/movie/$movieId'
@@ -103,6 +127,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
+  CommunautePageRoute: typeof CommunautePageRoute
+  ProfilePageRoute: typeof ProfilePageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   FavoritesRoute: typeof FavoritesRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
@@ -122,6 +148,20 @@ declare module '@tanstack/react-router' {
       path: '/RegisterPage'
       fullPath: '/RegisterPage'
       preLoaderRoute: typeof RegisterPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ProfilePage': {
+      id: '/ProfilePage'
+      path: '/ProfilePage'
+      fullPath: '/ProfilePage'
+      preLoaderRoute: typeof ProfilePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/CommunautePage': {
+      id: '/CommunautePage'
+      path: '/CommunautePage'
+      fullPath: '/CommunautePage'
+      preLoaderRoute: typeof CommunautePageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/MovieDetailPage': {
@@ -159,6 +199,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
+  CommunautePageRoute: CommunautePageRoute,
+  ProfilePageRoute: ProfilePageRoute,
   RegisterPageRoute: RegisterPageRoute,
   FavoritesRoute: FavoritesRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
