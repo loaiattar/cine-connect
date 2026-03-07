@@ -256,4 +256,33 @@ describe('Movie Functional Tests - Watchlist', () => {
         expect(response.status).toBe(403);
     });
 
+});
+
+describe('Movie Functional Tests - Search', () => {
+    it('should return 400 when search query is missing', async () => {
+        const response = await request(app).get('/api/movies/search');
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toBeDefined();
+    });
+
+    it('should return paginated search results for a valid query', async () => {
+        const response = await request(app)
+            .get('/api/movies/search')
+            .query({ q: 'inception' });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('page');
+        expect(response.body).toHaveProperty('results');
+        expect(response.body).toHaveProperty('total_pages');
+        expect(response.body).toHaveProperty('total_results');
+        expect(Array.isArray(response.body.results)).toBe(true);
+    });
+
+    it('should accept optional page and genre params', async () => {
+        const response = await request(app)
+            .get('/api/movies/search')
+            .query({ q: 'matrix', page: 1 });
+        expect(response.status).toBe(200);
+        expect(response.body.page).toBe(1);
+        expect(Array.isArray(response.body.results)).toBe(true);
+    });
 });   
