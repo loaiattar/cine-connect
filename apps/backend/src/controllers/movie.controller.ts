@@ -9,6 +9,15 @@ export const MovieController = {
         return success(res, data);
     },
 
+    async searchMovies(req: Request, res: Response) {
+        const q = String(req.query.q ?? "").trim();
+        const page = Math.max(1, parseInt(String(req.query.page ?? 1), 10) || 1);
+        const genreParam = req.query.genre != null && req.query.genre !== "" ? parseInt(String(req.query.genre), 10) : undefined;
+        const genre = genreParam != null && !Number.isNaN(genreParam) ? genreParam : undefined;
+        const data = await MovieService.searchMovies(q, page, genre);
+        return success(res, data);
+    },
+
     async handleToggleFavorite(req: Request, res: Response) {
         const { movieId } = req.body;
         const userId = req.user?.userId;

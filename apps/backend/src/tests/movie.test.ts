@@ -1,10 +1,35 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import request from 'supertest';
 
 import app from '../app';
 
 import { AuthService } from '../services/auth.service';
+
+vi.mock('../services/tmdb.service', async (importOriginal) => {
+    const mod = await importOriginal<typeof import('../services/tmdb.service')>();
+    return {
+        ...mod,
+        TmdbService: {
+            ...mod.TmdbService,
+            searchMovies: vi.fn().mockResolvedValue({
+                page: 1,
+                results: [
+                    {
+                        id: 27205,
+                        title: 'Inception',
+                        poster_path: '/path',
+                        release_date: '2010-07-15',
+                        vote_average: 8.4,
+                        genre_ids: [28, 878],
+                    },
+                ],
+                total_pages: 1,
+                total_results: 1,
+            }),
+        },
+    };
+});
 
 
 describe('Movie Functional Tests - Favorites', () => {
@@ -256,4 +281,33 @@ describe('Movie Functional Tests - Watchlist', () => {
         expect(response.status).toBe(403);
     });
 
+});
+
+describe('Movie Functional Tests - Search', () => {
+    it('should return 400 when search query is missing', async () => {
+        const response = await request(app).get('/api/movies/search');
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toBeDefined();
+    });
+
+    it('should return paginated search results for a valid query', async () => {
+        const response = await request(app)
+            .get('/api/movies/search')
+            .query({ q: 'inception' });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('page');
+        expect(response.body).toHaveProperty('results');
+        expect(response.body).toHaveProperty('total_pages');
+        expect(response.body).toHaveProperty('total_results');
+        expect(Array.isArray(response.body.results)).toBe(true);
+    });
+
+    it('should accept optional page and genre params', async () => {
+        const response = await request(app)
+            .get('/api/movies/search')
+            .query({ q: 'matrix', page: 1 });
+        expect(response.status).toBe(200);
+        expect(response.body.page).toBe(1);
+        expect(Array.isArray(response.body.results)).toBe(true);
+    });
 });   

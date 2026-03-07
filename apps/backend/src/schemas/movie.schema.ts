@@ -84,3 +84,20 @@ export const getMovieRatingSchema = z.object({
         movieId: movieIdSchema,
     }),
 });
+
+/** GET /api/movies/search — q required; page and genre optional */
+export const getMoviesSearchSchema = z.object({
+    query: z.object({
+        q: z.string().min(1, "Search query is required"),
+        page: z
+            .string()
+            .optional()
+            .transform((v) => (v != null ? parseInt(v, 10) : 1))
+            .pipe(z.number().int().positive()),
+        genre: z
+            .string()
+            .optional()
+            .transform((v) => (v != null ? parseInt(v, 10) : undefined))
+            .pipe(z.number().int().positive().optional()),
+    }),
+});
