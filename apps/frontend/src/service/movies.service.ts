@@ -13,6 +13,12 @@ export interface FavoriteEntry {
     addedAt: string | null;
 }
 
+/** POST /api/movies/favorite — toggle add/remove; response shape */
+export interface ToggleFavoriteResponse {
+    action: "added" | "removed";
+    movieId: number;
+}
+
 /** GET /api/movies/rating/:movieId response */
 export interface MovieRatingResponse {
     average: number;
@@ -95,6 +101,8 @@ export const moviesService = {
         Promise.resolve({ data: [...MOVIE_GENRES], success: true }),
     getFavorites: (userId: number) =>
         apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
+    toggleFavorite: (movieId: number) =>
+        apiClient.post<ToggleFavoriteResponse>("/api/movies/favorite", { movieId }),
     createMovie: (movie: Movie) => apiClient.post<Movie>("/api/movies", movie),
     updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/api/movies/${id}`, movie),
     deleteMovie: (id: number) => apiClient.delete<Movie>(`/api/movies/${id}`),
