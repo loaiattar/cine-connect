@@ -1,10 +1,35 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import request from 'supertest';
 
 import app from '../app';
 
 import { AuthService } from '../services/auth.service';
+
+vi.mock('../services/tmdb.service', async (importOriginal) => {
+    const mod = await importOriginal<typeof import('../services/tmdb.service')>();
+    return {
+        ...mod,
+        TmdbService: {
+            ...mod.TmdbService,
+            searchMovies: vi.fn().mockResolvedValue({
+                page: 1,
+                results: [
+                    {
+                        id: 27205,
+                        title: 'Inception',
+                        poster_path: '/path',
+                        release_date: '2010-07-15',
+                        vote_average: 8.4,
+                        genre_ids: [28, 878],
+                    },
+                ],
+                total_pages: 1,
+                total_results: 1,
+            }),
+        },
+    };
+});
 
 
 describe('Movie Functional Tests - Favorites', () => {
