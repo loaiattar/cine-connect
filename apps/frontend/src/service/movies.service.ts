@@ -19,6 +19,19 @@ export interface ToggleFavoriteResponse {
     movieId: number;
 }
 
+export interface WatchlistEntry {
+    id: number;
+    userId: number | null;
+    externalMovieId: number;
+    createdAt?: string | null;
+}
+
+/** POST /api/movies/watchlist — toggle add/remove; response shape */
+export interface ToggleWatchlistResponse {
+    action: "added" | "removed";
+    movieId: number;
+}
+
 /** GET /api/movies/rating/:movieId response */
 export interface MovieRatingResponse {
     average: number;
@@ -103,6 +116,12 @@ export const moviesService = {
         apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
     toggleFavorite: (movieId: number) =>
         apiClient.post<ToggleFavoriteResponse>("/api/movies/favorite", { movieId }),
+    getWatchlist: (userId: number) =>
+        apiClient.get<WatchlistEntry[]>(`/api/movies/watchlist/${userId}`),
+    toggleWatchlist: (movieId: number) =>
+        apiClient.post<ToggleWatchlistResponse>("/api/movies/watchlist", { movieId }),
+    removeFromWatchlist: (movieId: number) =>
+        apiClient.delete<{ action: string; movieId: number }>(`/api/movies/watchlist/${movieId}`),
     createMovie: (movie: Movie) => apiClient.post<Movie>("/api/movies", movie),
     updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/api/movies/${id}`, movie),
     deleteMovie: (id: number) => apiClient.delete<Movie>(`/api/movies/${id}`),
