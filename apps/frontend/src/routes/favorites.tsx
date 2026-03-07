@@ -1,23 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { requireAuth } from "@/lib/route-guard";
-import {
-  moviesService,
-  type FavoriteEntry,
-} from "@/service/movies.service";
-import { Clapperboard, Heart, Loader2 } from "lucide-react";
-
-function normalizeFavorites(
-  raw: unknown
-): FavoriteEntry[] {
-  if (Array.isArray(raw)) return raw;
-  if (raw && typeof raw === "object" && "data" in raw)
-    return Array.isArray((raw as { data: unknown }).data)
-      ? ((raw as { data: FavoriteEntry[] }).data)
-      : [];
-  return [];
-}
+import { Clapperboard, Heart, Loader2, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
@@ -26,20 +11,14 @@ export const Route = createFileRoute("/favorites")({
 
 function FavoritesPage() {
   const { user } = useAuth();
-  const userId = user?.userId;
-
   const {
-    data: rawData,
+    favorites,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["favorites", userId],
-    queryFn: () => moviesService.getFavorites(userId!),
-    enabled: !!userId,
-  });
-
-  const favorites = normalizeFavorites(rawData);
+    removeFavorite,
+    isToggling,
+  } = useFavorites();
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -116,13 +95,25 @@ function FavoritesPage() {
                 <span className="text-zinc-300">
                   Film #<span className="font-mono text-white">{fav.externalMovieId}</span>
                 </span>
-                <Link
-                  to="/movie/$movieId"
-                  params={{ movieId: String(fav.externalMovieId) }}
-                  className="text-sm font-medium text-red-500 hover:text-red-400 transition-colors"
-                >
-                  Voir la fiche →
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/movie/$movieId"
+                    params={{ movieId: String(fav.externalMovieId) }}
+                    className="text-sm font-medium text-red-500 hover:text-red-400 transition-colors"
+                  >
+                    Voir la fiche →
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => removeFavorite(fav.externalMovieId)}
+                    disabled={isToggling}
+                    className="rounded p-1.5 text-zinc-400 hover:bg-red-950/50 hover:text-red-400 transition-colors disabled:opacity-50"
+                    title="Retirer des favoris"
+                    aria-label="Retirer des favoris"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
