@@ -11,7 +11,7 @@ import {
   Heart,
   Loader2,
 } from "lucide-react";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 import { moviesService, type TrendingResponse } from "@/service/movies.service";
 import MovieCard from "@/components/ui/CardFilm";
 import { getMovieImageUrl } from "@/lib/utils";
@@ -21,8 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const token = useAuthStore((s) => s.token);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
+  const { token, logout } = useAuth();
 
   const { data: trendingData, isLoading: trendingLoading } = useQuery({
     queryKey: ["movies", "trending"],
@@ -86,7 +85,7 @@ function Index() {
               </Link>
               <button
                 type="button"
-                onClick={() => clearAuth()}
+                onClick={logout}
                 className="rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors px-4 py-2 text-sm font-bold"
               >
                 Se déconnecter
