@@ -1,5 +1,4 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import bgImage from "../../image/BackGround.png";
 import {
   Clapperboard,
@@ -12,7 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { moviesService, type TrendingResponse } from "@/service/movies.service";
+import { useMovieList } from "@/hooks/useMovies";
 import MovieCard from "@/components/ui/CardFilm";
 import { getMovieImageUrl } from "@/lib/utils";
 
@@ -22,17 +21,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { token, logout } = useAuth();
-
-  const { data: trendingData, isLoading: trendingLoading } = useQuery({
-    queryKey: ["movies", "trending"],
-    queryFn: () => moviesService.getTrending(),
-  });
-  const payload = (trendingData != null && typeof trendingData === "object" && "results" in trendingData)
-    ? (trendingData as TrendingResponse)
-    : (trendingData != null && typeof trendingData === "object" && "data" in trendingData && (trendingData as { data: TrendingResponse }).data?.results)
-    ? (trendingData as { data: TrendingResponse }).data
-    : null;
-  const trendingMovies = payload?.results ?? [];
+  const { data: trendingMovies, isLoading: trendingLoading } = useMovieList();
 
   const features = [
     {

@@ -7,13 +7,8 @@ import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
 import { moviesService, type MovieRatingResponse } from "@/service/movies.service";
 import { useAuth } from "@/hooks/useAuth";
+import { useMovieDetail } from "@/hooks/useMovies";
 import { Loader2 } from "lucide-react";
-
-/** Backend returns raw movie object (TMDB shape) + isFavorite, isOnWatchlist, comments */
-function getMoviePayload<T>(raw: unknown): T {
-  if (raw && typeof raw === "object" && "data" in raw) return (raw as { data: T }).data;
-  return raw as T;
-}
 
 export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetailPage,
@@ -26,16 +21,7 @@ function MovieDetailPage() {
   const movieIdNum = Number(movieId);
   const { user, isAuthenticated: isLoggedIn } = useAuth();
 
-  const {
-    data: rawMovie,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["movie", movieIdNum],
-    queryFn: () => moviesService.getMovieById(movieIdNum),
-    enabled: Number.isInteger(movieIdNum) && movieIdNum > 0,
-  });
+  const { data: rawMovie, isLoading, isError, error } = useMovieDetail(movieIdNum);
 
   const {
     data: ratingData,
@@ -62,8 +48,7 @@ function MovieDetailPage() {
     },
   });
 
-  const payload = rawMovie != null ? getMoviePayload<Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }>(rawMovie) : null;
-  const movie = payload ? apiMovieToDisplay(payload) : null;
+  const movie = rawMovie ? apiMovieToDisplay(rawMovie as Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }) : null;
 
   if (isLoading) {
     return (
