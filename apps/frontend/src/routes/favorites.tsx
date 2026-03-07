@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 import { requireAuth } from "@/lib/route-guard";
 import {
   moviesService,
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/favorites")({
 });
 
 function FavoritesPage() {
-  const user = useAuthStore((s) => s.user);
+  const { user } = useAuth();
   const userId = user?.userId;
 
   const {

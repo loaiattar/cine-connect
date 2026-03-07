@@ -6,7 +6,7 @@ import CommentSection from "@/components/ui/CommentSectionComponent";
 import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
 import { moviesService, type MovieRatingResponse } from "@/service/movies.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
 /** Backend returns raw movie object (TMDB shape) + isFavorite, isOnWatchlist, comments */
@@ -24,8 +24,7 @@ function MovieDetailPage() {
   const queryClient = useQueryClient();
   const { movieId } = Route.useParams();
   const movieIdNum = Number(movieId);
-  const user = useAuthStore((s) => s.user);
-  const isLoggedIn = !!useAuthStore((s) => s.token);
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
 
   const {
     data: rawMovie,
