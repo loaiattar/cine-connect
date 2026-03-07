@@ -168,8 +168,8 @@ function Index() {
               return (
                 <Link
                   key={m.id}
-                  to="/movie/$movieId"
-                  params={{ movieId: String(m.id) }}
+                  to="/MovieDetailPage"
+                  search={{ movieId: String(m.id) }}
                   className="block focus:outline-none focus:ring-2 focus:ring-red-500 rounded-xl overflow-hidden"
                 >
                   <MovieCard
