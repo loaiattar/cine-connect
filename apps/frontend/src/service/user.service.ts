@@ -22,6 +22,12 @@ export interface GetMeResponse {
   profile: UserProfileRow | null;
 }
 
+/** GET /api/users/:userId/profile response (public, no email) */
+export interface GetPublicProfileResponse {
+  user: { id: number; name: string | null; createdAt: string | null };
+  profile: UserProfileRow | null;
+}
+
 /** PUT /api/users/me body; all fields optional */
 export interface UpdateProfilePayload {
   bio?: string;
@@ -32,6 +38,8 @@ export interface UpdateProfilePayload {
 
 export const userService = {
   getMe: () => apiClient.get<GetMeResponse>("/api/users/me"),
+  getPublicProfile: (userId: number) =>
+    apiClient.get<GetPublicProfileResponse>(`/api/users/${userId}/profile`),
   updateProfile: (data: UpdateProfilePayload) =>
     apiClient.put<UserProfileRow>("/api/users/me", data),
 };

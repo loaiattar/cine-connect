@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useComments } from "@/hooks/useComments";
 import type { MovieCommentRow } from "@/service/movies.service";
 import { useMovieCommentSocket } from "@/lib/socket";
@@ -15,13 +16,27 @@ interface ReviewCardProps {
   date: string;
   reviewText: string;
   rating?: number;
+  userId?: number | null;
 }
 
-export function ReviewCard({ username, date, reviewText, rating = 0 }: ReviewCardProps) {
+export function ReviewCard({ username, date, reviewText, rating = 0, userId }: ReviewCardProps) {
   const stars = [];
   for (let i = 0; i < rating; i++) {
     stars.push(<span key={i} className="text-yellow-400 text-2xl">★</span>);
   }
+
+  const nameNode =
+    userId != null && userId > 0 ? (
+      <Link
+        to="/profile/$userId"
+        params={{ userId: String(userId) }}
+        className="font-bold text-white hover:text-red-400 transition-colors"
+      >
+        {username}
+      </Link>
+    ) : (
+      <p className="font-bold text-white">{username}</p>
+    );
 
   return (
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: "#1e2a3a" }}>
@@ -29,7 +44,7 @@ export function ReviewCard({ username, date, reviewText, rating = 0 }: ReviewCar
       <div className="flex gap-3">
         <div className="w-10 h-10 rounded-full bg-gray-500 shrink-0" />
         <div className="min-w-0">
-          <p className="font-bold text-white">{username}</p>
+          <div className="text-white">{nameNode}</div>
           <p className="text-sm text-gray-400">{date}</p>
           <p className="text-gray-200 text-sm mt-1">{reviewText}</p>
         </div>
@@ -58,6 +73,7 @@ function toDisplayComment(row: MovieCommentRow, currentUser: string): ReviewCard
     date: formatDate(row.createdAt),
     reviewText: row.comment,
     rating: 0,
+    userId: row.userId ?? undefined,
   };
 }
 
@@ -151,6 +167,7 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
                 date={c.date}
                 reviewText={c.reviewText}
                 rating={c.rating}
+                userId={c.userId}
               />
             ))}
           </div>
