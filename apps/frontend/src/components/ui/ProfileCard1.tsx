@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Clapperboard, MessageCircle, MessageSquare, Star } from "lucide-react"
+import { Link } from "@tanstack/react-router"
+import { Clapperboard, MessageCircle, MessageSquare, Star, User as UserIcon } from "lucide-react"
 
 type User = {
   username: string
@@ -14,10 +15,11 @@ type User = {
 
 type Props = {
   user: User
+  userId?: number | null
   onMessage?: () => void
 }
 
-export function UserProfileCard({ user, onMessage }: Props) {
+export function UserProfileCard({ user, userId, onMessage }: Props) {
 
   const [isFollowing, setIsFollowing] = useState(false)
 
@@ -64,7 +66,17 @@ export function UserProfileCard({ user, onMessage }: Props) {
       </div>
 
       {/* boutons */}
-      <div className="self-center">
+      <div className="self-center flex flex-col gap-2 items-center">
+        {userId != null && userId > 0 && (
+          <Link
+            to="/profile/$userId"
+            params={{ userId: String(userId) }}
+            className="rounded-lg bg-zinc-700 hover:bg-zinc-600 px-4 py-2 text-sm font-semibold transition-colors flex items-center gap-2 text-white"
+          >
+            <UserIcon className="w-4 h-4" />
+            Voir le profil
+          </Link>
+        )}
         {isFollowing ? (
           <div className="flex flex-col gap-2">
             <button

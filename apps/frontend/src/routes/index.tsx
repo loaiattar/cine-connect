@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import bgImage from "../../image/BackGround.png";
 import {
+  Bookmark,
   Clapperboard,
   MessageCircle,
   Play,
@@ -10,9 +10,10 @@ import {
   Mail,
   Heart,
   Loader2,
+  Search,
 } from "lucide-react";
-import { useAuthStore } from "@/stores/auth.store";
-import { moviesService, type TrendingResponse } from "@/service/movies.service";
+import { useAuth } from "@/hooks/useAuth";
+import { useMovieList } from "@/hooks/useMovies";
 import MovieCard from "@/components/ui/CardFilm";
 import { getMovieImageUrl } from "@/lib/utils";
 
@@ -21,19 +22,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const token = useAuthStore((s) => s.token);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
-
-  const { data: trendingData, isLoading: trendingLoading } = useQuery({
-    queryKey: ["movies", "trending"],
-    queryFn: () => moviesService.getTrending(),
-  });
-  const payload = (trendingData != null && typeof trendingData === "object" && "results" in trendingData)
-    ? (trendingData as TrendingResponse)
-    : (trendingData != null && typeof trendingData === "object" && "data" in trendingData && (trendingData as { data: TrendingResponse }).data?.results)
-    ? (trendingData as { data: TrendingResponse }).data
-    : null;
-  const trendingMovies = payload?.results ?? [];
+  const { token, logout } = useAuth();
+  const { data: trendingMovies, isLoading: trendingLoading } = useMovieList();
 
   const features = [
     {
@@ -78,15 +68,36 @@ function Index() {
           {token ? (
             <>
               <Link
+                to="/search"
+                className="rounded border border-zinc-500 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <Search className="w-4 h-4" />
+                Recherche
+              </Link>
+              <Link
                 to={"/favorites" as "/" | "/favorites"}
                 className="rounded border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
               >
                 <Heart className="w-4 h-4" />
                 Mes favoris
               </Link>
+              <Link
+                to="/watchlist"
+                className="rounded border border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <Bookmark className="w-4 h-4" />
+                À voir
+              </Link>
+              <Link
+                to="/chat"
+                className="rounded border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Chat
+              </Link>
               <button
                 type="button"
-                onClick={() => clearAuth()}
+                onClick={logout}
                 className="rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors px-4 py-2 text-sm font-bold"
               >
                 Se déconnecter

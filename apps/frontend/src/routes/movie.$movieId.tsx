@@ -1,19 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
 import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
-import { moviesService, type MovieRatingResponse } from "@/service/movies.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
+import { useMovieDetail } from "@/hooks/useMovies";
+import { useRating } from "@/hooks/useRating";
 import { Loader2 } from "lucide-react";
-
-/** Backend returns raw movie object (TMDB shape) + isFavorite, isOnWatchlist, comments */
-function getMoviePayload<T>(raw: unknown): T {
-  if (raw && typeof raw === "object" && "data" in raw) return (raw as { data: T }).data;
-  return raw as T;
-}
 
 export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetailPage,
@@ -21,50 +15,19 @@ export const Route = createFileRoute("/movie/$movieId")({
 
 function MovieDetailPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { movieId } = Route.useParams();
   const movieIdNum = Number(movieId);
-  const user = useAuthStore((s) => s.user);
-  const isLoggedIn = !!useAuthStore((s) => s.token);
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
 
+  const { data: rawMovie, isLoading, isError, error } = useMovieDetail(movieIdNum);
   const {
-    data: rawMovie,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["movie", movieIdNum],
-    queryFn: () => moviesService.getMovieById(movieIdNum),
-    enabled: Number.isInteger(movieIdNum) && movieIdNum > 0,
-  });
+    rating: ratingPayload,
+    setRating,
+    isSubmitting: ratingSubmitting,
+    submitError: ratingError,
+  } = useRating(movieIdNum);
 
-  const {
-    data: ratingData,
-  } = useQuery({
-    queryKey: ["movie", "rating", movieIdNum],
-    queryFn: () => moviesService.getMovieRating(movieIdNum),
-    enabled: Number.isInteger(movieIdNum) && movieIdNum > 0,
-  });
-
-  const ratingPayload: MovieRatingResponse | null =
-    ratingData != null && typeof ratingData === "object"
-      ? "average" in ratingData
-        ? (ratingData as unknown as MovieRatingResponse)
-        : "data" in ratingData && (ratingData as { data: unknown }).data != null
-          ? ((ratingData as { data: MovieRatingResponse }).data)
-          : null
-      : null;
-
-  const submitRatingMutation = useMutation({
-    mutationFn: ({ movieId: id, rating }: { movieId: number; rating: number }) =>
-      moviesService.submitRating(id, rating),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movie", "rating", movieIdNum] });
-    },
-  });
-
-  const payload = rawMovie != null ? getMoviePayload<Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }>(rawMovie) : null;
-  const movie = payload ? apiMovieToDisplay(payload) : null;
+  const movie = rawMovie ? apiMovieToDisplay(rawMovie as Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }) : null;
 
   if (isLoading) {
     return (
@@ -120,20 +83,15 @@ function MovieDetailPage() {
               canRate: isLoggedIn,
               onRate: (stars: number) => {
                 if (stars < 1) return;
-                const rating = Math.min(10, Math.max(1, stars * 2));
-                submitRatingMutation.mutate({ movieId: movieIdNum, rating });
+                setRating(stars * 2);
               },
             } satisfies RateMovieProps)}
           />
-          {submitRatingMutation.isPending && (
+          {ratingSubmitting && (
             <p className="text-gray-400 text-sm mt-2">Enregistrement…</p>
           )}
-          {submitRatingMutation.isError && (
-            <p className="text-red-400 text-sm mt-2">
-              {submitRatingMutation.error && typeof submitRatingMutation.error === "object" && "message" in submitRatingMutation.error
-                ? String((submitRatingMutation.error as { message: string }).message)
-                : "Erreur lors de l'enregistrement de la note"}
-            </p>
+          {ratingError && (
+            <p className="text-red-400 text-sm mt-2">{ratingError.message}</p>
           )}
         </section>
 

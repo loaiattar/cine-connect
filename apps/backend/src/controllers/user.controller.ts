@@ -20,4 +20,10 @@ export const UserController = {
     });
     return success(res, result);
   },
+
+  async getPublicProfile(req: Request, res: Response) {
+    const userId = Number(req.params.userId);
+    const result = await UserService.getPublicProfile(userId);
+    return success(res, result);
+  },
 };

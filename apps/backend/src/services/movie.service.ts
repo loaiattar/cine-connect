@@ -4,10 +4,37 @@ import { eq, and, sql } from "drizzle-orm";
 import { AppError, forbidden, notFound } from "../utils";
 import { TmdbService } from "./tmdb.service";
 
+/** Paginated movie list shape (TMDB search/trending style) */
+export interface PaginatedMovies {
+    page: number;
+    results: Array<{ genre_ids?: number[]; [key: string]: unknown }>;
+    total_pages: number;
+    total_results: number;
+}
+
 export const MovieService = {
     async getTrending() {
         const data = await TmdbService.getTrendingMovies();
         return data;
+    },
+
+    async searchMovies(query: string, page: number, genre?: number): Promise<PaginatedMovies> {
+        const data = await TmdbService.searchMovies(query, page);
+        const result: PaginatedMovies = {
+            page: data.page ?? page,
+            results: data.results ?? [],
+            total_pages: data.total_pages ?? 0,
+            total_results: data.total_results ?? 0,
+        };
+        if (genre != null && result.results.length > 0) {
+            const filtered = result.results.filter(
+                (m) => Array.isArray(m.genre_ids) && m.genre_ids.includes(genre)
+            );
+            result.results = filtered;
+            result.total_results = filtered.length;
+            // total_pages is ambiguous when filtering; keep page as-is for consistency
+        }
+        return result;
     },
 
     async toggleFavorite(userId: number, movieId: number) {

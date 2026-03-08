@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { authService } from "@/service/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/RegisterPage")({
   component: RegisterPage,
@@ -12,7 +11,7 @@ const MIN_PASSWORD_LENGTH = 8;
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const { register } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -51,12 +50,11 @@ function RegisterPage() {
 
     setSubmitting(true);
     try {
-      const res = await authService.register({
+      await register({
         name: name.trim(),
         email: email.trim(),
         password,
       });
-      setAuth(res.token, { userId: res.userId, email: res.email });
       navigate({ to: "/" });
     } catch (err: unknown) {
       const authErr = err as { status?: number; message?: string };
