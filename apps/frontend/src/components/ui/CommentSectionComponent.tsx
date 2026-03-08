@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { moviesService, type MovieCommentRow } from "@/service/movies.service";
+import { useComments } from "@/hooks/useComments";
+import type { MovieCommentRow } from "@/service/movies.service";
 import { useMovieCommentSocket } from "@/lib/socket";
 import { Loader2 } from "lucide-react";
 
@@ -61,47 +61,32 @@ function toDisplayComment(row: MovieCommentRow, currentUser: string): ReviewCard
   };
 }
 
-function getCommentsPayload(raw: unknown): MovieCommentRow[] {
-  if (Array.isArray(raw)) return raw as MovieCommentRow[];
-  if (raw && typeof raw === "object" && "data" in raw && Array.isArray((raw as { data: unknown }).data)) {
-    return (raw as { data: MovieCommentRow[] }).data;
-  }
-  return [];
-}
-
 export default function CommentSection({ movieId, isLoggedIn, currentUser }: CommentSectionProps) {
-  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [formText, setFormText] = useState("");
 
-  const { data: commentsRaw, isLoading } = useQuery({
-    queryKey: ["movie", "comments", movieId],
-    queryFn: () => moviesService.getMovieComments(movieId),
-    enabled: Number.isInteger(movieId) && movieId > 0,
-  });
-
-  const invalidateComments = () => {
-    queryClient.invalidateQueries({ queryKey: ["movie", "comments", movieId] });
-  };
-
-  useMovieCommentSocket(movieId, invalidateComments);
-
-  const addCommentMutation = useMutation({
-    mutationFn: (text: string) => moviesService.addComment(movieId, text),
-    onSuccess: () => {
-      invalidateComments();
+  const {
+    comments,
+    isLoading,
+    refetch,
+    addComment: addCommentAction,
+    isSubmitting,
+    addError,
+  } = useComments(movieId, {
+    onAddSuccess: () => {
       setFormText("");
       setShowForm(false);
     },
   });
 
-  const comments = getCommentsPayload(commentsRaw);
+  useMovieCommentSocket(movieId, refetch);
+
   const displayComments = comments.map((row) => toDisplayComment(row, currentUser));
 
   function handleSubmit() {
     const text = formText.trim();
     if (!text || !isLoggedIn) return;
-    addCommentMutation.mutate(text);
+    addCommentAction(text);
   }
 
   return (
@@ -130,15 +115,15 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
             onChange={(e) => setFormText(e.target.value)}
             rows={3}
             className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition-colors resize-none"
-            disabled={addCommentMutation.isPending}
+            disabled={isSubmitting}
           />
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!formText.trim() || addCommentMutation.isPending}
+            disabled={!formText.trim() || isSubmitting}
             className="bg-red-600 text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {addCommentMutation.isPending ? (
+            {isSubmitting ? (
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" /> Publication…
               </span>
@@ -146,12 +131,8 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
               "Publier"
             )}
           </button>
-          {addCommentMutation.isError && (
-            <p className="text-red-400 text-sm">
-              {addCommentMutation.error && typeof addCommentMutation.error === "object" && "message" in addCommentMutation.error
-                ? String((addCommentMutation.error as { message: string }).message)
-                : "Erreur lors de la publication"}
-            </p>
+          {addError && (
+            <p className="text-red-400 text-sm">{addError.message}</p>
           )}
         </div>
       )}
