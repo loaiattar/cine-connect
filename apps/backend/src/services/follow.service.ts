@@ -2,6 +2,7 @@ import { db } from "../db";
 import { follows, users } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { badRequest, conflict, notFound } from "../utils";
+import { NotificationService } from "./notification.service";
 
 export const FollowService = {
   /** Follow a user. Current user = followerId, target = followingId. */
@@ -25,6 +26,19 @@ export const FollowService = {
       .insert(follows)
       .values({ followerId, followingId })
       .returning();
+
+    const follower = await db.query.users.findFirst({
+      where: eq(users.id, followerId),
+      columns: { name: true },
+    });
+    const displayName = follower?.name?.trim() || "Quelqu'un";
+    await NotificationService.create({
+      userId: followingId,
+      message: `${displayName} vous suit`,
+      linkType: "profile",
+      targetId: followerId,
+    }).catch(() => {});
+
     return row;
   },
 

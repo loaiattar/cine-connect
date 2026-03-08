@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { authService } from "@/service/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/LoginPage")({
   component: LoginPage,
@@ -11,7 +10,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function LoginPage() {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,8 +40,7 @@ function LoginPage() {
 
     setSubmitting(true);
     try {
-      const res = await authService.login({ email: email.trim(), password });
-      setAuth(res.token, { userId: res.userId, email: res.email });
+      await login({ email: email.trim(), password });
       navigate({ to: "/" });
     } catch (err: unknown) {
       const authErr = err as { status?: number; message?: string };

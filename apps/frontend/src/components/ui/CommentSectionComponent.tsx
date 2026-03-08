@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { moviesService, type MovieCommentRow } from "@/service/movies.service";
+import { Link } from "@tanstack/react-router";
+import { useComments } from "@/hooks/useComments";
+import type { MovieCommentRow } from "@/service/movies.service";
 import { useMovieCommentSocket } from "@/lib/socket";
 import { Loader2 } from "lucide-react";
 
@@ -15,13 +16,27 @@ interface ReviewCardProps {
   date: string;
   reviewText: string;
   rating?: number;
+  userId?: number | null;
 }
 
-export function ReviewCard({ username, date, reviewText, rating = 0 }: ReviewCardProps) {
+export function ReviewCard({ username, date, reviewText, rating = 0, userId }: ReviewCardProps) {
   const stars = [];
   for (let i = 0; i < rating; i++) {
     stars.push(<span key={i} className="text-yellow-400 text-2xl">★</span>);
   }
+
+  const nameNode =
+    userId != null && userId > 0 ? (
+      <Link
+        to="/profile/$userId"
+        params={{ userId: String(userId) }}
+        className="font-bold text-white hover:text-red-400 transition-colors"
+      >
+        {username}
+      </Link>
+    ) : (
+      <p className="font-bold text-white">{username}</p>
+    );
 
   return (
     <div className="w-full rounded-xl p-4" style={{ backgroundColor: "#1e2a3a" }}>
@@ -29,7 +44,7 @@ export function ReviewCard({ username, date, reviewText, rating = 0 }: ReviewCar
       <div className="flex gap-3">
         <div className="w-10 h-10 rounded-full bg-gray-500 shrink-0" />
         <div className="min-w-0">
-          <p className="font-bold text-white">{username}</p>
+          <div className="text-white">{nameNode}</div>
           <p className="text-sm text-gray-400">{date}</p>
           <p className="text-gray-200 text-sm mt-1">{reviewText}</p>
         </div>
@@ -58,50 +73,36 @@ function toDisplayComment(row: MovieCommentRow, currentUser: string): ReviewCard
     date: formatDate(row.createdAt),
     reviewText: row.comment,
     rating: 0,
+    userId: row.userId ?? undefined,
   };
-}
-
-function getCommentsPayload(raw: unknown): MovieCommentRow[] {
-  if (Array.isArray(raw)) return raw as MovieCommentRow[];
-  if (raw && typeof raw === "object" && "data" in raw && Array.isArray((raw as { data: unknown }).data)) {
-    return (raw as { data: MovieCommentRow[] }).data;
-  }
-  return [];
 }
 
 export default function CommentSection({ movieId, isLoggedIn, currentUser }: CommentSectionProps) {
-  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [formText, setFormText] = useState("");
 
-  const { data: commentsRaw, isLoading } = useQuery({
-    queryKey: ["movie", "comments", movieId],
-    queryFn: () => moviesService.getMovieComments(movieId),
-    enabled: Number.isInteger(movieId) && movieId > 0,
-  });
-
-  const invalidateComments = () => {
-    queryClient.invalidateQueries({ queryKey: ["movie", "comments", movieId] });
-  };
-
-  useMovieCommentSocket(movieId, invalidateComments);
-
-  const addCommentMutation = useMutation({
-    mutationFn: (text: string) => moviesService.addComment(movieId, text),
-    onSuccess: () => {
-      invalidateComments();
+  const {
+    comments,
+    isLoading,
+    refetch,
+    addComment: addCommentAction,
+    isSubmitting,
+    addError,
+  } = useComments(movieId, {
+    onAddSuccess: () => {
       setFormText("");
       setShowForm(false);
     },
   });
 
-  const comments = getCommentsPayload(commentsRaw);
+  useMovieCommentSocket(movieId, refetch);
+
   const displayComments = comments.map((row) => toDisplayComment(row, currentUser));
 
   function handleSubmit() {
     const text = formText.trim();
     if (!text || !isLoggedIn) return;
-    addCommentMutation.mutate(text);
+    addCommentAction(text);
   }
 
   return (
@@ -130,15 +131,15 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
             onChange={(e) => setFormText(e.target.value)}
             rows={3}
             className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition-colors resize-none"
-            disabled={addCommentMutation.isPending}
+            disabled={isSubmitting}
           />
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!formText.trim() || addCommentMutation.isPending}
+            disabled={!formText.trim() || isSubmitting}
             className="bg-red-600 text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {addCommentMutation.isPending ? (
+            {isSubmitting ? (
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" /> Publication…
               </span>
@@ -146,12 +147,8 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
               "Publier"
             )}
           </button>
-          {addCommentMutation.isError && (
-            <p className="text-red-400 text-sm">
-              {addCommentMutation.error && typeof addCommentMutation.error === "object" && "message" in addCommentMutation.error
-                ? String((addCommentMutation.error as { message: string }).message)
-                : "Erreur lors de la publication"}
-            </p>
+          {addError && (
+            <p className="text-red-400 text-sm">{addError.message}</p>
           )}
         </div>
       )}
@@ -170,6 +167,7 @@ export default function CommentSection({ movieId, isLoggedIn, currentUser }: Com
                 date={c.date}
                 reviewText={c.reviewText}
                 rating={c.rating}
+                userId={c.userId}
               />
             ))}
           </div>

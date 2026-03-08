@@ -83,6 +83,10 @@ export class ApiClient {
     delete<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
         return this.request<T>(endpoint, HttpMethod.DELETE, undefined, headers);
     }
+
+    patch<T>(endpoint: string, body?: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+        return this.request<T>(endpoint, HttpMethod.PATCH, body, headers);
+    }
 }
 
 export const apiClient = new ApiClient();
