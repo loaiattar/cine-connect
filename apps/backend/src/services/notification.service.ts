@@ -1,14 +1,30 @@
 import { db } from "../db";
 import { notifications } from "../db/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, isNull } from "drizzle-orm";
+
+export interface CreateNotificationOptions {
+    userId: number;
+    message: string;
+    linkType?: string | null;
+    targetId?: number | null;
+}
 
 export const NotificationService = {
-    /** List notifications for the current user, newest first. */
-    async list(userId: number, limit: number, offset: number) {
+    /** List notifications for the current user, newest first. Optional unreadOnly filter. */
+    async list(
+        userId: number,
+        limit: number,
+        offset: number,
+        unreadOnly = false
+    ) {
+        const conditions = unreadOnly
+            ? and(eq(notifications.userId, userId), isNull(notifications.readAt))
+            : eq(notifications.userId, userId);
+
         const rows = await db
             .select()
             .from(notifications)
-            .where(eq(notifications.userId, userId))
+            .where(conditions)
             .orderBy(desc(notifications.createdAt))
             .limit(limit)
             .offset(offset);
@@ -16,7 +32,7 @@ export const NotificationService = {
         const [{ count }] = await db
             .select({ count: sql<number>`count(*)::int` })
             .from(notifications)
-            .where(eq(notifications.userId, userId));
+            .where(conditions);
 
         return {
             notifications: rows.map((r) => ({
@@ -32,6 +48,20 @@ export const NotificationService = {
             limit,
             offset,
         };
+    },
+
+    /** Create a notification for a user (e.g. on follow, comment, like). */
+    async create(options: CreateNotificationOptions) {
+        const [row] = await db
+            .insert(notifications)
+            .values({
+                userId: options.userId,
+                message: options.message,
+                linkType: options.linkType ?? null,
+                targetId: options.targetId ?? null,
+            })
+            .returning();
+        return row;
     },
 
     /** Mark a single notification as read (must belong to userId). */
