@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { messageService, type ChatMessage } from "@/service/message.service";
 import { getSocket } from "@/lib/socket";
 
@@ -42,8 +42,7 @@ export interface UseChatRoomReturn {
 export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
   const { roomId, limit = 50 } = options;
   const queryClient = useQueryClient();
-  const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
-  const roomIdRef = useRef<string | null>(null);
+  const [messagesByRoom, setMessagesByRoom] = useState<Record<string, ChatMessage[]>>({});
 
   const {
     data: rawData,
@@ -82,32 +81,25 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
   );
 
   useEffect(() => {
-    if (roomId !== roomIdRef.current) {
-      roomIdRef.current = roomId;
-      setLiveMessages([]);
-    }
-  }, [roomId]);
-
-  useEffect(() => {
     if (roomId == null || roomId === "") return;
     const socket = getSocket();
     socket.emit("join_room", roomId);
 
     const onHistory = (payload: { roomId: string; messages: ChatMessage[] }) => {
-      if (payload.roomId === roomId && Array.isArray(payload.messages)) {
-        const normalized = payload.messages.map((m) => ({
-          id: m.id,
-          senderId: m.senderId,
-          senderEmail: m.senderEmail,
-          roomId: m.roomId,
-          content: m.content,
-          createdAt:
-            typeof m.createdAt === "string"
-              ? m.createdAt
-              : (m.createdAt as Date)?.toISOString?.() ?? new Date().toISOString(),
-        }));
-        setLiveMessages([...normalized].reverse());
-      }
+      if (!Array.isArray(payload.messages)) return;
+      const normalized = payload.messages.map((m) => ({
+        id: m.id,
+        senderId: m.senderId,
+        senderEmail: m.senderEmail,
+        roomId: m.roomId,
+        content: m.content,
+        createdAt:
+          typeof m.createdAt === "string"
+            ? m.createdAt
+            : (m.createdAt as Date)?.toISOString?.() ?? new Date().toISOString(),
+      }));
+      const ordered = [...normalized].reverse();
+      setMessagesByRoom((prev) => ({ ...prev, [payload.roomId]: ordered }));
     };
 
     const onMessage = (payload: {
@@ -117,18 +109,20 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
       email?: string;
       timestamp?: string;
     }) => {
-      if (payload.roomId !== roomId) return;
-      setLiveMessages((prev) => [
+      const rid = payload.roomId;
+      if (!rid) return;
+      const newMsg: ChatMessage = {
+        id: undefined,
+        senderId: payload.userId ?? null,
+        senderEmail: payload.email ?? null,
+        roomId: rid,
+        content: payload.text ?? "",
+        createdAt: payload.timestamp ?? new Date().toISOString(),
+      };
+      setMessagesByRoom((prev) => ({
         ...prev,
-        {
-          id: undefined,
-          senderId: payload.userId ?? null,
-          senderEmail: payload.email ?? null,
-          roomId: payload.roomId,
-          content: payload.text ?? "",
-          createdAt: payload.timestamp ?? new Date().toISOString(),
-        },
-      ]);
+        [rid]: [...(prev[rid] ?? []), newMsg],
+      }));
     };
 
     socket.on("message_history", onHistory);
@@ -148,6 +142,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
         ? m.createdAt
         : (m.createdAt as Date)?.toISOString?.() ?? new Date().toISOString(),
   }));
+  const liveMessages = roomId ? messagesByRoom[roomId] ?? [] : [];
   const messages = liveMessages.length > 0 ? liveMessages : apiOrdered;
 
   return {
