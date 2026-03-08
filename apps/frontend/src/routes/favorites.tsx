@@ -30,10 +30,7 @@ function FavoritesPage() {
     <div className="min-h-screen bg-black text-white">
       <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors"
-          >
+          <Link to="/" className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors">
             <Clapperboard className="w-6 h-6 text-red-500" />
             <span>
               <span className="text-red-500">Ciné</span>
@@ -98,9 +95,7 @@ function FavoritesPage() {
 
         {isError && (
           <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
-            <p>
-              {error instanceof Error ? error.message : "Impossible de charger les favoris."}
-            </p>
+            <p>{error instanceof Error ? error.message : "Impossible de charger les favoris."}</p>
           </div>
         )}
 
@@ -108,13 +103,7 @@ function FavoritesPage() {
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
             <Heart className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
             <p className="text-zinc-400">Aucun film en favori pour le moment.</p>
-            <p className="mt-2 text-sm text-zinc-500">
-              Parcourez le catalogue et ajoutez des films à vos favoris.
-            </p>
-            <Link
-              to="/"
-              className="mt-6 inline-block rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition-colors"
-            >
+            <Link to="/" className="mt-6 inline-block rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition-colors">
               Découvrir des films
             </Link>
           </div>
@@ -123,10 +112,7 @@ function FavoritesPage() {
         {!isLoading && !isError && favorites.length > 0 && (
           <ul className="space-y-3">
             {favorites.map((fav) => (
-              <li
-                key={fav.id}
-                className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3"
-              >
+              <li key={fav.id} className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
                 <span className="text-zinc-300">
                   Film #<span className="font-mono text-white">{fav.externalMovieId}</span>
                 </span>
@@ -157,3 +143,5 @@ function FavoritesPage() {
     </div>
   );
 }
+
+export default FavoritesPage;

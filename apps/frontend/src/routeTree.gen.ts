@@ -16,6 +16,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
+import { Route as ProfilePageRouteImport } from './routes/ProfilePage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
 import { Route as IndexRouteImport } from './routes/index'
@@ -57,6 +58,11 @@ const RegisterPageRoute = RegisterPageRouteImport.update({
   path: '/RegisterPage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfilePageRoute = ProfilePageRouteImport.update({
+  id: '/ProfilePage',
+  path: '/ProfilePage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
   id: '/MovieDetailPage',
   path: '/MovieDetailPage',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
+  '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
     | '/favorites'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
     | '/favorites'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/LoginPage'
     | '/MovieDetailPage'
+    | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
     | '/favorites'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
+  ProfilePageRoute: typeof ProfilePageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   ChatRoute: typeof ChatRoute
   FavoritesRoute: typeof FavoritesRoute
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterPageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ProfilePage': {
+      id: '/ProfilePage'
+      path: '/ProfilePage'
+      fullPath: '/ProfilePage'
+      preLoaderRoute: typeof ProfilePageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/MovieDetailPage': {
       id: '/MovieDetailPage'
       path: '/MovieDetailPage'
@@ -289,6 +309,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
+  ProfilePageRoute: ProfilePageRoute,
   RegisterPageRoute: RegisterPageRoute,
   ChatRoute: ChatRoute,
   FavoritesRoute: FavoritesRoute,
