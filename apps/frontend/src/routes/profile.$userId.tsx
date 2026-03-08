@@ -1,113 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
-import { useNotifications } from "@/hooks/useNotifications";
-import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Loader2, User, UserPlus, UserMinus, Bell } from "lucide-react";
-import { useState } from "react";
-import type { UserProfileRow } from "@/service/user.service";
+import { Clapperboard, Loader2, User, UserPlus, UserMinus } from "lucide-react";
 
-export const Route = createFileRoute("/profile")({
-  beforeLoad: () => requireAuth(),
-  component: ProfilePage,
+export const Route = createFileRoute("/profile/$userId")({
+  component: UserProfilePage,
 });
 
-function ProfileEditForm({
-  profile,
-  onSubmit,
-  isUpdating,
-  updateError,
-}: {
-  profile: UserProfileRow | null;
-  onSubmit: (data: { bio?: string; avatarUrl?: string; location?: string; favoriteGenre?: string }) => void;
-  isUpdating: boolean;
-  updateError: Error | null;
-}) {
-  const [bio, setBio] = useState(profile?.bio ?? "");
-  const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl ?? "");
-  const [location, setLocation] = useState(profile?.location ?? "");
-  const [favoriteGenre, setFavoriteGenre] = useState(profile?.favoriteGenre ?? "");
+function UserProfilePage() {
+  const { userId: userIdParam } = Route.useParams();
+  const userId = parseInt(userIdParam, 10);
+  const isValidId = Number.isInteger(userId) && userId > 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      bio: bio || undefined,
-      avatarUrl: avatarUrl || undefined,
-      location: location || undefined,
-      favoriteGenre: favoriteGenre || undefined,
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-      <h2 className="text-lg font-semibold text-white">Modifier le profil</h2>
-      {updateError && (
-        <p className="text-sm text-red-400">{updateError.message}</p>
-      )}
-      <div>
-        <label htmlFor="profile-bio" className="mb-1 block text-sm text-zinc-400">
-          Bio
-        </label>
-        <textarea
-          id="profile-bio"
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          rows={3}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-          placeholder="Quelques mots sur vous…"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-avatar" className="mb-1 block text-sm text-zinc-400">
-          URL de l&apos;avatar
-        </label>
-        <input
-          id="profile-avatar"
-          type="url"
-          value={avatarUrl}
-          onChange={(e) => setAvatarUrl(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-          placeholder="https://…"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-location" className="mb-1 block text-sm text-zinc-400">
-          Ville / région
-        </label>
-        <input
-          id="profile-location"
-          type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-          placeholder="Paris"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-genre" className="mb-1 block text-sm text-zinc-400">
-          Genre préféré
-        </label>
-        <input
-          id="profile-genre"
-          type="text"
-          value={favoriteGenre}
-          onChange={(e) => setFavoriteGenre(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-          placeholder="Comédie, Thriller…"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={isUpdating}
-        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
-      >
-        {isUpdating ? "Enregistrement…" : "Enregistrer"}
-      </button>
-    </form>
-  );
-}
-
-function ProfilePage() {
   const {
     user,
     profile,
@@ -115,13 +19,9 @@ function ProfilePage() {
     isError,
     error,
     refetch,
-    updateProfile,
-    isUpdating,
-    updateError,
     isCurrentUser,
-  } = useProfile();
+  } = useProfile(isValidId ? userId : null);
 
-  const profileUserId = user?.id ?? null;
   const {
     isFollowing,
     follow,
@@ -134,16 +34,21 @@ function ProfilePage() {
     following,
     followingTotal,
     followingLoading,
-  } = useFollow(profileUserId, { fetchFollowers: true, fetchFollowing: true });
+  } = useFollow(isValidId ? userId : null, { fetchFollowers: true, fetchFollowing: true });
 
-  const displayName = user?.name ?? user?.email ?? "";
+  const displayName = user?.name ?? "Utilisateur";
   const avatarDisplay = profile?.avatarUrl ?? null;
-  const { unreadCount } = useNotifications({ limit: 100 });
 
-  /** Key so the form remounts when profile loads or updates (e.g. after save), avoiding setState-in-effect */
-  const profileFormKey = profile
-    ? [profile.id, profile.bio, profile.avatarUrl, profile.location, profile.favoriteGenre].join("\0")
-    : "none";
+  if (!isValidId) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-red-400">Profil invalide.</p>
+        <Link to="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
+          ← Accueil
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -159,27 +64,9 @@ function ProfilePage() {
               <span className="text-orange-400">Connect</span>
             </span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/notifications"
-              className="relative rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              ← Accueil
-            </Link>
-          </div>
+          <Link to="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
+            ← Accueil
+          </Link>
         </div>
       </header>
 
@@ -220,7 +107,9 @@ function ProfilePage() {
               )}
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-white">{displayName}</h1>
-                <p className="text-sm text-zinc-400">{user.email}</p>
+                {user.email != null && user.email !== "" && (
+                  <p className="text-sm text-zinc-400">{user.email}</p>
+                )}
                 <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-400">
                   {followersLoading || followingLoading ? (
                     <span>Chargement…</span>
@@ -231,7 +120,7 @@ function ProfilePage() {
                     </>
                   )}
                 </div>
-                {!isCurrentUser && profileUserId != null && (
+                {!isCurrentUser && (
                   <div className="mt-3">
                     {followError && (
                       <p className="text-sm text-red-400 mb-1">{followError.message}</p>
@@ -239,7 +128,7 @@ function ProfilePage() {
                     {isFollowing ? (
                       <button
                         type="button"
-                        onClick={() => unfollow(profileUserId)}
+                        onClick={() => unfollow(userId)}
                         disabled={isFollowLoading}
                         className="inline-flex items-center gap-2 rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
                       >
@@ -249,7 +138,7 @@ function ProfilePage() {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => follow(profileUserId)}
+                        onClick={() => follow(userId)}
                         disabled={isFollowLoading}
                         className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
                       >
@@ -261,16 +150,6 @@ function ProfilePage() {
                 )}
               </div>
             </div>
-
-            {isCurrentUser && (
-              <ProfileEditForm
-                key={profileFormKey}
-                profile={profile}
-                onSubmit={updateProfile}
-                isUpdating={isUpdating}
-                updateError={updateError}
-              />
-            )}
 
             {profile?.bio && (
               <div>
@@ -331,6 +210,15 @@ function ProfilePage() {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {!isLoading && !isError && !user && (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
+            <p className="text-zinc-400">Ce profil n’existe pas ou a été supprimé.</p>
+            <Link to="/" className="mt-4 inline-block text-sm text-red-500 hover:text-red-400">
+              ← Retour à l’accueil
+            </Link>
           </div>
         )}
       </main>
