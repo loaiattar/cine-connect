@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as FavoritesRouteImport } from './routes/favorites'
@@ -22,6 +23,11 @@ import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/notifications'
     | '/profile'
+    | '/search'
     | '/watchlist'
     | '/movie/$movieId'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/notifications'
     | '/profile'
+    | '/search'
     | '/watchlist'
     | '/movie/$movieId'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/notifications'
     | '/profile'
+    | '/search'
     | '/watchlist'
     | '/movie/$movieId'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
+  SearchRoute: typeof SearchRoute
   WatchlistRoute: typeof WatchlistRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
 }
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
+  SearchRoute: SearchRoute,
   WatchlistRoute: WatchlistRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
 }

@@ -10,6 +10,7 @@ import {
   Mail,
   Heart,
   Loader2,
+  Search,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
@@ -66,6 +67,13 @@ function Index() {
         <div className="flex items-center gap-3">
           {token ? (
             <>
+              <Link
+                to="/search"
+                className="rounded border border-zinc-500 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <Search className="w-4 h-4" />
+                Recherche
+              </Link>
               <Link
                 to={"/favorites" as "/" | "/favorites"}
                 className="rounded border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
