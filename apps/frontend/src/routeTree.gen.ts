@@ -14,6 +14,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
@@ -44,6 +45,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterPageRoute = RegisterPageRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
+  '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
+  '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/LoginPage': typeof LoginPageRoute
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
+  '/chat': typeof ChatRoute
   '/favorites': typeof FavoritesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
+    | '/chat'
     | '/favorites'
     | '/notifications'
     | '/profile'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
+    | '/chat'
     | '/favorites'
     | '/notifications'
     | '/profile'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/LoginPage'
     | '/MovieDetailPage'
     | '/RegisterPage'
+    | '/chat'
     | '/favorites'
     | '/notifications'
     | '/profile'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   LoginPageRoute: typeof LoginPageRoute
   MovieDetailPageRoute: typeof MovieDetailPageRoute
   RegisterPageRoute: typeof RegisterPageRoute
+  ChatRoute: typeof ChatRoute
   FavoritesRoute: typeof FavoritesRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/favorites'
       fullPath: '/favorites'
       preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/RegisterPage': {
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginPageRoute: LoginPageRoute,
   MovieDetailPageRoute: MovieDetailPageRoute,
   RegisterPageRoute: RegisterPageRoute,
+  ChatRoute: ChatRoute,
   FavoritesRoute: FavoritesRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
