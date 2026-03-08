@@ -2,12 +2,108 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
 import { requireAuth } from "@/lib/route-guard";
 import { Clapperboard, Loader2, User } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import type { UserProfileRow } from "@/service/user.service";
 
 export const Route = createFileRoute("/profile")({
   beforeLoad: () => requireAuth(),
   component: ProfilePage,
 });
+
+function ProfileEditForm({
+  profile,
+  onSubmit,
+  isUpdating,
+  updateError,
+}: {
+  profile: UserProfileRow | null;
+  onSubmit: (data: { bio?: string; avatarUrl?: string; location?: string; favoriteGenre?: string }) => void;
+  isUpdating: boolean;
+  updateError: Error | null;
+}) {
+  const [bio, setBio] = useState(profile?.bio ?? "");
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl ?? "");
+  const [location, setLocation] = useState(profile?.location ?? "");
+  const [favoriteGenre, setFavoriteGenre] = useState(profile?.favoriteGenre ?? "");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      bio: bio || undefined,
+      avatarUrl: avatarUrl || undefined,
+      location: location || undefined,
+      favoriteGenre: favoriteGenre || undefined,
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+      <h2 className="text-lg font-semibold text-white">Modifier le profil</h2>
+      {updateError && (
+        <p className="text-sm text-red-400">{updateError.message}</p>
+      )}
+      <div>
+        <label htmlFor="profile-bio" className="mb-1 block text-sm text-zinc-400">
+          Bio
+        </label>
+        <textarea
+          id="profile-bio"
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={3}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          placeholder="Quelques mots sur vous…"
+        />
+      </div>
+      <div>
+        <label htmlFor="profile-avatar" className="mb-1 block text-sm text-zinc-400">
+          URL de l&apos;avatar
+        </label>
+        <input
+          id="profile-avatar"
+          type="url"
+          value={avatarUrl}
+          onChange={(e) => setAvatarUrl(e.target.value)}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          placeholder="https://…"
+        />
+      </div>
+      <div>
+        <label htmlFor="profile-location" className="mb-1 block text-sm text-zinc-400">
+          Ville / région
+        </label>
+        <input
+          id="profile-location"
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          placeholder="Paris"
+        />
+      </div>
+      <div>
+        <label htmlFor="profile-genre" className="mb-1 block text-sm text-zinc-400">
+          Genre préféré
+        </label>
+        <input
+          id="profile-genre"
+          type="text"
+          value={favoriteGenre}
+          onChange={(e) => setFavoriteGenre(e.target.value)}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          placeholder="Comédie, Thriller…"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={isUpdating}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+      >
+        {isUpdating ? "Enregistrement…" : "Enregistrer"}
+      </button>
+    </form>
+  );
+}
 
 function ProfilePage() {
   const {
@@ -23,33 +119,13 @@ function ProfilePage() {
     isCurrentUser,
   } = useProfile();
 
-  const [bio, setBio] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [location, setLocation] = useState("");
-  const [favoriteGenre, setFavoriteGenre] = useState("");
-
-  useEffect(() => {
-    if (profile) {
-      setBio(profile.bio ?? "");
-      setAvatarUrl(profile.avatarUrl ?? "");
-      setLocation(profile.location ?? "");
-      setFavoriteGenre(profile.favoriteGenre ?? "");
-    }
-  }, [profile]);
-
   const displayName = user?.name ?? user?.email ?? "";
   const avatarDisplay = profile?.avatarUrl ?? null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isCurrentUser) return;
-    updateProfile({
-      bio: bio || undefined,
-      avatarUrl: avatarUrl || undefined,
-      location: location || undefined,
-      favoriteGenre: favoriteGenre || undefined,
-    });
-  };
+  /** Key so the form remounts when profile loads or updates (e.g. after save), avoiding setState-in-effect */
+  const profileFormKey = profile
+    ? [profile.id, profile.bio, profile.avatarUrl, profile.location, profile.favoriteGenre].join("\0")
+    : "none";
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -116,71 +192,13 @@ function ProfilePage() {
             </div>
 
             {isCurrentUser && (
-              <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-                <h2 className="text-lg font-semibold text-white">Modifier le profil</h2>
-                {updateError && (
-                  <p className="text-sm text-red-400">{updateError.message}</p>
-                )}
-                <div>
-                  <label htmlFor="profile-bio" className="mb-1 block text-sm text-zinc-400">
-                    Bio
-                  </label>
-                  <textarea
-                    id="profile-bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    rows={3}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-                    placeholder="Quelques mots sur vous…"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="profile-avatar" className="mb-1 block text-sm text-zinc-400">
-                    URL de l&apos;avatar
-                  </label>
-                  <input
-                    id="profile-avatar"
-                    type="url"
-                    value={avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-                    placeholder="https://…"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="profile-location" className="mb-1 block text-sm text-zinc-400">
-                    Ville / région
-                  </label>
-                  <input
-                    id="profile-location"
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-                    placeholder="Paris"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="profile-genre" className="mb-1 block text-sm text-zinc-400">
-                    Genre préféré
-                  </label>
-                  <input
-                    id="profile-genre"
-                    type="text"
-                    value={favoriteGenre}
-                    onChange={(e) => setFavoriteGenre(e.target.value)}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
-                    placeholder="Comédie, Thriller…"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isUpdating}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
-                >
-                  {isUpdating ? "Enregistrement…" : "Enregistrer"}
-                </button>
-              </form>
+              <ProfileEditForm
+                key={profileFormKey}
+                profile={profile}
+                onSubmit={updateProfile}
+                isUpdating={isUpdating}
+                updateError={updateError}
+              />
             )}
 
             {profile?.bio && (
