@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import bgImage from "../../image/BackGround.png";
 import {
+  Bookmark,
   Clapperboard,
   MessageCircle,
   Play,
@@ -71,6 +72,13 @@ function Index() {
               >
                 <Heart className="w-4 h-4" />
                 Mes favoris
+              </Link>
+              <Link
+                to="/watchlist"
+                className="rounded border border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <Bookmark className="w-4 h-4" />
+                À voir
               </Link>
               <button
                 type="button"
