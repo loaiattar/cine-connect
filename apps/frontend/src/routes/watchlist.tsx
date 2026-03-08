@@ -1,8 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQueries } from "@tanstack/react-query";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useAuth } from "@/hooks/useAuth";
 import { requireAuth } from "@/lib/route-guard";
+import MovieCard from "@/components/ui/CardFilm";
+import { getMovieImageUrl } from "@/lib/utils";
+import { moviesService } from "@/service/movies.service";
+import { MOVIE_GENRES } from "@cine-connect/shared";
+import type { Movie } from "@cine-connect/shared";
 import { Clapperboard, Loader2, Bookmark, Trash2 } from "lucide-react";
+
+function getGenreNames(genreIds: number[] | undefined): string[] {
+  if (!genreIds?.length) return [];
+  const map = new Map(MOVIE_GENRES.map((g) => [g.id, g.name]));
+  return genreIds.map((id) => map.get(id) ?? "").filter(Boolean);
+}
+
+function unwrapMovie(raw: unknown): Movie | undefined {
+  if (raw == null) return undefined;
+  if (typeof raw === "object" && raw !== null && "data" in raw) return (raw as { data: Movie }).data;
+  return raw as Movie;
+}
 
 export const Route = createFileRoute("/watchlist")({
   beforeLoad: () => requireAuth(),
@@ -19,6 +37,14 @@ function WatchlistPage() {
     removeFromWatchlist,
     isToggling,
   } = useWatchlist();
+
+  const movieQueries = useQueries({
+    queries: watchlist.map((entry) => ({
+      queryKey: ["movie", entry.externalMovieId],
+      queryFn: () => moviesService.getMovieById(entry.externalMovieId),
+      enabled: watchlist.length > 0,
+    })),
+  });
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -86,37 +112,80 @@ function WatchlistPage() {
         )}
 
         {!isLoading && !isError && watchlist.length > 0 && (
-          <ul className="space-y-3">
-            {watchlist.map((entry) => (
-              <li
-                key={entry.id}
-                className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3"
-              >
-                <span className="text-zinc-300">
-                  Film #<span className="font-mono text-white">{entry.externalMovieId}</span>
-                </span>
-                <div className="flex items-center gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {watchlist.map((entry, index) => {
+              const query = movieQueries[index];
+              const rawMovie = query?.data;
+              const movie = rawMovie != null ? unwrapMovie(rawMovie) : undefined;
+              const isLoadingMovie = query?.isLoading ?? true;
+
+              if (isLoadingMovie || !movie) {
+                return (
+                  <div
+                    key={entry.id}
+                    className="relative rounded-xl overflow-hidden w-full h-[360px] bg-zinc-900 flex items-center justify-center"
+                  >
+                    <Loader2 className="h-10 w-10 animate-spin text-zinc-600" aria-hidden />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeFromWatchlist(entry.externalMovieId);
+                      }}
+                      disabled={isToggling}
+                      className="absolute top-2 right-2 z-10 rounded p-1.5 bg-black/60 text-zinc-400 hover:bg-orange-950/80 hover:text-orange-400 transition-colors disabled:opacity-50"
+                      title="Retirer de la liste"
+                      aria-label="Retirer de la liste"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                );
+              }
+
+              const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 0;
+              const genreNames =
+                movie.genres?.map((g) => g.name) ?? getGenreNames((movie as unknown as { genre_ids?: number[] }).genre_ids);
+
+              return (
+                <div key={entry.id} className="relative group">
                   <Link
                     to="/movie/$movieId"
                     params={{ movieId: String(entry.externalMovieId) }}
-                    className="text-sm font-medium text-orange-400 hover:text-orange-300 transition-colors"
+                    className="block focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-xl overflow-hidden"
                   >
-                    Voir la fiche →
+                    <MovieCard
+                      id={movie.id}
+                      title={movie.title ?? "Sans titre"}
+                      year={Number.isNaN(year) ? 0 : year}
+                      rating={
+                        typeof movie.vote_average === "number"
+                          ? Math.round(movie.vote_average * 10) / 10
+                          : 0
+                      }
+                      imageUrl={getMovieImageUrl(movie.poster_path ?? "")}
+                      genres={genreNames}
+                    />
                   </Link>
                   <button
                     type="button"
-                    onClick={() => removeFromWatchlist(entry.externalMovieId)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeFromWatchlist(entry.externalMovieId);
+                    }}
                     disabled={isToggling}
-                    className="rounded p-1.5 text-zinc-400 hover:bg-orange-950/50 hover:text-orange-400 transition-colors disabled:opacity-50"
+                    className="absolute top-2 right-2 z-10 rounded p-1.5 bg-black/60 text-zinc-400 hover:bg-orange-950/80 hover:text-orange-400 transition-colors disabled:opacity-50"
                     title="Retirer de la liste"
                     aria-label="Retirer de la liste"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-              </li>
-            ))}
-          </ul>
+              );
+            })}
+          </div>
         )}
       </main>
     </div>
