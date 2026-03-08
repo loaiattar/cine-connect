@@ -39,6 +39,24 @@ export function errorHandler(
     return;
   }
 
+  // Database connection refused (PostgreSQL not running or wrong DATABASE_URL)
+  const cause = err && typeof err === "object" && "cause" in err ? (err as { cause: unknown }).cause : null;
+  let code: string | null = null;
+  if (cause && typeof cause === "object") {
+    if ("code" in cause && typeof (cause as { code: unknown }).code === "string") code = (cause as { code: string }).code;
+    else if ("errors" in cause && Array.isArray((cause as { errors: unknown[] }).errors)) {
+      const first = (cause as { errors: unknown[] }).errors[0];
+      if (first && typeof first === "object" && "code" in first) code = String((first as { code: unknown }).code);
+    }
+  }
+  if (code === "ECONNREFUSED") {
+    console.error("Database connection refused. Is PostgreSQL running? Check DATABASE_URL in .env:", err);
+    res.status(503).json({
+      error: "Service temporarily unavailable. Database connection failed. Check that PostgreSQL is running and DATABASE_URL is correct.",
+    });
+    return;
+  }
+
   console.error("Unhandled error:", err);
   res.status(500).json({ error: "Internal Server Error" });
 }

@@ -44,6 +44,7 @@ export const notifications = pgTable("notifications", {
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id, { onDelete: 'cascade' }),
     message: text("message").notNull(),
+    readAt: timestamp("read_at"),
     createdAt: timestamp("created_at").defaultNow(),
 });
 

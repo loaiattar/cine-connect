@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
+import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Loader2, User, UserPlus, UserMinus } from "lucide-react";
+import { Clapperboard, Loader2, User, UserPlus, UserMinus, Bell } from "lucide-react";
 import { useState } from "react";
 import type { UserProfileRow } from "@/service/user.service";
 
@@ -137,6 +138,7 @@ function ProfilePage() {
 
   const displayName = user?.name ?? user?.email ?? "";
   const avatarDisplay = profile?.avatarUrl ?? null;
+  const { unreadCount } = useNotifications({ limit: 100 });
 
   /** Key so the form remounts when profile loads or updates (e.g. after save), avoiding setState-in-effect */
   const profileFormKey = profile
@@ -157,12 +159,27 @@ function ProfilePage() {
               <span className="text-orange-400">Connect</span>
             </span>
           </Link>
-          <Link
-            to="/"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            ← Accueil
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/notifications"
+              className="relative rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              to="/"
+              className="text-sm text-zinc-400 hover:text-white transition-colors"
+            >
+              ← Accueil
+            </Link>
+          </div>
         </div>
       </header>
 

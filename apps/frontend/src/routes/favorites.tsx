@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Heart, Loader2, Trash2 } from "lucide-react";
+import { Clapperboard, Heart, Loader2, Trash2, Bell } from "lucide-react";
 
 export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
@@ -15,6 +16,7 @@ function FavoritesPage() {
   const { user: profileUser, profile } = useProfile();
   const displayName = profileUser?.name ?? user?.email ?? "";
   const avatarUrl = profile?.avatarUrl ?? null;
+  const { unreadCount } = useNotifications({ limit: 100 });
   const {
     favorites,
     isLoading,
@@ -39,6 +41,19 @@ function FavoritesPage() {
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <Link
+              to="/notifications"
+              className="relative rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              title="Notifications"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </Link>
             <Link
               to="/profile"
               className="flex items-center gap-2 rounded-full text-zinc-400 hover:text-white transition-colors"
