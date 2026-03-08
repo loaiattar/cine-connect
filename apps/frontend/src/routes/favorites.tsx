@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { requireAuth } from "@/lib/route-guard";
 import { Clapperboard, Heart, Loader2, Trash2 } from "lucide-react";
 
@@ -11,6 +12,9 @@ export const Route = createFileRoute("/favorites")({
 
 function FavoritesPage() {
   const { user } = useAuth();
+  const { user: profileUser, profile } = useProfile();
+  const displayName = profileUser?.name ?? user?.email ?? "";
+  const avatarUrl = profile?.avatarUrl ?? null;
   const {
     favorites,
     isLoading,
@@ -34,12 +38,28 @@ function FavoritesPage() {
               <span className="text-orange-400">Connect</span>
             </span>
           </Link>
-          <Link
-            to="/"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            ← Accueil
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 rounded-full text-zinc-400 hover:text-white transition-colors"
+              title="Mon profil"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+              ) : (
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-medium text-white">
+                  {displayName.slice(0, 1).toUpperCase() || "?"}
+                </span>
+              )}
+              <span className="text-sm">{displayName}</span>
+            </Link>
+            <Link
+              to="/"
+              className="text-sm text-zinc-400 hover:text-white transition-colors"
+            >
+              ← Accueil
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -49,7 +69,7 @@ function FavoritesPage() {
           <div>
             <h1 className="text-2xl font-bold text-white">Mes favoris</h1>
             <p className="text-sm text-zinc-400">
-              {user?.email}
+              {displayName}
             </p>
           </div>
         </div>

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
@@ -20,6 +21,11 @@ import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/MovieDetailPage': typeof MovieDetailPageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/favorites': typeof FavoritesRoute
+  '/profile': typeof ProfileRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/MovieDetailPage'
     | '/RegisterPage'
     | '/favorites'
+    | '/profile'
     | '/watchlist'
     | '/movie/$movieId'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/MovieDetailPage'
     | '/RegisterPage'
     | '/favorites'
+    | '/profile'
     | '/watchlist'
     | '/movie/$movieId'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/MovieDetailPage'
     | '/RegisterPage'
     | '/favorites'
+    | '/profile'
     | '/watchlist'
     | '/movie/$movieId'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   MovieDetailPageRoute: typeof MovieDetailPageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   FavoritesRoute: typeof FavoritesRoute
+  ProfileRoute: typeof ProfileRoute
   WatchlistRoute: typeof WatchlistRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
 }
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   MovieDetailPageRoute: MovieDetailPageRoute,
   RegisterPageRoute: RegisterPageRoute,
   FavoritesRoute: FavoritesRoute,
+  ProfileRoute: ProfileRoute,
   WatchlistRoute: WatchlistRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
 }
