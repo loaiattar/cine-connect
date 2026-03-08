@@ -284,8 +284,17 @@ describe('Movie Functional Tests - Watchlist', () => {
 });
 
 describe('Movie Functional Tests - Search', () => {
+    let searchToken: string;
+
+    beforeEach(async () => {
+        const auth = await AuthService.register('searchuser', `search-${Date.now()}@example.com`, 'password123');
+        searchToken = auth.token;
+    });
+
     it('should return 400 when search query is missing', async () => {
-        const response = await request(app).get('/api/movies/search');
+        const response = await request(app)
+            .get('/api/movies/search')
+            .set('Authorization', `Bearer ${searchToken}`);
         expect(response.status).toBe(400);
         expect(response.body.errors).toBeDefined();
     });
@@ -293,6 +302,7 @@ describe('Movie Functional Tests - Search', () => {
     it('should return paginated search results for a valid query', async () => {
         const response = await request(app)
             .get('/api/movies/search')
+            .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'inception' });
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('page');
@@ -305,6 +315,7 @@ describe('Movie Functional Tests - Search', () => {
     it('should accept optional page and genre params', async () => {
         const response = await request(app)
             .get('/api/movies/search')
+            .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'matrix', page: 1 });
         expect(response.status).toBe(200);
         expect(response.body.page).toBe(1);
