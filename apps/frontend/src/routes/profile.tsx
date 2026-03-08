@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
+import { useFollow } from "@/hooks/useFollow";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Loader2, User } from "lucide-react";
+import { Clapperboard, Loader2, User, UserPlus, UserMinus } from "lucide-react";
 import { useState } from "react";
 import type { UserProfileRow } from "@/service/user.service";
 
@@ -119,6 +120,21 @@ function ProfilePage() {
     isCurrentUser,
   } = useProfile();
 
+  const profileUserId = user?.id ?? null;
+  const {
+    isFollowing,
+    follow,
+    unfollow,
+    isFollowLoading,
+    followError,
+    followers,
+    followersTotal,
+    followersLoading,
+    following,
+    followingTotal,
+    followingLoading,
+  } = useFollow(profileUserId, { fetchFollowers: true, fetchFollowing: true });
+
   const displayName = user?.name ?? user?.email ?? "";
   const avatarDisplay = profile?.avatarUrl ?? null;
 
@@ -185,9 +201,47 @@ function ProfilePage() {
                   <User className="h-10 w-10 text-zinc-500" />
                 </div>
               )}
-              <div>
+              <div className="flex-1">
                 <h1 className="text-2xl font-bold text-white">{displayName}</h1>
                 <p className="text-sm text-zinc-400">{user.email}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-400">
+                  {followersLoading || followingLoading ? (
+                    <span>Chargement…</span>
+                  ) : (
+                    <>
+                      <span><span className="font-semibold text-white">{followersTotal}</span> abonnés</span>
+                      <span><span className="font-semibold text-white">{followingTotal}</span> abonnements</span>
+                    </>
+                  )}
+                </div>
+                {!isCurrentUser && profileUserId != null && (
+                  <div className="mt-3">
+                    {followError && (
+                      <p className="text-sm text-red-400 mb-1">{followError.message}</p>
+                    )}
+                    {isFollowing ? (
+                      <button
+                        type="button"
+                        onClick={() => unfollow(profileUserId)}
+                        disabled={isFollowLoading}
+                        className="inline-flex items-center gap-2 rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                      >
+                        <UserMinus className="h-4 w-4" />
+                        Ne plus suivre
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => follow(profileUserId)}
+                        disabled={isFollowLoading}
+                        className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        Suivre
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -209,8 +263,43 @@ function ProfilePage() {
             )}
             {(profile?.location || profile?.favoriteGenre) && (
               <div className="flex gap-6 text-sm text-zinc-400">
-                {profile?.location && <span>📍 {profile.location}</span>}
-                {profile?.favoriteGenre && <span>🎬 {profile.favoriteGenre}</span>}
+                {profile?.location && <span>Ville: <br /> {profile.location}</span>}
+                {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
+              </div>
+            )}
+
+            {(followers.length > 0 || following.length > 0) && (
+              <div className="grid gap-6 sm:grid-cols-2">
+                {followers.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-semibold text-white mb-2">Abonnés ({followersTotal})</h2>
+                    <ul className="space-y-2">
+                      {followers.slice(0, 10).map((u) => (
+                        <li key={u.id} className="text-sm text-zinc-300">
+                          {u.name || u.email}
+                        </li>
+                      ))}
+                      {followersTotal > 10 && (
+                        <li className="text-zinc-500 text-sm">… et {followersTotal - 10} autres</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+                {following.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-semibold text-white mb-2">Abonnements ({followingTotal})</h2>
+                    <ul className="space-y-2">
+                      {following.slice(0, 10).map((u) => (
+                        <li key={u.id} className="text-sm text-zinc-300">
+                          {u.name || u.email}
+                        </li>
+                      ))}
+                      {followingTotal > 10 && (
+                        <li className="text-zinc-500 text-sm">… et {followingTotal - 10} autres</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>
