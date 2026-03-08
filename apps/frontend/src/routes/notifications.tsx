@@ -118,31 +118,64 @@ function NotificationsPage() {
 
         {!isLoading && !isError && notifications.length > 0 && (
           <ul className="space-y-2">
-            {notifications.map((n) => (
-              <li
-                key={n.id}
-                className={`flex items-start justify-between gap-4 rounded-lg border px-4 py-3 ${
-                  n.readAt ? "border-zinc-800 bg-zinc-900/30" : "border-zinc-700 bg-zinc-900/50"
-                }`}
-              >
+            {notifications.map((n) => {
+              const hasLink =
+                n.linkType != null &&
+                n.linkType !== "" &&
+                n.targetId != null &&
+                Number.isInteger(n.targetId) &&
+                n.targetId > 0;
+              const linkToProfile = hasLink && n.linkType === "profile";
+              const linkToMovie = hasLink && n.linkType === "movie";
+
+              const content = (
                 <div className="min-w-0 flex-1">
                   <p className="text-zinc-200">{n.message}</p>
                   <p className="mt-1 text-xs text-zinc-500">{formatDate(n.createdAt)}</p>
                 </div>
-                {!n.readAt && (
-                  <button
-                    type="button"
-                    onClick={() => markAsRead(n.id)}
-                    disabled={isMarking}
-                    className="shrink-0 rounded p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
-                    title="Marquer comme lu"
-                    aria-label="Marquer comme lu"
-                  >
-                    <Check className="h-4 w-4" />
-                  </button>
-                )}
-              </li>
-            ))}
+              );
+
+              return (
+                <li
+                  key={n.id}
+                  className={`flex items-start justify-between gap-4 rounded-lg border px-4 py-3 ${
+                    n.readAt ? "border-zinc-800 bg-zinc-900/30" : "border-zinc-700 bg-zinc-900/50"
+                  }`}
+                >
+                  {linkToProfile ? (
+                    <Link
+                      to="/profile/$userId"
+                      params={{ userId: String(n.targetId!) }}
+                      className="min-w-0 flex-1 block hover:bg-zinc-800/50 rounded -m-2 p-2 transition-colors"
+                    >
+                      {content}
+                    </Link>
+                  ) : linkToMovie ? (
+                    <Link
+                      to="/movie/$movieId"
+                      params={{ movieId: String(n.targetId!) }}
+                      className="min-w-0 flex-1 block hover:bg-zinc-800/50 rounded -m-2 p-2 transition-colors"
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    content
+                  )}
+                  {!n.readAt && (
+                    <button
+                      type="button"
+                      onClick={() => markAsRead(n.id)}
+                      disabled={isMarking}
+                      className="shrink-0 rounded p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
+                      title="Marquer comme lu"
+                      aria-label="Marquer comme lu"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </main>

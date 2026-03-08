@@ -7,6 +7,10 @@ export interface NotificationRow {
   message: string;
   readAt: string | null;
   createdAt: string | null;
+  /** Optional: "profile" | "movie" — link to relevant page when set with targetId */
+  linkType?: string | null;
+  /** Optional: userId for profile, or externalMovieId for movie */
+  targetId?: number | null;
 }
 
 /** GET /api/notifications response */

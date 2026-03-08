@@ -46,6 +46,10 @@ export const notifications = pgTable("notifications", {
     message: text("message").notNull(),
     readAt: timestamp("read_at"),
     createdAt: timestamp("created_at").defaultNow(),
+    /** Optional: "profile" | "movie" — used by frontend to link to the relevant page */
+    linkType: text("link_type"),
+    /** Optional: userId for profile link, or externalMovieId for movie link */
+    targetId: integer("target_id"),
 });
 
 export const follows = pgTable("follows", {
