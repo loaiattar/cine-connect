@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as UsersRouteImport } from './routes/users'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -17,8 +18,8 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
 import { Route as ProfilePageRouteImport } from './routes/ProfilePage'
-import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
 import { Route as LoginPageRouteImport } from './routes/LoginPage'
+import { Route as CommunautePageRouteImport } from './routes/CommuityPage'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
@@ -26,6 +27,11 @@ import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersRoute = UsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -63,14 +69,14 @@ const ProfilePageRoute = ProfilePageRouteImport.update({
   path: '/ProfilePage',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
-  id: '/MovieDetailPage',
-  path: '/MovieDetailPage',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginPageRoute = LoginPageRouteImport.update({
   id: '/LoginPage',
   path: '/LoginPage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunautePageRoute = CommunautePageRouteImport.update({
+  id: '/CommunautePage',
+  path: '/CommunautePage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -91,8 +97,8 @@ const MovieMovieIdRoute = MovieMovieIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
@@ -100,14 +106,15 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/search': typeof SearchRoute
+  '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/search': typeof SearchRoute
+  '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
@@ -122,8 +130,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/CommunautePage': typeof CommunautePageRoute
   '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
   '/ProfilePage': typeof ProfilePageRoute
   '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/search': typeof SearchRoute
+  '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
@@ -139,8 +148,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
-    | '/MovieDetailPage'
     | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
@@ -148,14 +157,15 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/search'
+    | '/users'
     | '/watchlist'
     | '/movie/$movieId'
     | '/profile/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
-    | '/MovieDetailPage'
     | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
@@ -163,14 +173,15 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/search'
+    | '/users'
     | '/watchlist'
     | '/movie/$movieId'
     | '/profile/$userId'
   id:
     | '__root__'
     | '/'
+    | '/CommunautePage'
     | '/LoginPage'
-    | '/MovieDetailPage'
     | '/ProfilePage'
     | '/RegisterPage'
     | '/chat'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/search'
+    | '/users'
     | '/watchlist'
     | '/movie/$movieId'
     | '/profile/$userId'
@@ -185,8 +197,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CommunautePageRoute: typeof CommunautePageRoute
   LoginPageRoute: typeof LoginPageRoute
-  MovieDetailPageRoute: typeof MovieDetailPageRoute
   ProfilePageRoute: typeof ProfilePageRoute
   RegisterPageRoute: typeof RegisterPageRoute
   ChatRoute: typeof ChatRoute
@@ -194,6 +206,7 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   SearchRoute: typeof SearchRoute
+  UsersRoute: typeof UsersRoute
   WatchlistRoute: typeof WatchlistRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
 }
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users': {
+      id: '/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -256,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfilePageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/LoginPage': {
+      id: '/LoginPage'
+      path: '/LoginPage'
+      fullPath: '/LoginPage'
+      preLoaderRoute: typeof LoginPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/MovieDetailPage': {
       id: '/MovieDetailPage'
       path: '/MovieDetailPage'
@@ -263,11 +290,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovieDetailPageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/LoginPage': {
-      id: '/LoginPage'
-      path: '/LoginPage'
-      fullPath: '/LoginPage'
-      preLoaderRoute: typeof LoginPageRouteImport
+    '/CommunautePage': {
+      id: '/CommunautePage'
+      path: '/CommunautePage'
+      fullPath: '/CommunautePage'
+      preLoaderRoute: typeof CommunautePageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -307,8 +334,8 @@ const ProfileRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CommunautePageRoute: CommunautePageRoute,
   LoginPageRoute: LoginPageRoute,
-  MovieDetailPageRoute: MovieDetailPageRoute,
   ProfilePageRoute: ProfilePageRoute,
   RegisterPageRoute: RegisterPageRoute,
   ChatRoute: ChatRoute,
@@ -316,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
   SearchRoute: SearchRoute,
+  UsersRoute: UsersRoute,
   WatchlistRoute: WatchlistRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
 }
