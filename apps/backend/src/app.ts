@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.route';
 import userRoutes from './routes/user.route';
 import followRoutes from './routes/follow.route';
 import messageRoutes from './routes/message.route';
+import notificationRoutes from './routes/notification.route';
 import { openApiSpec } from './openapi';
 import { getCorsAllowlist } from './config';
 import { authRateLimiter } from './middlewares/rateLimit.middleware';
@@ -96,6 +97,7 @@ app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/follows', followRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/movies', movieRoutes);
 
 // 404: no route matched
