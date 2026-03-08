@@ -25,6 +25,8 @@ export const NotificationService = {
                 message: r.message,
                 readAt: r.readAt,
                 createdAt: r.createdAt,
+                linkType: r.linkType ?? null,
+                targetId: r.targetId ?? null,
             })),
             total: count,
             limit,
