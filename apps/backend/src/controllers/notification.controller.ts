@@ -8,7 +8,8 @@ export const NotificationController = {
         const userId = (req as any).user.userId;
         const limit = Number(req.query.limit) || 50;
         const offset = Number(req.query.offset) || 0;
-        const result = await NotificationService.list(userId, limit, offset);
+        const unreadOnly = req.query.unreadOnly === "true" || req.query.unreadOnly === "1";
+        const result = await NotificationService.list(userId, limit, offset, unreadOnly);
         return success(res, result);
     },
 
