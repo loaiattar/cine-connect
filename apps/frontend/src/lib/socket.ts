@@ -7,7 +7,7 @@ const SOCKET_PATH = "/socket.io";
 
 let sharedSocket: Socket | null = null;
 
-function getSocket(): Socket {
+export function getSocket(): Socket {
   if (!sharedSocket) {
     const token = useAuthStore.getState().token;
     const url = ApiClientConfig.BASE_URL.replace(/\/$/, "");
