@@ -88,6 +88,13 @@ function Index() {
                 <Bookmark className="w-4 h-4" />
                 À voir
               </Link>
+              <Link
+                to="/chat"
+                className="rounded border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Chat
+              </Link>
               <button
                 type="button"
                 onClick={logout}
