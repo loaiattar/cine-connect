@@ -17,9 +17,20 @@ import {
     updateCommentSchema,
     submitRatingSchema,
     getMovieRatingSchema,
+    omdbSearchSchema,
+    omdbGetByIdSchema,
+    omdbGetByTitleSchema,
 } from "../schemas/movie.schema";
 
 const router: Router = Router();
+
+// ── OMDb routes (before /:movieId to avoid conflict) ────────────────────────
+// GET /api/movies/omdb/search?t=title&page=1
+router.get("/omdb/search", authMiddleware, validate(omdbSearchSchema), asyncHandler(MovieController.omdbSearch));
+// GET /api/movies/omdb/id/:imdbId  (ex: tt1375666)
+router.get("/omdb/id/:imdbId", authMiddleware, validate(omdbGetByIdSchema), asyncHandler(MovieController.omdbGetByImdbId));
+// GET /api/movies/omdb/title/:title
+router.get("/omdb/title/:title", authMiddleware, validate(omdbGetByTitleSchema), asyncHandler(MovieController.omdbGetByTitle));
 
 // GET /api/movies/trending — list trending movies (TMDB)
 router.get("/trending", asyncHandler(MovieController.getTrending));

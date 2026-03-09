@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { badRequest, forbidden, success } from "../utils";
 import { MovieService } from "../services/movie.service";
+import { OmdbService } from "../services/omdb.service";
 import { getSocketIo, filmRoomId } from "../socket";
 
 export const MovieController = {
@@ -147,5 +148,26 @@ export const MovieController = {
         const userId = req.user?.userId;
         const result = await MovieService.getMovieRating(Number(movieId), userId);
         return success(res, result);
+    },
+
+    // ── OMDb ────────────────────────────────────────────────────────────────
+
+    async omdbSearch(req: Request, res: Response) {
+        const title = String(req.query.t ?? "").trim();
+        const page = Math.max(1, parseInt(String(req.query.page ?? 1), 10) || 1);
+        const data = await OmdbService.searchByTitle(title, page);
+        return success(res, data);
+    },
+
+    async omdbGetByImdbId(req: Request<{ imdbId: string }>, res: Response) {
+        const { imdbId } = req.params;
+        const data = await OmdbService.getByImdbId(imdbId);
+        return success(res, data);
+    },
+
+    async omdbGetByTitle(req: Request<{ title: string }>, res: Response) {
+        const { title } = req.params;
+        const data = await OmdbService.getByTitle(title);
+        return success(res, data);
     },
 };

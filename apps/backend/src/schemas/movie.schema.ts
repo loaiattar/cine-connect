@@ -85,6 +85,32 @@ export const getMovieRatingSchema = z.object({
     }),
 });
 
+/** GET /api/movies/omdb/search?t=title&page=1 */
+export const omdbSearchSchema = z.object({
+    query: z.object({
+        t: z.string().min(1, "Title is required"),
+        page: z
+            .string()
+            .optional()
+            .transform((v) => (v != null ? parseInt(v, 10) : 1))
+            .pipe(z.number().int().positive()),
+    }),
+});
+
+/** GET /api/movies/omdb/id/:imdbId */
+export const omdbGetByIdSchema = z.object({
+    params: z.object({
+        imdbId: z.string().regex(/^tt\d+$/, "imdbId must start with 'tt' followed by digits"),
+    }),
+});
+
+/** GET /api/movies/omdb/title/:title */
+export const omdbGetByTitleSchema = z.object({
+    params: z.object({
+        title: z.string().min(1),
+    }),
+});
+
 /** GET /api/movies/search — q required; page and genre optional */
 export const getMoviesSearchSchema = z.object({
     query: z.object({
