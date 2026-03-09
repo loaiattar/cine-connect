@@ -198,6 +198,8 @@ function UserProfilePage() {
                     <Loader2 className="h-5 w-5 animate-spin" />
                     <span className="text-sm">Chargement des abonnés…</span>
                   </div>
+                ) : followers.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-zinc-500">Aucun abonné pour l'instant.</p>
                 ) : (
                   <ul className="space-y-3">
                     {followers.map((u) => (
@@ -224,6 +226,8 @@ function UserProfilePage() {
                     <Loader2 className="h-5 w-5 animate-spin" />
                     <span className="text-sm">Chargement des abonnements…</span>
                   </div>
+                ) : following.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-zinc-500">Ne suit personne pour l'instant.</p>
                 ) : (
                   <ul className="space-y-3">
                     {following.map((u) => (
