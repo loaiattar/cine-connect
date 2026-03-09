@@ -2,39 +2,85 @@ import { db } from "../db";
 import { favorites, watchlists, comments, users, ratings } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { AppError, forbidden, notFound } from "../utils";
-import { TmdbService } from "./tmdb.service";
+import { OmdbService } from "./omdb.service";
 
-/** Paginated movie list shape (TMDB search/trending style) */
+/** Paginated movie list shape */
 export interface PaginatedMovies {
     page: number;
-    results: Array<{ genre_ids?: number[]; [key: string]: unknown }>;
+    results: unknown[];
     total_pages: number;
     total_results: number;
 }
 
+/** Popular IMDB IDs used for the "trending" list (OMDb has no trending endpoint) */
+const POPULAR_IMDB_IDS = [
+    "tt1375666", // Inception
+    "tt0468569", // The Dark Knight
+    "tt0110912", // Pulp Fiction
+    "tt0137523", // Fight Club
+    "tt0109830", // Forrest Gump
+    "tt0133093", // The Matrix
+    "tt0816692", // Interstellar
+    "tt0245429", // Spirited Away
+    "tt6751668", // Parasite
+    "tt4154796", // Avengers: Endgame
+];
+
+/** Convert an OMDb imdbID (tt1375666) to a numeric id (1375666) for the frontend */
+function imdbIdToNumber(imdbId: string): number {
+    return parseInt(imdbId.replace("tt", ""), 10);
+}
+
+/** Map OMDb full movie to the TMDB-like shape the frontend expects */
+function omdbToMovie(m: Record<string, string>) {
+    return {
+        id: imdbIdToNumber(m.imdbID ?? "tt0"),
+        title: m.Title ?? "",
+        release_date: m.Year ? `${m.Year}-01-01` : "",
+        vote_average: parseFloat(m.imdbRating ?? "0") || 0,
+        poster_path: m.Poster !== "N/A" ? m.Poster : "",
+        overview: m.Plot ?? "",
+        genres: (m.Genre ?? "").split(", ").filter(Boolean).map((name) => ({ name })),
+        director: m.Director ?? "",
+        actors: m.Actors ?? "",
+        awards: m.Awards ?? "",
+        imdbID: m.imdbID ?? "",
+    };
+}
+
+/** Map OMDb search item (from ?s=) to the TMDB-like shape */
+function omdbSearchItemToMovie(m: Record<string, string>) {
+    return {
+        id: imdbIdToNumber(m.imdbID ?? "tt0"),
+        title: m.Title ?? "",
+        release_date: m.Year ? `${m.Year}-01-01` : "",
+        vote_average: 0,
+        poster_path: m.Poster !== "N/A" ? m.Poster : "",
+        imdbID: m.imdbID ?? "",
+    };
+}
+
 export const MovieService = {
     async getTrending() {
-        const data = await TmdbService.getTrendingMovies();
-        return data;
+        const movies = await Promise.allSettled(
+            POPULAR_IMDB_IDS.map((id) => OmdbService.getByImdbId(id))
+        );
+        const results = movies
+            .filter((r) => r.status === "fulfilled")
+            .map((r) => omdbToMovie((r as PromiseFulfilledResult<unknown>).value as Record<string, string>));
+        return { results, total_results: results.length };
     },
 
-    async searchMovies(query: string, page: number, genre?: number): Promise<PaginatedMovies> {
-        const data = await TmdbService.searchMovies(query, page);
-        const result: PaginatedMovies = {
-            page: data.page ?? page,
-            results: data.results ?? [],
-            total_pages: data.total_pages ?? 0,
-            total_results: data.total_results ?? 0,
+    async searchMovies(query: string, page: number, _genre?: number): Promise<PaginatedMovies> {
+        const data = await OmdbService.searchByTitle(query, page);
+        const results = (data.Search ?? []).map((m) => omdbSearchItemToMovie(m as unknown as Record<string, string>));
+        const total = parseInt(data.totalResults ?? "0", 10);
+        return {
+            page,
+            results,
+            total_pages: Math.ceil(total / 10),
+            total_results: total,
         };
-        if (genre != null && result.results.length > 0) {
-            const filtered = result.results.filter(
-                (m) => Array.isArray(m.genre_ids) && m.genre_ids.includes(genre)
-            );
-            result.results = filtered;
-            result.total_results = filtered.length;
-            // total_pages is ambiguous when filtering; keep page as-is for consistency
-        }
-        return result;
     },
 
     async toggleFavorite(userId: number, movieId: number) {
@@ -280,13 +326,13 @@ export const MovieService = {
         return result;
     },
 
-    async getMovieById(movieId: number, userId?: number) {
-        const movie = await TmdbService.getMovieDetails(movieId);
+    async getMovieById(movieId: number) {
+        const movie = await OmdbService.getByImdbId(`tt${movieId}`);
         return movie;
     },
 
     async getDetailedMovie(movieId: number, userId?: number) {
-        const movieData = await TmdbService.getMovieDetails(movieId);
+        const movieData = await OmdbService.getByImdbId(`tt${movieId}`);
         let isFavorite = false;
         let isOnWatchlist = false;
         let comments: Awaited<ReturnType<typeof this.getMovieComments>> = [];
@@ -319,8 +365,8 @@ export const MovieService = {
             }
             comments = await this.getMovieComments(movieId);
         } catch (err) {
-            // DB unreachable (e.g. ECONNREFUSED): return TMDB data only; no favorites/watchlist/comments
-            console.warn('Database unavailable for getDetailedMovie, returning TMDB data only:', (err as Error)?.message ?? err);
+            // DB unreachable (e.g. ECONNREFUSED): return OMDb data only; no favorites/watchlist/comments
+            console.warn('Database unavailable for getDetailedMovie, returning OMDb data only:', (err as Error)?.message ?? err);
         }
 
         return {

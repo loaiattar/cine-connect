@@ -40,8 +40,8 @@ export function validateEnv(): void {
   }
 
   if (!process.env.TMDB_API_KEY || process.env.TMDB_API_KEY.trim() === '') {
-    throw new Error(
-      'TMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
+    console.warn(
+      '[WARN] TMDB_API_KEY is not set — TMDB movie routes (trending, search, details) will return errors.'
     );
   }
 }

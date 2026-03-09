@@ -48,6 +48,8 @@ services:
       DATABASE_URL: postgres://admin:password123@db:5432/cineconnect
       JWT_SECRET: ${JWT_SECRET}
       TMDB_API_KEY: ${TMDB_API_KEY}
+      OMDB_API_KEY: ${OMDB_API_KEY:-66de618e}
+      OMDB_BASE_URL: ${OMDB_BASE_URL:-https://www.omdbapi.com}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:8080}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
     depends_on:
