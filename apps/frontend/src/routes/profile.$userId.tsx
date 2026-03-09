@@ -8,6 +8,79 @@ export const Route = createFileRoute("/profile/$userId")({
   component: UserProfilePage,
 });
 
+//──Petits composants locaux ─────────────────────────────────────────────────
+
+interface UserRow {
+  id: number;
+  name?: string | null;
+  email?: string | null;
+}
+
+function UserListItem({ user }: { user: UserRow }) {
+  return (
+    <Link
+      to="/profile/$userId"
+      params={{ userId: String(user.id) }}
+      className="flex items-center gap-3 hover:bg-zinc-900 rounded-lg px-2 py-1.5 transition-colors"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white uppercase">
+        {user.name ? user.name.charAt(0) : <User className="h-4 w-4 text-zinc-500" />}
+      </div>
+      <span className="text-sm text-zinc-300">{user.name || user.email}</span>
+    </Link>
+  );
+}
+
+function TabContent({
+  isLoading,
+  error,
+  onRetry,
+  emptyMessage,
+  loadingMessage,
+  users,
+}: {
+  isLoading: boolean;
+  error: Error | null;
+  onRetry: () => void;
+  emptyMessage: string;
+  loadingMessage: string;
+  users: UserRow[];
+}) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 py-6 text-zinc-400">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span className="text-sm">{loadingMessage}</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
+        <p className="text-sm">{error.message}</p>
+        <button type="button" onClick={onRetry} className="mt-2 text-sm underline hover:no-underline">
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
+  if (users.length === 0) {
+    return <p className="py-6 text-center text-sm text-zinc-500">{emptyMessage}</p>;
+  }
+
+  return (
+    <ul className="space-y-3">
+      {users.map((u) => (
+        <li key={u.id}>
+          <UserListItem user={u} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function UserProfilePage() {
   const { userId: userIdParam } = Route.useParams();
   const userId = parseInt(userIdParam, 10);
@@ -33,9 +106,13 @@ function UserProfilePage() {
     followers,
     followersTotal,
     followersLoading,
+    followersError,
+    refetchFollowers,
     following,
     followingTotal,
     followingLoading,
+    followingError,
+    refetchFollowing,
   } = useFollow(isValidId ? userId : null, { fetchFollowers: true, fetchFollowing: true });
 
   const displayName = user?.name ?? "Utilisateur";
@@ -193,59 +270,25 @@ function UserProfilePage() {
               </div>
 
               {activeTab === "followers" && (
-                followersLoading ? (
-                  <div className="flex items-center gap-2 py-6 text-zinc-400">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Chargement des abonnés…</span>
-                  </div>
-                ) : followers.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-zinc-500">Aucun abonné pour l'instant.</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {followers.map((u) => (
-                      <li key={u.id}>
-                        <Link
-                          to="/profile/$userId"
-                          params={{ userId: String(u.id) }}
-                          className="flex items-center gap-3 hover:bg-zinc-900 rounded-lg px-2 py-1.5 transition-colors"
-                        >
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white uppercase">
-                            {u.name ? u.name.charAt(0) : <User className="h-4 w-4 text-zinc-500" />}
-                          </div>
-                          <span className="text-sm text-zinc-300 hover:text-white">{u.name || u.email}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )
+                <TabContent
+                  isLoading={followersLoading}
+                  error={followersError}
+                  onRetry={refetchFollowers}
+                  loadingMessage="Chargement des abonnés…"
+                  emptyMessage="Aucun abonné pour l'instant."
+                  users={followers}
+                />
               )}
 
               {activeTab === "following" && (
-                followingLoading ? (
-                  <div className="flex items-center gap-2 py-6 text-zinc-400">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Chargement des abonnements…</span>
-                  </div>
-                ) : following.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-zinc-500">Ne suit personne pour l'instant.</p>
-                ) : (
-                  <ul className="space-y-3">
-                    {following.map((u) => (
-                      <li key={u.id}>
-                        <Link
-                          to="/profile/$userId"
-                          params={{ userId: String(u.id) }}
-                          className="flex items-center gap-3 hover:bg-zinc-900 rounded-lg px-2 py-1.5 transition-colors"
-                        >
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white uppercase">
-                            {u.name ? u.name.charAt(0) : <User className="h-4 w-4 text-zinc-500" />}
-                          </div>
-                          <span className="text-sm text-zinc-300 hover:text-white">{u.name || u.email}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )
+                <TabContent
+                  isLoading={followingLoading}
+                  error={followingError}
+                  onRetry={refetchFollowing}
+                  loadingMessage="Chargement des abonnements…"
+                  emptyMessage="Ne suit personne pour l'instant."
+                  users={following}
+                />
               )}
             </div>
           </div>
