@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
 import { Clapperboard, Loader2, User, UserPlus, UserMinus } from "lucide-react";
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/profile/$userId")({
 function UserProfilePage() {
   const { userId: userIdParam } = Route.useParams();
   const userId = parseInt(userIdParam, 10);
+  const [activeTab, setActiveTab] = useState<"followers" | "following">("followers");
   const isValidId = Number.isInteger(userId) && userId > 0;
 
   const {
@@ -164,52 +166,64 @@ function UserProfilePage() {
               </div>
             )}
 
-            {(followers.length > 0 || following.length > 0) && (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {followers.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnés ({followersTotal})</h2>
-                    <ul className="space-y-2">
-                      {followers.slice(0, 10).map((u) => (
-                        <li key={u.id}>
-                          <Link
-                            to="/profile/$userId"
-                            params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
-                          >
-                            {u.name || u.email}
-                          </Link>
-                        </li>
-                      ))}
-                      {followersTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followersTotal - 10} autres</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-                {following.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnements ({followingTotal})</h2>
-                    <ul className="space-y-2">
-                      {following.slice(0, 10).map((u) => (
-                        <li key={u.id}>
-                          <Link
-                            to="/profile/$userId"
-                            params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
-                          >
-                            {u.name || u.email}
-                          </Link>
-                        </li>
-                      ))}
-                      {followingTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followingTotal - 10} autres</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
+            <div>
+              <div className="flex border-b border-zinc-800 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("followers")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === "followers"
+                      ? "border-b-2 border-red-500 text-white"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Abonnés ({followersTotal})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("following")}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === "following"
+                      ? "border-b-2 border-red-500 text-white"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Abonnements ({followingTotal})
+                </button>
               </div>
-            )}
+
+              {activeTab === "followers" && (
+                <ul className="space-y-2">
+                  {followers.map((u) => (
+                    <li key={u.id}>
+                      <Link
+                        to="/profile/$userId"
+                        params={{ userId: String(u.id) }}
+                        className="text-sm text-zinc-300 hover:text-white transition-colors"
+                      >
+                        {u.name || u.email}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {activeTab === "following" && (
+                <ul className="space-y-2">
+                  {following.map((u) => (
+                    <li key={u.id}>
+                      <Link
+                        to="/profile/$userId"
+                        params={{ userId: String(u.id) }}
+                        className="text-sm text-zinc-300 hover:text-white transition-colors"
+                      >
+                        {u.name || u.email}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
 

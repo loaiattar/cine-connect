@@ -2,22 +2,37 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Clapperboard, Users } from "lucide-react";
 
-export const Route = createFileRoute("/CommuityPage")({
+export const Route = createFileRoute("/CommunautePage")({
   component: CommunautePage,
 });
 
 const membres = [
-  { id: 1, username: "Alice Martin", bio: "Passionnée de cinéma français.", films: 142 },
+  {
+    id: 1,
+    username: "Alice Martin",
+    bio: "Passionnée de cinéma français.",
+    films: 142,
+  },
   { id: 2, username: "Tom Dubois", bio: "Fan de science-fiction.", films: 89 },
-  { id: 3, username: "Sara Benali", bio: "J'adore les comédies romantiques.", films: 57 },
-  { id: 4, username: "Karim Leroy", bio: "Spécialiste des films noirs des années 50.", films: 315 },
+  {
+    id: 3,
+    username: "Sara Benali",
+    bio: "J'adore les comédies romantiques.",
+    films: 57,
+  },
+  {
+    id: 4,
+    username: "Karim Leroy",
+    bio: "Spécialiste des films noirs des années 50.",
+    films: 315,
+  },
 ];
 
 function CommunautePage() {
   const [recherche, setRecherche] = useState("");
 
   const resultats = membres.filter((m) =>
-    m.username.toLowerCase().includes(recherche.toLowerCase())
+    m.username.toLowerCase().includes(recherche.toLowerCase()),
   );
 
   return (
@@ -34,7 +49,10 @@ function CommunautePage() {
               <span className="text-orange-400">Connect</span>
             </span>
           </Link>
-          <Link to="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
+          <Link
+            to="/"
+            className="text-sm text-zinc-400 hover:text-white transition-colors"
+          >
             ← Accueil
           </Link>
         </div>
@@ -48,14 +66,16 @@ function CommunautePage() {
 
         <input
           type="text"
-          placeholder="Rechercher un membre..."
+          placeholder="Rechercher a member..."
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
           className="mb-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
         />
 
         {resultats.length === 0 && (
-          <p className="text-center text-zinc-400">Aucun membre trouvé pour "{recherche}"</p>
+          <p className="text-center text-zinc-400">
+            Aucun membre trouvé pour "{recherche}"
+          </p>
         )}
 
         <ul className="space-y-3">
@@ -66,7 +86,9 @@ function CommunautePage() {
             >
               <p className="font-semibold text-white">{membre.username}</p>
               <p className="text-sm text-zinc-400">{membre.bio}</p>
-              <p className="mt-1 text-xs text-zinc-500">{membre.films} films vus</p>
+              <p className="mt-1 text-xs text-zinc-500">
+                {membre.films} films vus
+              </p>
             </li>
           ))}
         </ul>
