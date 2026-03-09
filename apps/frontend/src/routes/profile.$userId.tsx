@@ -193,35 +193,49 @@ function UserProfilePage() {
               </div>
 
               {activeTab === "followers" && (
-                <ul className="space-y-2">
-                  {followers.map((u) => (
-                    <li key={u.id}>
-                      <Link
-                        to="/profile/$userId"
-                        params={{ userId: String(u.id) }}
-                        className="text-sm text-zinc-300 hover:text-white transition-colors"
-                      >
-                        {u.name || u.email}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                followersLoading ? (
+                  <div className="flex items-center gap-2 py-6 text-zinc-400">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span className="text-sm">Chargement des abonnés…</span>
+                  </div>
+                ) : (
+                  <ul className="space-y-2">
+                    {followers.map((u) => (
+                      <li key={u.id}>
+                        <Link
+                          to="/profile/$userId"
+                          params={{ userId: String(u.id) }}
+                          className="text-sm text-zinc-300 hover:text-white transition-colors"
+                        >
+                          {u.name || u.email}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )
               )}
 
               {activeTab === "following" && (
-                <ul className="space-y-2">
-                  {following.map((u) => (
-                    <li key={u.id}>
-                      <Link
-                        to="/profile/$userId"
-                        params={{ userId: String(u.id) }}
-                        className="text-sm text-zinc-300 hover:text-white transition-colors"
-                      >
-                        {u.name || u.email}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                followingLoading ? (
+                  <div className="flex items-center gap-2 py-6 text-zinc-400">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span className="text-sm">Chargement des abonnements…</span>
+                  </div>
+                ) : (
+                  <ul className="space-y-2">
+                    {following.map((u) => (
+                      <li key={u.id}>
+                        <Link
+                          to="/profile/$userId"
+                          params={{ userId: String(u.id) }}
+                          className="text-sm text-zinc-300 hover:text-white transition-colors"
+                        >
+                          {u.name || u.email}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )
               )}
             </div>
           </div>
