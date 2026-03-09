@@ -199,15 +199,18 @@ function UserProfilePage() {
                     <span className="text-sm">Chargement des abonnés…</span>
                   </div>
                 ) : (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {followers.map((u) => (
                       <li key={u.id}>
                         <Link
                           to="/profile/$userId"
                           params={{ userId: String(u.id) }}
-                          className="text-sm text-zinc-300 hover:text-white transition-colors"
+                          className="flex items-center gap-3 hover:bg-zinc-900 rounded-lg px-2 py-1.5 transition-colors"
                         >
-                          {u.name || u.email}
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white uppercase">
+                            {u.name ? u.name.charAt(0) : <User className="h-4 w-4 text-zinc-500" />}
+                          </div>
+                          <span className="text-sm text-zinc-300 hover:text-white">{u.name || u.email}</span>
                         </Link>
                       </li>
                     ))}
@@ -222,15 +225,18 @@ function UserProfilePage() {
                     <span className="text-sm">Chargement des abonnements…</span>
                   </div>
                 ) : (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {following.map((u) => (
                       <li key={u.id}>
                         <Link
                           to="/profile/$userId"
                           params={{ userId: String(u.id) }}
-                          className="text-sm text-zinc-300 hover:text-white transition-colors"
+                          className="flex items-center gap-3 hover:bg-zinc-900 rounded-lg px-2 py-1.5 transition-colors"
                         >
-                          {u.name || u.email}
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-white uppercase">
+                            {u.name ? u.name.charAt(0) : <User className="h-4 w-4 text-zinc-500" />}
+                          </div>
+                          <span className="text-sm text-zinc-300 hover:text-white">{u.name || u.email}</span>
                         </Link>
                       </li>
                     ))}
