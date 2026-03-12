@@ -6,26 +6,37 @@ import app from '../app';
 
 import { AuthService } from '../services/auth.service';
 
-vi.mock('../services/tmdb.service', async (importOriginal) => {
-    const mod = await importOriginal<typeof import('../services/tmdb.service')>();
+vi.mock('../services/omdb.service', async (importOriginal) => {
+    const mod = await importOriginal<typeof import('../services/omdb.service')>();
     return {
         ...mod,
-        TmdbService: {
-            ...mod.TmdbService,
-            searchMovies: vi.fn().mockResolvedValue({
-                page: 1,
-                results: [
+        OmdbService: {
+            ...mod.OmdbService,
+            searchByTitle: vi.fn().mockResolvedValue({
+                Search: [
                     {
-                        id: 27205,
-                        title: 'Inception',
-                        poster_path: '/path',
-                        release_date: '2010-07-15',
-                        vote_average: 8.4,
-                        genre_ids: [28, 878],
+                        Title: 'Inception',
+                        Year: '2010',
+                        imdbID: 'tt1375666',
+                        Type: 'movie',
+                        Poster: 'https://example.com/poster.jpg',
                     },
                 ],
-                total_pages: 1,
-                total_results: 1,
+                totalResults: '1',
+                Response: 'True',
+            }),
+            getByImdbId: vi.fn().mockResolvedValue({
+                Title: 'Inception',
+                Year: '2010',
+                imdbID: 'tt1375666',
+                Plot: 'A thief who steals corporate secrets.',
+                Genre: 'Action, Adventure',
+                Director: 'Christopher Nolan',
+                Actors: 'Leonardo DiCaprio',
+                Awards: 'Won 4 Oscars',
+                Poster: 'https://example.com/poster.jpg',
+                imdbRating: '8.8',
+                Response: 'True',
             }),
         },
     };
