@@ -1,5 +1,5 @@
 # Runs backend functional tests on every push/PR using a PostgreSQL service container.
-# Required: Add TMDB_API_KEY to repository Secrets (Settings → Secrets and variables → Actions).
+# Required: Add OMDB_API_KEY to repository Secrets (Settings → Secrets and variables → Actions).
 name: Tests
 
 on:
@@ -63,4 +63,4 @@ jobs:
         run: pnpm --filter backend test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cineconnect_test
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
