@@ -327,12 +327,12 @@ export const MovieService = {
     },
 
     async getMovieById(movieId: number) {
-        const movie = await OmdbService.getByImdbId(`tt${movieId}`);
+        const movie = await OmdbService.getByImdbId(`tt${String(movieId).padStart(7, '0')}`);
         return movie;
     },
 
     async getDetailedMovie(movieId: number, userId?: number) {
-        const movieData = await OmdbService.getByImdbId(`tt${movieId}`);
+        const movieData = await OmdbService.getByImdbId(`tt${String(movieId).padStart(7, '0')}`);
         let isFavorite = false;
         let isOnWatchlist = false;
         let comments: Awaited<ReturnType<typeof this.getMovieComments>> = [];
