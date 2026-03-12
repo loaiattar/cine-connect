@@ -326,9 +326,9 @@ export const MovieService = {
         return result;
     },
 
-    async getMovieById(movieId: number, userId?: number) {
-        const movie = await TmdbService.getMovieDetails(movieId);
-        return movie;
+    async getMovieById(movieId: number) {
+        const movie = await OmdbService.getByImdbId(`tt${String(movieId).padStart(7, '0')}`);
+        return omdbToMovie(movie as unknown as Record<string, string>);
     },
 
     async getDetailedMovie(movieId: number, userId?: number) {
