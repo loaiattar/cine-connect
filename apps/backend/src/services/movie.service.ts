@@ -2,7 +2,7 @@ import { db } from "../db";
 import { favorites, watchlists, comments, users, ratings } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { AppError, forbidden, notFound } from "../utils";
-import { OmdbService } from "./omdb.service";
+import { OmdbService, OmdbSearchItem } from "./omdb.service";
 
 /** Popular IMDB IDs used for the "trending" list (OMDb has no trending endpoint) */
 const POPULAR_IMDB_IDS = [
@@ -73,7 +73,7 @@ export const MovieService = {
 
     async searchMovies(query: string, page: number, _genre?: number): Promise<PaginatedMovies> {
         const data = await OmdbService.searchByTitle(query, page);
-        const results = (data.Search ?? []).map((m) => omdbSearchItemToMovie(m as unknown as Record<string, string>));
+        const results = (data.Search ?? []).map((m: OmdbSearchItem) => omdbSearchItemToMovie(m as unknown as Record<string, string>));
         const total = parseInt(data.totalResults ?? "0", 10);
         return {
             page,
