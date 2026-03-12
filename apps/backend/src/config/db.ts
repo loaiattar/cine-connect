@@ -13,7 +13,7 @@ const TEST_JWT_SECRET = 'fixed_test_secret_123';
  * Call early at bootstrap (e.g. in index.ts after dotenv.config()).
  * - DATABASE_URL: always required.
  * - JWT_SECRET: required when NODE_ENV is not "test"; in production must not be the test value.
- * - TMDB_API_KEY: required when NODE_ENV is not "test" (movie/TMDB routes depend on it).
+ * - OMDB_API_KEY: required when NODE_ENV is not "test" (movie routes depend on it).
  */
 export function validateEnv(): void {
   if (!process.env.DATABASE_URL) {
@@ -21,7 +21,7 @@ export function validateEnv(): void {
   }
 
   if (process.env.NODE_ENV === 'test') {
-    return; // JWT_SECRET and TMDB_API_KEY fallbacks / optional in test
+    return; // JWT_SECRET and OMDB_API_KEY fallbacks / optional in test
   }
 
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET.trim() === '') {
@@ -39,9 +39,9 @@ export function validateEnv(): void {
     );
   }
 
-  if (!process.env.TMDB_API_KEY || process.env.TMDB_API_KEY.trim() === '') {
+  if (!process.env.OMDB_API_KEY || process.env.OMDB_API_KEY.trim() === '') {
     throw new Error(
-      'TMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
+      'OMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
     );
   }
 }
