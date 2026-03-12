@@ -332,7 +332,8 @@ export const MovieService = {
     },
 
     async getDetailedMovie(movieId: number, userId?: number) {
-        const movieData = await TmdbService.getMovieDetails(movieId);
+        const raw = await OmdbService.getByImdbId(`tt${String(movieId).padStart(7, '0')}`);
+        const movieData = omdbToMovie(raw as unknown as Record<string, string>);
         let isFavorite = false;
         let isOnWatchlist = false;
         let comments: Awaited<ReturnType<typeof this.getMovieComments>> = [];
@@ -366,7 +367,7 @@ export const MovieService = {
             comments = await this.getMovieComments(movieId);
         } catch (err) {
             // DB unreachable (e.g. ECONNREFUSED): return TMDB data only; no favorites/watchlist/comments
-            console.warn('Database unavailable for getDetailedMovie, returning TMDB data only:', (err as Error)?.message ?? err);
+            console.warn('Database unavailable for getDetailedMovie, returning OMDb data only:', (err as Error)?.message ?? err);
         }
 
         return {
