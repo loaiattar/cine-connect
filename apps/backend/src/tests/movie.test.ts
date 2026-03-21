@@ -281,6 +281,38 @@ describe('Movie Functional Tests - Watchlist', () => {
         expect(response.status).toBe(403);
     });
 
+    it('should notify followers when the author adds a comment', async () => {
+        const mid = 551;
+        const follower = await AuthService.register('Follower', `fol-${Date.now()}@example.com`, 'password123');
+        const author = await AuthService.register('Author', `auth-${Date.now()}@example.com`, 'password123');
+
+        await request(app)
+            .post('/api/follows')
+            .set('Authorization', `Bearer ${follower.token}`)
+            .send({ followingId: author.userId });
+
+        const commentRes = await request(app)
+            .post('/api/movies/comments')
+            .set('Authorization', `Bearer ${author.token}`)
+            .send({ movieId: mid, comment: 'Hello followers' });
+
+        expect(commentRes.status).toBe(200);
+
+        const notifRes = await request(app)
+            .get('/api/notifications')
+            .set('Authorization', `Bearer ${follower.token}`)
+            .query({ limit: 20 });
+
+        expect(notifRes.status).toBe(200);
+        const list = notifRes.body.notifications ?? [];
+        expect(
+            list.some(
+                (n: { message: string; linkType?: string | null; targetId?: number | null }) =>
+                    n.message.includes('commentaire') && n.linkType === 'movie' && n.targetId === mid
+            )
+        ).toBe(true);
+    });
+
 });
 
 describe('Movie Functional Tests - Search', () => {

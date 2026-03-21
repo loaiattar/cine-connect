@@ -95,6 +95,7 @@ export function useFollow(
       if (profileUserId != null) {
         queryClient.invalidateQueries({ queryKey: ["follow", "followers", profileUserId] });
         queryClient.invalidateQueries({ queryKey: ["follow", "following", profileUserId] });
+        queryClient.invalidateQueries({ queryKey: ["user", "profile", profileUserId] });
       }
     },
   });
@@ -108,6 +109,7 @@ export function useFollow(
       if (profileUserId != null) {
         queryClient.invalidateQueries({ queryKey: ["follow", "followers", profileUserId] });
         queryClient.invalidateQueries({ queryKey: ["follow", "following", profileUserId] });
+        queryClient.invalidateQueries({ queryKey: ["user", "profile", profileUserId] });
       }
     },
   });

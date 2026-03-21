@@ -4,6 +4,7 @@ import {
   userService,
   type GetMeResponse,
   type GetPublicProfileResponse,
+  type PublicProfileStats,
   type UserProfileRow,
   type UpdateProfilePayload,
 } from "@/service/user.service";
@@ -32,13 +33,23 @@ function unwrapPublicProfile(raw: unknown): GetPublicProfileResponse | null {
     const d = (raw as { data: unknown }).data;
     return d != null && typeof d === "object" && "user" in d ? (d as GetPublicProfileResponse) : null;
   }
-  if (typeof raw === "object" && "user" in raw && "profile" in raw) return raw as GetPublicProfileResponse;
+  if (typeof raw === "object" && "user" in raw && "profile" in raw) {
+    const r = raw as GetPublicProfileResponse;
+    return {
+      ...r,
+      stats: r.stats ?? { followersCount: 0, followingCount: 0 },
+    };
+  }
   return null;
 }
 
 export interface UseProfileReturn {
   user: ProfileUser | null;
   profile: UserProfileRow | null;
+  /** From GET /api/users/:userId only (follower/following counts). */
+  stats: PublicProfileStats | null;
+  /** From GET /api/users/:userId when logged in as another user (optional). */
+  isFollowingFromApi: boolean | undefined;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
@@ -92,6 +103,8 @@ export function useProfile(userId?: number | null): UseProfileReturn {
 
   const user: ProfileUser | null = isSelf ? (me?.user ?? null) : (publicProfile?.user ?? null);
   const profile = isSelf ? (me?.profile ?? null) : (publicProfile?.profile ?? null);
+  const stats = !isSelf ? (publicProfile?.stats ?? null) : null;
+  const isFollowingFromApi = !isSelf ? publicProfile?.isFollowing : undefined;
   const isLoading = isSelf ? meQuery.isLoading : publicQuery.isLoading;
   const isError = isSelf ? meQuery.isError : publicQuery.isError;
   const error = isSelf ? meQuery.error : publicQuery.error;
@@ -111,6 +124,8 @@ export function useProfile(userId?: number | null): UseProfileReturn {
   return {
     user,
     profile,
+    stats,
+    isFollowingFromApi,
     isLoading,
     isError,
     error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
