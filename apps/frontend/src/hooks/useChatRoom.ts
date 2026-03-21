@@ -3,22 +3,6 @@ import { useEffect, useCallback, useState } from "react";
 import { messageService, type ChatMessage } from "@/service/message.service";
 import { getSocket } from "@/lib/socket";
 
-function unwrapHistory(raw: unknown): { messages: ChatMessage[]; total: number } | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    if (d != null && typeof d === "object" && "messages" in d) {
-      const data = d as { messages: ChatMessage[]; total: number };
-      return { messages: data.messages ?? [], total: data.total ?? 0 };
-    }
-  }
-  if (typeof raw === "object" && "messages" in raw) {
-    const r = raw as { messages: ChatMessage[]; total?: number };
-    return { messages: Array.isArray(r.messages) ? r.messages : [], total: r.total ?? 0 };
-  }
-  return null;
-}
-
 export interface UseChatRoomOptions {
   roomId: string | null;
   limit?: number;
@@ -56,9 +40,8 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
     enabled: roomId != null && roomId.length > 0,
   });
 
-  const history = unwrapHistory(rawData);
-  const apiMessages = history?.messages ?? [];
-  const total = history?.total ?? 0;
+  const apiMessages = rawData?.messages ?? [];
+  const total = rawData?.total ?? 0;
 
   const sendMutation = useMutation({
     mutationFn: (text: string) => {
