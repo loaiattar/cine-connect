@@ -91,4 +91,52 @@ describe('User profile REST endpoints', () => {
             expect(res.body.message).toBe('Validation Failed');
         });
     });
+
+    describe('GET /api/users/search', () => {
+        it('returns empty list when q is missing or blank', async () => {
+            const res = await request(app).get('/api/users/search');
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({
+                users: [],
+                total: 0,
+                limit: 20,
+                offset: 0,
+            });
+        });
+
+        it('finds users by name and omits email from results', async () => {
+            const suffix = Date.now();
+            const email = `search-u1-${suffix}@example.com`;
+            await AuthService.register('SearchUniqueNameAlpha', email, 'password123');
+
+            const res = await request(app).get('/api/users/search').query({ q: 'SearchUnique' });
+            expect(res.status).toBe(200);
+            expect(res.body.total).toBeGreaterThanOrEqual(1);
+            const row = res.body.users.find((u: { name: string | null }) => u.name === 'SearchUniqueNameAlpha');
+            expect(row).toBeDefined();
+            expect(row).toMatchObject({
+                name: 'SearchUniqueNameAlpha',
+                avatarUrl: null,
+            });
+            expect(row).not.toHaveProperty('email');
+        });
+
+        it('matches by email locally but never exposes email', async () => {
+            const suffix = Date.now();
+            const email = `hidden-mail-${suffix}@example.com`;
+            await AuthService.register('Hidden Mail User', email, 'password123');
+
+            const res = await request(app).get('/api/users/search').query({ q: `hidden-mail-${suffix}` });
+            expect(res.status).toBe(200);
+            expect(res.body.users.length).toBeGreaterThanOrEqual(1);
+            const row = res.body.users[0];
+            expect(row).not.toHaveProperty('email');
+            expect(row.name).toBe('Hidden Mail User');
+        });
+
+        it('returns 400 when q exceeds max length', async () => {
+            const res = await request(app).get('/api/users/search').query({ q: 'a'.repeat(101) });
+            expect(res.status).toBe(400);
+        });
+    });
 });
