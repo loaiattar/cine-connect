@@ -15,32 +15,11 @@ export type ProfileUser = (GetMeResponse["user"] | GetPublicProfileResponse["use
   email?: string | null;
 };
 
-/** Unwrap GET /api/users/me response (direct payload or ApiResponse envelope). */
-function unwrapMe(raw: unknown): GetMeResponse | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return d != null && typeof d === "object" && "user" in d ? (d as GetMeResponse) : null;
-  }
-  if (typeof raw === "object" && "user" in raw && "profile" in raw) return raw as GetMeResponse;
-  return null;
-}
-
-/** Unwrap GET /api/users/:userId response. */
-function unwrapPublicProfile(raw: unknown): GetPublicProfileResponse | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return d != null && typeof d === "object" && "user" in d ? (d as GetPublicProfileResponse) : null;
-  }
-  if (typeof raw === "object" && "user" in raw && "profile" in raw) {
-    const r = raw as GetPublicProfileResponse;
-    return {
-      ...r,
-      stats: r.stats ?? { followersCount: 0, followingCount: 0 },
-    };
-  }
-  return null;
+function withDefaultStats(p: GetPublicProfileResponse): GetPublicProfileResponse {
+  return {
+    ...p,
+    stats: p.stats ?? { followersCount: 0, followingCount: 0 },
+  };
 }
 
 export interface UseProfileReturn {
@@ -98,8 +77,9 @@ export function useProfile(userId?: number | null): UseProfileReturn {
     [updateMutation, isSelf]
   );
 
-  const me = unwrapMe(meQuery.data);
-  const publicProfile = unwrapPublicProfile(publicQuery.data);
+  const me = meQuery.data ?? null;
+  const publicProfile =
+    publicQuery.data != null ? withDefaultStats(publicQuery.data) : null;
 
   const user: ProfileUser | null = isSelf ? (me?.user ?? null) : (publicProfile?.user ?? null);
   const profile = isSelf ? (me?.profile ?? null) : (publicProfile?.profile ?? null);

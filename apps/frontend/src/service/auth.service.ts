@@ -24,6 +24,17 @@ export interface AuthError {
 
 const baseUrl = ApiClientConfig.BASE_URL;
 
+function parseEnvelope(json: unknown): { ok: true; data: unknown } | { ok: false; error: string; errors?: unknown } {
+  if (json && typeof json === "object" && json !== null && "success" in json) {
+    const o = json as Record<string, unknown>;
+    if (o.success === true && "data" in o) return { ok: true, data: o.data };
+    if (o.success === false && typeof o.error === "string") {
+      return { ok: false, error: o.error, errors: o.errors };
+    }
+  }
+  return { ok: false, error: "Réponse invalide du serveur." };
+}
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const res = await fetch(`${baseUrl}/api/auth/login`, {
@@ -35,14 +46,21 @@ export const authService = {
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
+      const parsed = parseEnvelope(body);
       const message =
         res.status === 401
           ? "Identifiants incorrects"
-          : (body.error as string) || `Erreur ${res.status}`;
+          : parsed.ok
+            ? `Erreur ${res.status}`
+            : parsed.error || `Erreur ${res.status}`;
       throw { status: res.status, message } as AuthError;
     }
 
-    return body as AuthResponse;
+    const parsed = parseEnvelope(body);
+    if (!parsed.ok) {
+      throw { status: res.status, message: parsed.error } as AuthError;
+    }
+    return parsed.data as AuthResponse;
   },
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
@@ -55,15 +73,26 @@ export const authService = {
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      const message =
-        res.status === 409
-          ? "Cet email est déjà utilisé."
-          : res.status === 400
-            ? ((body.message as string) || (body.errors as { message?: string }[])?.[0]?.message) ?? "Données invalides."
-            : (body.error as string) || `Erreur ${res.status}`;
+      const parsed = parseEnvelope(body);
+      let message: string;
+      if (res.status === 409) {
+        message = "Cet email est déjà utilisé.";
+      } else if (res.status === 400) {
+        const errs = parsed.ok ? undefined : (parsed.errors as Array<{ message?: string }> | undefined);
+        message =
+          (!parsed.ok && parsed.error) ||
+          errs?.[0]?.message ||
+          "Données invalides.";
+      } else {
+        message = !parsed.ok ? parsed.error : `Erreur ${res.status}`;
+      }
       throw { status: res.status, message, data: body } as AuthError & { data?: unknown };
     }
 
-    return body as AuthResponse;
+    const parsed = parseEnvelope(body);
+    if (!parsed.ok) {
+      throw { status: res.status, message: parsed.error } as AuthError;
+    }
+    return parsed.data as AuthResponse;
   },
 };

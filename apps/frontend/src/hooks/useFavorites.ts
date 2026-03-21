@@ -6,13 +6,8 @@ import {
 } from "@/service/movies.service";
 import { useAuth } from "@/hooks/useAuth";
 
-function normalizeFavorites(raw: unknown): FavoriteEntry[] {
-  if (Array.isArray(raw)) return raw;
-  if (raw != null && typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return Array.isArray(d) ? (d as FavoriteEntry[]) : [];
-  }
-  return [];
+function normalizeFavorites(raw: FavoriteEntry[] | undefined): FavoriteEntry[] {
+  return Array.isArray(raw) ? raw : [];
 }
 
 export interface UseFavoritesReturn {

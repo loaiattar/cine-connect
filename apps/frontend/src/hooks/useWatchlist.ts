@@ -6,13 +6,8 @@ import {
 } from "@/service/movies.service";
 import { useAuth } from "@/hooks/useAuth";
 
-function normalizeWatchlist(raw: unknown): WatchlistEntry[] {
-  if (Array.isArray(raw)) return raw;
-  if (raw != null && typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return Array.isArray(d) ? (d as WatchlistEntry[]) : [];
-  }
-  return [];
+function normalizeWatchlist(raw: WatchlistEntry[] | undefined): WatchlistEntry[] {
+  return Array.isArray(raw) ? raw : [];
 }
 
 export interface UseWatchlistReturn {

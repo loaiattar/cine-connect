@@ -1,8 +1,16 @@
-export interface ApiResponse<T> {
+export interface ApiSuccess<T> {
+    success: true;
     data: T;
-    message?: string;
-    success: boolean;
 }
+
+/** Field issue list is included for 400 validation responses. */
+export interface ApiFailure {
+    success: false;
+    error: string;
+    errors?: Array<{ path: string; message: string }>;
+}
+
+export type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 
 export interface User {
     id: number;

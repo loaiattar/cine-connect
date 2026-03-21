@@ -6,7 +6,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized: No token provided" });
+        return res.status(401).json({ success: false, error: "Unauthorized: No token provided" });
     }
 
     const token = authHeader.split(" ")[1];
@@ -24,7 +24,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
         console.error("JWT Verification Failed:", message);
-        return res.status(401).json({ error: `Unauthorized: ${message}` });
+        return res.status(401).json({ success: false, error: `Unauthorized: ${message}` });
     }
 };
 

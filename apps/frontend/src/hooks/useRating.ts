@@ -5,17 +5,9 @@ import {
   type MovieRatingResponse,
 } from "@/service/movies.service";
 
-function normalizeRating(raw: unknown): MovieRatingResponse | null {
+function normalizeRating(raw: MovieRatingResponse | undefined): MovieRatingResponse | null {
   if (raw == null) return null;
-  if (typeof raw === "object" && "average" in raw && "count" in raw) {
-    return raw as MovieRatingResponse;
-  }
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return d != null && typeof d === "object" && "average" in d
-      ? (d as MovieRatingResponse)
-      : null;
-  }
+  if (typeof raw === "object" && "average" in raw && "count" in raw) return raw;
   return null;
 }
 

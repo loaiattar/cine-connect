@@ -35,7 +35,7 @@ export function errorHandler(
   }
 
   if (err instanceof AppError) {
-    res.status(err.statusCode).json({ error: err.message });
+    res.status(err.statusCode).json({ success: false, error: err.message });
     return;
   }
 
@@ -52,11 +52,13 @@ export function errorHandler(
   if (code === "ECONNREFUSED") {
     console.error("Database connection refused. Is PostgreSQL running? Check DATABASE_URL in .env:", err);
     res.status(503).json({
-      error: "Service temporarily unavailable. Database connection failed. Check that PostgreSQL is running and DATABASE_URL is correct.",
+      success: false,
+      error:
+        "Service temporarily unavailable. Database connection failed. Check that PostgreSQL is running and DATABASE_URL is correct.",
     });
     return;
   }
 
   console.error("Unhandled error:", err);
-  res.status(500).json({ error: "Internal Server Error" });
+  res.status(500).json({ success: false, error: "Internal Server Error" });
 }

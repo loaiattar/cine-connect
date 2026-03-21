@@ -5,13 +5,8 @@ import {
   type MovieCommentRow,
 } from "@/service/movies.service";
 
-function normalizeComments(raw: unknown): MovieCommentRow[] {
-  if (Array.isArray(raw)) return raw as MovieCommentRow[];
-  if (raw != null && typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    return Array.isArray(d) ? (d as MovieCommentRow[]) : [];
-  }
-  return [];
+function normalizeComments(raw: MovieCommentRow[] | undefined): MovieCommentRow[] {
+  return Array.isArray(raw) ? raw : [];
 }
 
 export interface UseCommentsOptions {

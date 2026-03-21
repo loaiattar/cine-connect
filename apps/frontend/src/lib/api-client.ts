@@ -2,7 +2,6 @@ export const ApiClientConfig = {
     BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
 } as const;
 
-import type { ApiResponse } from '@cine-connect/shared';
 import { useAuthStore } from '../stores/auth.store';
 
 export const HttpMethod = {
@@ -21,6 +20,15 @@ export interface ApiRequestError {
     data: unknown;
 }
 
+function parseFailureMessage(json: unknown, statusText: string): string {
+    if (json && typeof json === 'object' && json !== null) {
+        const o = json as Record<string, unknown>;
+        if (typeof o.error === 'string') return o.error;
+        if (typeof o.message === 'string') return o.message;
+    }
+    return `API Error: ${statusText}`;
+}
+
 export class ApiClient {
     private baseUrl: string;
 
@@ -28,7 +36,11 @@ export class ApiClient {
         this.baseUrl = baseUrl;
     }
 
-    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
+    /**
+     * Returns unwrapped `data` from `{ success: true, data }`.
+     * Throws `ApiRequestError` on HTTP errors or `{ success: false, error }` with 2xx (should not happen).
+     */
+    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<T> {
         const url = `${this.baseUrl}${endpoint}`;
         const token = useAuthStore.getState().token;
         const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
@@ -44,47 +56,58 @@ export class ApiClient {
         };
 
         const response = await fetch(url, config);
+        const json: unknown = await response.json().catch(() => null);
 
         if (!response.ok) {
             if (response.status === 401) {
                 useAuthStore.getState().clearAuth();
                 window.location.href = '/LoginPage';
             }
-            const errorBody = await response.json().catch(() => ({}));
             throw {
                 status: response.status,
-                message: errorBody.message || errorBody.error || `API Error: ${response.statusText}`,
-                data: errorBody
+                message: parseFailureMessage(json, response.statusText),
+                data: json,
             } as ApiRequestError;
         }
 
         if (response.status === 204) {
-            return {
-                success: true,
-                data: {} as T,
-            };
+            return {} as T;
         }
 
-        return (await response.json()) as ApiResponse<T>;
+        if (json && typeof json === 'object' && json !== null && 'success' in json) {
+            const o = json as Record<string, unknown>;
+            if (o.success === true && 'data' in o) {
+                return o.data as T;
+            }
+            if (o.success === false && typeof o.error === 'string') {
+                throw {
+                    status: response.status,
+                    message: o.error,
+                    data: json,
+                } as ApiRequestError;
+            }
+        }
+
+        return json as T;
     }
 
-    get<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+    get<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, HttpMethod.GET, undefined, headers);
     }
 
-    post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+    post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, HttpMethod.POST, body, headers);
     }
 
-    put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+    put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, HttpMethod.PUT, body, headers);
     }
 
-    delete<T>(endpoint: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+    delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, HttpMethod.DELETE, undefined, headers);
     }
 
-    patch<T>(endpoint: string, body?: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+    patch<T>(endpoint: string, body?: unknown, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, HttpMethod.PATCH, body, headers);
     }
 }

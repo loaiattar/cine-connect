@@ -8,7 +8,11 @@ export const openApiSpec = {
   info: {
     title: "CinéConnect API",
     version: "1.0.0",
-    description: "Backend API for CinéConnect: auth, movies, favorites, watchlist, and comments.",
+    description:
+      "Backend API for CinéConnect: auth, movies, favorites, watchlist, and comments. " +
+      "JSON responses for `/api/*` routes use a consistent envelope: " +
+      "`{ success: true, data }` on success, or `{ success: false, error, errors? }` on failure " +
+      "(optional `errors` lists validation issues for 400).",
   },
   servers: [
     { url: "/", description: "Current host" },
@@ -23,27 +27,37 @@ export const openApiSpec = {
       },
     },
     schemas: {
-      Error: {
+      ApiFailure: {
         type: "object",
+        description: "Standard error envelope (4xx/5xx, including validation failures).",
+        required: ["success", "error"],
         properties: {
-          error: { type: "string", description: "Error message" },
-        },
-        required: ["error"],
-      },
-      ValidationError: {
-        type: "object",
-        properties: {
-          status: { type: "string", example: "error" },
-          message: { type: "string", example: "Validation Failed" },
+          success: { type: "boolean", enum: [false] },
+          error: { type: "string" },
           errors: {
             type: "array",
+            description: "Field-level issues (typically on 400 Validation Failed).",
             items: {
               type: "object",
               properties: {
                 path: { type: "string" },
                 message: { type: "string" },
               },
+              required: ["path", "message"],
             },
+          },
+        },
+      },
+      ApiSuccessEnvelope: {
+        type: "object",
+        description: "Successful JSON response; combine with allOf to type `data` per operation.",
+        required: ["success", "data"],
+        properties: {
+          success: { type: "boolean", enum: [true] },
+          data: {
+            type: "object",
+            description: "Operation-specific payload (narrowed via allOf on each response).",
+            additionalProperties: true,
           },
         },
       },
@@ -126,6 +140,11 @@ export const openApiSpec = {
           followingId: { type: "integer" },
           createdAt: { type: "string", format: "date-time" },
         },
+      },
+      UnfollowResponseBody: {
+        type: "object",
+        properties: { unfollowed: { type: "boolean" } },
+        required: ["unfollowed"],
       },
       FollowListUser: {
         type: "object",
@@ -310,20 +329,31 @@ export const openApiSpec = {
             description: "User registered; returns token and user info",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/AuthResponse" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/AuthResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
               },
             },
           },
           "400": {
             description: "Validation failed (invalid email, short password, etc.)",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
           "409": {
             description: "Email already registered",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -347,20 +377,31 @@ export const openApiSpec = {
             description: "Login successful; returns token and user info",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/AuthResponse" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/AuthResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
               },
             },
           },
           "400": {
             description: "Validation failed",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
           "401": {
             description: "Invalid credentials",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -377,14 +418,25 @@ export const openApiSpec = {
             description: "User and profile",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/UserMeResponse" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/UserMeResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
               },
             },
           },
           "401": {
             description: "Unauthorized",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -406,20 +458,31 @@ export const openApiSpec = {
             description: "Updated profile",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/UserProfile" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/UserProfile" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
               },
             },
           },
           "400": {
             description: "Validation failed",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
           "401": {
             description: "Unauthorized",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -440,13 +503,26 @@ export const openApiSpec = {
           "200": {
             description: "Paginated search results",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/UserSearchResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/UserSearchResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed (e.g. q too long)",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -466,12 +542,25 @@ export const openApiSpec = {
           "200": {
             description: "Public profile",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/PublicUserByIdResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/PublicUserByIdResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "404": {
             description: "User not found",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -492,24 +581,37 @@ export const openApiSpec = {
           "201": {
             description: "Follow created",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/FollowRow" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/FollowRow" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed or cannot follow yourself",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "404": {
             description: "User not found",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "409": {
             description: "Already following this user",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -529,16 +631,23 @@ export const openApiSpec = {
             content: {
               "application/json": {
                 schema: {
-                  type: "object",
-                  properties: { unfollowed: { type: "boolean" } },
-                  required: ["unfollowed"],
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/UnfollowResponseBody" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
                 },
               },
             },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -557,12 +666,25 @@ export const openApiSpec = {
           "200": {
             description: "Paginated list of followers",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/FollowersResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/FollowersResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "404": {
             description: "User not found",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -581,12 +703,25 @@ export const openApiSpec = {
           "200": {
             description: "Paginated list of following",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/FollowersResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/FollowersResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "404": {
             description: "User not found",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -623,20 +758,31 @@ export const openApiSpec = {
             description: "Paginated message history",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/MessageHistoryResponse" },
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/MessageHistoryResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
               },
             },
           },
           "400": {
             description: "Validation failed (e.g. missing room)",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
           "401": {
             description: "Unauthorized",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },
           },
         },
@@ -665,10 +811,13 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          "200": { description: "Movie details" },
+          "200": {
+            description:
+              "Movie details in `{ success: true, data }` (TMDB-shaped object; exact fields vary).",
+          },
           "401": {
             description: "Missing or invalid token",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -689,16 +838,29 @@ export const openApiSpec = {
           "200": {
             description: "Toggle result",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ToggleActionResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/ToggleActionResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -718,14 +880,16 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          "200": { description: "List of favorite entries" },
+          "200": {
+            description: "List of favorite entries in `{ success: true, data }` (array of favorite rows).",
+          },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "403": {
             description: "Forbidden (can only view own favorites)",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -746,16 +910,29 @@ export const openApiSpec = {
           "200": {
             description: "Toggle result",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/ToggleActionResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/ToggleActionResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -775,14 +952,16 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          "200": { description: "List of watchlist entries" },
+          "200": {
+            description: "Watchlist entries in `{ success: true, data }` (array of watchlist rows).",
+          },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "403": {
             description: "Forbidden (can only view own watchlist)",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -805,12 +984,25 @@ export const openApiSpec = {
           "200": {
             description: "Removed or not_found",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/WatchlistDeleteResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/WatchlistDeleteResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -829,10 +1021,12 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          "200": { description: "List of comments" },
+          "200": {
+            description: "Comments in `{ success: true, data }` (array of comment objects).",
+          },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -850,14 +1044,16 @@ export const openApiSpec = {
           },
         },
         responses: {
-          "200": { description: "Created comment" },
+          "200": {
+            description: "Created comment in `{ success: true, data }`.",
+          },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -877,14 +1073,16 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          "200": { description: "Comment removed" },
+          "200": {
+            description: "Deletion result in `{ success: true, data }`.",
+          },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "403": {
             description: "Forbidden (not comment owner)",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -908,18 +1106,20 @@ export const openApiSpec = {
           },
         },
         responses: {
-          "200": { description: "Comment updated" },
+          "200": {
+            description: "Updated comment in `{ success: true, data }`.",
+          },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "403": {
             description: "Forbidden (not comment owner)",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -940,16 +1140,29 @@ export const openApiSpec = {
           "200": {
             description: "Rating saved",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/SubmitRatingResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/SubmitRatingResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed (e.g. rating out of 1–10)",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
           "401": {
             description: "Unauthorized",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },
@@ -973,12 +1186,25 @@ export const openApiSpec = {
           "200": {
             description: "Rating data",
             content: {
-              "application/json": { schema: { $ref: "#/components/schemas/MovieRatingResponse" } },
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/MovieRatingResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
           "400": {
             description: "Validation failed",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
           },
         },
       },

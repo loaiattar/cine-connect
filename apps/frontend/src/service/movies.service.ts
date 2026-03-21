@@ -1,4 +1,3 @@
-import type { ApiResponse } from "@cine-connect/shared";
 import type { Genre, Movie } from "@cine-connect/shared";
 import { MOVIE_GENRES } from "@cine-connect/shared";
 import { apiClient } from "../lib/api-client";
@@ -110,8 +109,7 @@ export const moviesService = {
         if (options?.genre != null) params.set("genre", String(options.genre));
         return apiClient.get<SearchResponse>(`/api/movies/search?${params.toString()}`);
     },
-    getGenres: (): Promise<ApiResponse<Genre[]>> =>
-        Promise.resolve({ data: [...MOVIE_GENRES], success: true }),
+    getGenres: (): Promise<Genre[]> => Promise.resolve([...MOVIE_GENRES]),
     getFavorites: (userId: number) =>
         apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
     toggleFavorite: (movieId: number) =>
