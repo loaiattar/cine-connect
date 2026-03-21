@@ -7,6 +7,9 @@ dotenv.config({ path: path.resolve(__dirname, '.env.test') });
 
 export default defineConfig({
     test: {
+        env: {
+            NODE_ENV: 'test',
+        },
         globals: true,
         environment: 'node',
         include: ['src/**/*.test.ts'],

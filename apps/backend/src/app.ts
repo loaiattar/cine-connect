@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 import { notFound } from './utils';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import movieRoutes from './routes/movie.route';
@@ -26,6 +27,14 @@ function applyCors(app: Express): void {
 const app: Express = express();
 
 applyCors(app);
+
+// HTTP request logging (skip in tests to avoid noisy output)
+if (process.env.NODE_ENV !== 'test') {
+  const logFormat =
+    process.env.MORGAN_FORMAT ??
+    (process.env.NODE_ENV === 'production' ? 'combined' : 'dev');
+  app.use(morgan(logFormat));
+}
 
 // API spec and Swagger UI — register BEFORE express.json() so we see the raw URL first
 const swaggerSpec = JSON.parse(JSON.stringify(openApiSpec));
