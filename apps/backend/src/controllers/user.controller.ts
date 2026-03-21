@@ -26,4 +26,12 @@ export const UserController = {
     const result = await UserService.getPublicProfile(userId);
     return success(res, result);
   },
+
+  async searchUsers(req: Request, res: Response) {
+    const q = String(req.query.q ?? "");
+    const limit = Number(req.query.limit) || 20;
+    const offset = Number(req.query.offset) || 0;
+    const result = await UserService.searchPublicUsers(q, limit, offset);
+    return success(res, result);
+  },
 };
