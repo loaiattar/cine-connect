@@ -25,7 +25,7 @@ function unwrapMe(raw: unknown): GetMeResponse | null {
   return null;
 }
 
-/** Unwrap GET /api/users/:userId/profile response. */
+/** Unwrap GET /api/users/:userId response. */
 function unwrapPublicProfile(raw: unknown): GetPublicProfileResponse | null {
   if (raw == null) return null;
   if (typeof raw === "object" && "data" in raw) {
@@ -52,7 +52,7 @@ export interface UseProfileReturn {
 /**
  * Fetches profile by user: when userId is omitted or equals the current user,
  * fetches GET /api/users/me and exposes updateProfile. For another user, fetches
- * GET /api/users/:userId/profile (public profile, no email).
+ * GET /api/users/:userId (public profile, no email).
  */
 export function useProfile(userId?: number | null): UseProfileReturn {
   const queryClient = useQueryClient();
