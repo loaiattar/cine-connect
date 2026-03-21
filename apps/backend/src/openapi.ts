@@ -148,6 +148,26 @@ export const openApiSpec = {
         },
         required: ["users", "total", "limit", "offset"],
       },
+      UserSearchUser: {
+        type: "object",
+        description: "Public user summary for search (no email)",
+        properties: {
+          id: { type: "integer" },
+          name: { type: "string", nullable: true },
+          avatarUrl: { type: "string", nullable: true },
+        },
+        required: ["id", "name", "avatarUrl"],
+      },
+      UserSearchResponse: {
+        type: "object",
+        properties: {
+          users: { type: "array", items: { $ref: "#/components/schemas/UserSearchUser" } },
+          total: { type: "integer" },
+          limit: { type: "integer" },
+          offset: { type: "integer" },
+        },
+        required: ["users", "total", "limit", "offset"],
+      },
       ToggleFavoriteBody: {
         type: "object",
         required: ["movieId"],
@@ -372,6 +392,33 @@ export const openApiSpec = {
             description: "Unauthorized",
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/Error" } },
+            },
+          },
+        },
+      },
+    },
+    "/api/users/search": {
+      get: {
+        tags: ["Users"],
+        summary: "Search users by name or email",
+        description:
+          "Returns public fields only (id, name, avatarUrl). Email is used for matching but never exposed. No authentication required.",
+        parameters: [
+          { name: "q", in: "query", required: false, schema: { type: "string", maxLength: 100 }, description: "Search term" },
+          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 20 } },
+          { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated search results",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/UserSearchResponse" } },
+            },
+          },
+          "400": {
+            description: "Validation failed (e.g. q too long)",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
             },
           },
         },
