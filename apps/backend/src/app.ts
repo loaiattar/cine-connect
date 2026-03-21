@@ -1,6 +1,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import { sql } from 'drizzle-orm';
+import { db } from './db';
 import { notFound } from './utils';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import movieRoutes from './routes/movie.route';
@@ -95,6 +97,17 @@ function rootHandler(req: express.Request, res: express.Response): void {
 }
 
 app.get("/", rootHandler);
+
+/** Liveness / readiness for orchestration: 200 if DB responds, 503 otherwise. */
+app.get("/health", async (_req, res) => {
+  try {
+    await db.execute(sql`SELECT 1`);
+    res.status(200).json({ status: "healthy", database: "connected" });
+  } catch {
+    res.status(503).json({ status: "unhealthy", database: "disconnected" });
+  }
+});
+
 app.get("/docs", sendSwaggerHtml);
 app.get("/docs/", sendSwaggerHtml);
 app.get("/version", (_req, res) => res.json({ docs: true, message: "API docs at /docs and /?docs=1" }));

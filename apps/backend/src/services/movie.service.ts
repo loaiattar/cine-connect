@@ -118,30 +118,31 @@ export const MovieService = {
     },
 
     async deleteMovieFromWatchlist(userId: number, movieId: number) {
-        const existing = await db
-            .select()
-            .from(watchlists)
-            .where(
-                and(
-                    eq(watchlists.userId, userId),
-                    eq(watchlists.externalMovieId, movieId)
-                )
-            )
-            .limit(1);
-
-        if (existing.length > 0) {
-            await db
-                .delete(watchlists)
+        return db.transaction(async (tx) => {
+            const existing = await tx
+                .select()
+                .from(watchlists)
                 .where(
                     and(
                         eq(watchlists.userId, userId),
                         eq(watchlists.externalMovieId, movieId)
                     )
-                );
-            return { action: "removed", movieId };
-        } else {
-            return { action: "not_found", movieId };
-        }
+                )
+                .limit(1);
+
+            if (existing.length > 0) {
+                await tx
+                    .delete(watchlists)
+                    .where(
+                        and(
+                            eq(watchlists.userId, userId),
+                            eq(watchlists.externalMovieId, movieId)
+                        )
+                    );
+                return { action: "removed" as const, movieId };
+            }
+            return { action: "not_found" as const, movieId };
+        });
     },
 
     async addComment(userId: number, movieId: number, comment: string) {
