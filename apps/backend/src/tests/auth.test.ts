@@ -34,6 +34,7 @@ describe('Auth REST endpoints', () => {
             expect(res.body.success).toBe(true);
             expect(res.body.data).toMatchObject({
                 token: expect.any(String),
+                refreshToken: expect.any(String),
                 userId: expect.any(Number),
                 email: expect.stringMatching(/@/),
             });
@@ -74,6 +75,7 @@ describe('Auth REST endpoints', () => {
             expect(res.body.success).toBe(true);
             expect(res.body.data).toMatchObject({
                 token: expect.any(String),
+                refreshToken: expect.any(String),
                 userId: expect.any(Number),
                 email,
             });
@@ -105,6 +107,38 @@ describe('Auth REST endpoints', () => {
             expect(res.status).toBe(400);
             expect(res.body.success).toBe(false);
             expect(res.body.error).toBe('Validation Failed');
+        });
+    });
+
+    describe('POST /api/auth/refresh', () => {
+        it.skipIf(() => !dbAvailable())('returns new access and refresh tokens and rotates (200)', async () => {
+            const email = `refresh-${Date.now()}@example.com`;
+            const reg = await request(app)
+                .post('/api/auth/register')
+                .send({ name: 'Refresh User', email, password: 'password123' });
+            expect(reg.status).toBe(201);
+            const { refreshToken: rt1, token: access1 } = reg.body.data;
+
+            const res = await request(app).post('/api/auth/refresh').send({ refreshToken: rt1 });
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.token).toBeTruthy();
+            expect(res.body.data.refreshToken).toBeTruthy();
+            expect(res.body.data.token).not.toBe(access1);
+            expect(res.body.data.refreshToken).not.toBe(rt1);
+            expect(res.body.data.email).toBe(email);
+
+            const second = await request(app).post('/api/auth/refresh').send({ refreshToken: rt1 });
+            expect(second.status).toBe(401);
+            expect(second.body.success).toBe(false);
+        });
+
+        it.skipIf(() => !dbAvailable())('returns 401 for invalid refresh token', async () => {
+            const res = await request(app)
+                .post('/api/auth/refresh')
+                .send({ refreshToken: 'definitely-not-a-valid-token' });
+            expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
         });
     });
 
