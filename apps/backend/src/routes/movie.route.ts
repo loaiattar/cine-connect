@@ -3,6 +3,7 @@ import { MovieController } from "../controllers/movie.controller";
 import { authMiddleware, optionalAuthMiddleware } from "../middlewares/auth.middleware";
 import { asyncHandler } from "../middlewares/errorHandler.middleware";
 import { validate } from "../middlewares/validation.middleware";
+import { publicMovieReadRateLimiter } from "../middlewares/rateLimit.middleware";
 import {
     getMovieDetailsSchema,
     getMoviesSearchSchema,
@@ -22,18 +23,44 @@ import {
 const router: Router = Router();
 
 // GET /api/movies/trending — list trending movies (TMDB)
-router.get("/trending", asyncHandler(MovieController.getTrending));
+router.get("/trending", publicMovieReadRateLimiter, asyncHandler(MovieController.getTrending));
 // GET /api/movies/search — search movies (auth required; q, optional page, optional genre)
-router.get("/search", authMiddleware, validate(getMoviesSearchSchema), asyncHandler(MovieController.searchMovies));
+router.get(
+  "/search",
+  publicMovieReadRateLimiter,
+  authMiddleware,
+  validate(getMoviesSearchSchema),
+  asyncHandler(MovieController.searchMovies)
+);
 
-// More specific routes first so /rating/:movieId is not matched by /:movieId (details)
+// More specific routes first so /rating/:movieId and /comments/:movieId are not matched by /:movieId
 // GET /api/movies/rating/:movieId — aggregate (public) + user's rating when authenticated
-router.get("/rating/:movieId", optionalAuthMiddleware, validate(getMovieRatingSchema), asyncHandler(MovieController.getMovieRating));
+router.get(
+  "/rating/:movieId",
+  publicMovieReadRateLimiter,
+  optionalAuthMiddleware,
+  validate(getMovieRatingSchema),
+  asyncHandler(MovieController.getMovieRating)
+);
 // POST /api/movies/rate — submit or update rating (upsert)
 router.post("/rate", authMiddleware, validate(submitRatingSchema), asyncHandler(MovieController.submitRating));
 
+// GET /api/movies/comments/:movieId — must be before /:movieId
+router.get(
+  "/comments/:movieId",
+  publicMovieReadRateLimiter,
+  validate(getMovieCommentsSchema),
+  asyncHandler(MovieController.getMovieComments)
+);
+
 // GET /api/movies/:movieId — public; optional auth adds isFavorite, isOnWatchlist, comments
-router.get("/:movieId", optionalAuthMiddleware, validate(getMovieDetailsSchema), asyncHandler(MovieController.getMovieDetails));
+router.get(
+  "/:movieId",
+  publicMovieReadRateLimiter,
+  optionalAuthMiddleware,
+  validate(getMovieDetailsSchema),
+  asyncHandler(MovieController.getMovieDetails)
+);
 // POST /api/movies/favorite
 router.post("/favorite", authMiddleware, validate(toggleFavoriteSchema), asyncHandler(MovieController.handleToggleFavorite));
 // GET /api/movies/favorites/:userId
@@ -44,8 +71,6 @@ router.post("/watchlist", authMiddleware, validate(addToWatchlistSchema), asyncH
 router.get("/watchlist/:userId", authMiddleware, validate(getMovieWatchlistSchema), asyncHandler(MovieController.getMovieWatchlist));
 // DELETE /api/movies/watchlist/:movieId
 router.delete("/watchlist/:movieId", authMiddleware, validate(deleteMovieFromWatchlistSchema), asyncHandler(MovieController.deleteMovieFromWatchlist));
-// GET /api/movies/comments/:movieId
-router.get("/comments/:movieId", validate(getMovieCommentsSchema), asyncHandler(MovieController.getMovieComments));
 // POST /api/movies/comments
 router.post("/comments", authMiddleware, validate(addCommentSchema), asyncHandler(MovieController.addComment));
 // DELETE /api/movies/comments/:commentId
