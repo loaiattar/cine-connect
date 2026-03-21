@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { users, profiles, follows } from "../db/schema";
 import { and, asc, eq, sql } from "drizzle-orm";
-import { notFound } from "../utils";
+import { notFound, sanitizeUserText } from "../utils";
 
 /** Escape `%`, `_`, and `\` for use in ILIKE … ESCAPE '\\' (PostgreSQL). */
 function escapeILikePattern(s: string): string {
@@ -138,10 +138,10 @@ export const UserService = {
     if (!profile) throw notFound("Profile not found");
 
     const update: Record<string, string | null | undefined> = {};
-    if (data.bio !== undefined) update.bio = data.bio;
+    if (data.bio !== undefined) update.bio = sanitizeUserText(data.bio);
     if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl === "" ? null : data.avatarUrl;
-    if (data.location !== undefined) update.location = data.location;
-    if (data.favoriteGenre !== undefined) update.favoriteGenre = data.favoriteGenre;
+    if (data.location !== undefined) update.location = sanitizeUserText(data.location);
+    if (data.favoriteGenre !== undefined) update.favoriteGenre = sanitizeUserText(data.favoriteGenre);
 
     const [updated] = await db
       .update(profiles)

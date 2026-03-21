@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { favorites, watchlists, comments, users, ratings, follows, notifications } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
-import { AppError, forbidden, notFound } from "../utils";
+import { AppError, badRequest, forbidden, notFound, sanitizeUserText } from "../utils";
 import { TmdbService } from "./tmdb.service";
 
 /** Paginated movie list shape (TMDB search/trending style) */
@@ -256,9 +256,14 @@ export const MovieService = {
             throw forbidden("You can only update your own comments");
         }
 
+        const safeComment = sanitizeUserText(comment);
+        if (!safeComment) {
+            throw badRequest("Comment cannot be empty");
+        }
+
         await db
             .update(comments)
-            .set({ comment })
+            .set({ comment: safeComment })
             .where(eq(comments.id, commentId));
 
         return { action: "updated" };
