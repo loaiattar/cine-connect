@@ -9,7 +9,7 @@ const isTest = process.env.NODE_ENV === "test";
 export const authRateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: isTest ? 10000 : 10,
-  message: { error: "Too many attempts. Please try again later." },
+  message: { success: false, error: "Too many attempts. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -21,7 +21,7 @@ export const authRateLimiter = rateLimit({
 export const generalApiRateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: isTest ? 10000 : 100,
-  message: { error: "Too many requests. Please slow down." },
+  message: { success: false, error: "Too many requests. Please slow down." },
   standardHeaders: true,
   legacyHeaders: false,
 });
