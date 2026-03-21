@@ -1,6 +1,15 @@
 import { beforeAll, afterAll, beforeEach } from 'vitest';
 import { db } from '../db';
-import { users, favorites, comments } from '../db/schema';
+import {
+  users,
+  favorites,
+  comments,
+  watchlists,
+  ratings,
+  notifications,
+  follows,
+  profiles,
+} from '../db/schema';
 import { sql } from 'drizzle-orm';
 
 let dbAvailable = false;
@@ -20,6 +29,11 @@ beforeEach(async () => {
   if (!dbAvailable) return;
   await db.delete(comments);
   await db.delete(favorites);
+  await db.delete(watchlists);
+  await db.delete(ratings);
+  await db.delete(notifications);
+  await db.delete(follows);
+  await db.delete(profiles);
   await db.delete(users);
 });
 
