@@ -14,14 +14,16 @@ export const authRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const FIFTEEN_MIN_MS = 15 * 60 * 1000;
+
 /**
- * Optional: looser limit for the rest of the API (e.g. 100/min per IP).
- * Apply to app or specific routers if desired.
+ * Public / read-heavy movie routes (TMDB + DB reads): 100 requests per 15 minutes per IP.
+ * Returns 429 with JSON body when exceeded (express-rate-limit default status).
  */
-export const generalApiRateLimiter = rateLimit({
-  windowMs: 60 * 1000,
+export const publicMovieReadRateLimiter = rateLimit({
+  windowMs: FIFTEEN_MIN_MS,
   max: isTest ? 10000 : 100,
-  message: { success: false, error: "Too many requests. Please slow down." },
+  message: { success: false, error: "Too many requests. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
 });
