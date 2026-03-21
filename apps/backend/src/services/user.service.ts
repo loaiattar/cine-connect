@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { users, profiles } from "../db/schema";
-import { asc, eq, sql } from "drizzle-orm";
+import { users, profiles, follows } from "../db/schema";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { notFound } from "../utils";
 
 /** Escape `%`, `_`, and `\` for use in ILIKE … ESCAPE '\\' (PostgreSQL). */
@@ -12,6 +12,27 @@ export type PublicUserSearchRow = {
   id: number;
   name: string | null;
   avatarUrl: string | null;
+};
+
+export type PublicProfileStats = {
+  followersCount: number;
+  followingCount: number;
+};
+
+/** Public user document for GET /api/users/:userId (and legacy /profile). No email. */
+export type PublicUserByIdResponse = {
+  user: { id: number; name: string | null; createdAt: Date | string | null };
+  profile: {
+    id: number;
+    userId: number;
+    bio: string | null;
+    avatarUrl: string | null;
+    location: string | null;
+    favoriteGenre: string | null;
+  } | null;
+  stats: PublicProfileStats;
+  /** Present only when the viewer is authenticated and is not the target user. */
+  isFollowing?: boolean;
 };
 
 export const UserService = {
@@ -46,8 +67,14 @@ export const UserService = {
     };
   },
 
-  /** Public profile for any user (no email). */
-  async getPublicProfile(targetUserId: number) {
+  /**
+   * Public profile for any user (no email). Optional viewer enables `isFollowing`.
+   * Includes follower/following counts.
+   */
+  async getPublicUserById(
+    targetUserId: number,
+    viewerUserId?: number | null
+  ): Promise<PublicUserByIdResponse> {
     const user = await db.query.users.findFirst({
       where: eq(users.id, targetUserId),
       columns: { id: true, name: true, createdAt: true },
@@ -58,7 +85,17 @@ export const UserService = {
       where: eq(profiles.userId, targetUserId),
     });
 
-    return {
+    const [{ followersCount }] = await db
+      .select({ followersCount: sql<number>`count(*)::int` })
+      .from(follows)
+      .where(eq(follows.followingId, targetUserId));
+
+    const [{ followingCount }] = await db
+      .select({ followingCount: sql<number>`count(*)::int` })
+      .from(follows)
+      .where(eq(follows.followerId, targetUserId));
+
+    const base: PublicUserByIdResponse = {
       user: {
         id: user.id,
         name: user.name,
@@ -74,7 +111,21 @@ export const UserService = {
             favoriteGenre: profile.favoriteGenre,
           }
         : null,
+      stats: {
+        followersCount,
+        followingCount,
+      },
     };
+
+    if (viewerUserId != null && viewerUserId !== targetUserId) {
+      const followRow = await db.query.follows.findFirst({
+        where: and(eq(follows.followerId, viewerUserId), eq(follows.followingId, targetUserId)),
+        columns: { followerId: true },
+      });
+      return { ...base, isFollowing: followRow != null };
+    }
+
+    return base;
   },
 
   async updateProfile(
