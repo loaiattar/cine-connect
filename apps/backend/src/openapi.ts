@@ -168,6 +168,34 @@ export const openApiSpec = {
         },
         required: ["users", "total", "limit", "offset"],
       },
+      PublicProfileStats: {
+        type: "object",
+        description: "Follower counts for a user profile",
+        properties: {
+          followersCount: { type: "integer", minimum: 0 },
+          followingCount: { type: "integer", minimum: 0 },
+        },
+        required: ["followersCount", "followingCount"],
+      },
+      PublicUserByIdResponse: {
+        type: "object",
+        description: "Public profile by user id (no email). Send optional Bearer token to receive isFollowing when viewing another user.",
+        properties: {
+          user: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              name: { type: "string", nullable: true },
+              createdAt: { type: "string", format: "date-time", nullable: true },
+            },
+            required: ["id", "name", "createdAt"],
+          },
+          profile: { oneOf: [{ $ref: "#/components/schemas/UserProfile" }, { type: "null" }] },
+          stats: { $ref: "#/components/schemas/PublicProfileStats" },
+          isFollowing: { type: "boolean", description: "Only when authenticated viewer is not the target user" },
+        },
+        required: ["user", "profile", "stats"],
+      },
       ToggleFavoriteBody: {
         type: "object",
         required: ["movieId"],
@@ -420,6 +448,30 @@ export const openApiSpec = {
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/ValidationError" } },
             },
+          },
+        },
+      },
+    },
+    "/api/users/{userId}": {
+      get: {
+        tags: ["Users"],
+        summary: "Get public user profile by ID",
+        description:
+          "Returns name, profile fields (bio, avatar, etc.), and follower/following counts. No email. Optional JWT: when viewing another user, response includes isFollowing for the current user.",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "integer", minimum: 1 } },
+        ],
+        security: [],
+        responses: {
+          "200": {
+            description: "Public profile",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/PublicUserByIdResponse" } },
+            },
+          },
+          "404": {
+            description: "User not found",
+            content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
           },
         },
       },

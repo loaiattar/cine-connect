@@ -21,9 +21,11 @@ export const UserController = {
     return success(res, result);
   },
 
-  async getPublicProfile(req: Request, res: Response) {
+  /** GET /api/users/:userId and GET /api/users/:userId/profile (same payload). */
+  async getPublicUser(req: Request, res: Response) {
     const userId = Number(req.params.userId);
-    const result = await UserService.getPublicProfile(userId);
+    const viewerUserId = req.user?.userId ?? null;
+    const result = await UserService.getPublicUserById(userId, viewerUserId);
     return success(res, result);
   },
 

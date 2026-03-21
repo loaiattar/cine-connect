@@ -22,10 +22,18 @@ export interface GetMeResponse {
   profile: UserProfileRow | null;
 }
 
-/** GET /api/users/:userId/profile response (public, no email) */
+/** GET /api/users/:userId (and legacy /profile) — public, no email */
+export interface PublicProfileStats {
+  followersCount: number;
+  followingCount: number;
+}
+
 export interface GetPublicProfileResponse {
   user: { id: number; name: string | null; createdAt: string | null };
   profile: UserProfileRow | null;
+  stats: PublicProfileStats;
+  /** When the caller is logged in and viewing another user. */
+  isFollowing?: boolean;
 }
 
 /** PUT /api/users/me body; all fields optional */
@@ -58,7 +66,7 @@ export interface UserSearchOptions {
 export const userService = {
   getMe: () => apiClient.get<GetMeResponse>("/api/users/me"),
   getPublicProfile: (userId: number) =>
-    apiClient.get<GetPublicProfileResponse>(`/api/users/${userId}/profile`),
+    apiClient.get<GetPublicProfileResponse>(`/api/users/${userId}`),
   updateProfile: (data: UpdateProfilePayload) =>
     apiClient.put<UserProfileRow>("/api/users/me", data),
 
