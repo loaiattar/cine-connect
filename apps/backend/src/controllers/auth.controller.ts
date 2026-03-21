@@ -14,4 +14,10 @@ export const AuthController = {
         const result = await AuthService.login(email, password);
         return success(res, result);
     },
+
+    async refresh(req: Request, res: Response) {
+        const { refreshToken } = req.body;
+        const result = await AuthService.refresh(refreshToken);
+        return success(res, result);
+    },
 };
