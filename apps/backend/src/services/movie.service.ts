@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { favorites, watchlists, comments, users, ratings } from "../db/schema";
+import { favorites, watchlists, comments, users, ratings, follows, notifications } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { AppError, forbidden, notFound } from "../utils";
 import { TmdbService } from "./tmdb.service";
@@ -38,34 +38,35 @@ export const MovieService = {
     },
 
     async toggleFavorite(userId: number, movieId: number) {
-        const existing = await db
-            .select()
-            .from(favorites)
-            .where(
-                and(
-                    eq(favorites.userId, userId),
-                    eq(favorites.externalMovieId, movieId)
-                )
-            )
-            .limit(1);
-
-        if (existing.length > 0) {
-            await db
-                .delete(favorites)
+        return db.transaction(async (tx) => {
+            const existing = await tx
+                .select()
+                .from(favorites)
                 .where(
                     and(
                         eq(favorites.userId, userId),
                         eq(favorites.externalMovieId, movieId)
                     )
-                );
-            return { action: "removed", movieId };
-        } else {
-            await db.insert(favorites).values({
+                )
+                .limit(1);
+
+            if (existing.length > 0) {
+                await tx
+                    .delete(favorites)
+                    .where(
+                        and(
+                            eq(favorites.userId, userId),
+                            eq(favorites.externalMovieId, movieId)
+                        )
+                    );
+                return { action: "removed" as const, movieId };
+            }
+            await tx.insert(favorites).values({
                 userId,
                 externalMovieId: movieId,
             });
-            return { action: "added", movieId };
-        }
+            return { action: "added" as const, movieId };
+        });
     },
 
     async getUserFavorites(userId: number) {
@@ -77,34 +78,35 @@ export const MovieService = {
     },
 
     async toggleWatchlist(userId: number, movieId: number) {
-        const existing = await db
-            .select()
-            .from(watchlists)
-            .where(
-                and(
-                    eq(watchlists.userId, userId),
-                    eq(watchlists.externalMovieId, movieId)
-                )
-            )
-            .limit(1);
-
-        if (existing.length > 0) {
-            await db
-                .delete(watchlists)
+        return db.transaction(async (tx) => {
+            const existing = await tx
+                .select()
+                .from(watchlists)
                 .where(
                     and(
                         eq(watchlists.userId, userId),
                         eq(watchlists.externalMovieId, movieId)
                     )
-                );
-            return { action: "removed", movieId };
-        } else {
-            await db.insert(watchlists).values({
+                )
+                .limit(1);
+
+            if (existing.length > 0) {
+                await tx
+                    .delete(watchlists)
+                    .where(
+                        and(
+                            eq(watchlists.userId, userId),
+                            eq(watchlists.externalMovieId, movieId)
+                        )
+                    );
+                return { action: "removed" as const, movieId };
+            }
+            await tx.insert(watchlists).values({
                 userId,
                 externalMovieId: movieId,
             });
-            return { action: "added", movieId };
-        }
+            return { action: "added" as const, movieId };
+        });
     },
 
     async getMovieWatchlist(userId: number) {
@@ -143,33 +145,60 @@ export const MovieService = {
     },
 
     async addComment(userId: number, movieId: number, comment: string) {
-        const [newComment] = await db
-            .insert(comments)
-            .values({
-                userId,
-                externalMovieId: movieId,
-                comment,
-            })
-            .returning();
+        return db.transaction(async (tx) => {
+            const [newComment] = await tx
+                .insert(comments)
+                .values({
+                    userId,
+                    externalMovieId: movieId,
+                    comment,
+                })
+                .returning();
 
-        if (!newComment) {
-            throw new AppError("Failed to create comment", 500);
-        }
-        const [withUser] = await db
-            .select({
-                id: comments.id,
-                userId: comments.userId,
-                externalMovieId: comments.externalMovieId,
-                comment: comments.comment,
-                createdAt: comments.createdAt,
-                userEmail: users.email,
-                userName: users.name,
-            })
-            .from(comments)
-            .leftJoin(users, eq(comments.userId, users.id))
-            .where(eq(comments.id, newComment.id))
-            .limit(1);
-        return withUser ?? newComment;
+            if (!newComment) {
+                throw new AppError("Failed to create comment", 500);
+            }
+
+            const [commenter] = await tx
+                .select({ name: users.name })
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
+            const displayName = commenter?.name?.trim() || "Un membre";
+
+            const followerRows = await tx
+                .select({ followerId: follows.followerId })
+                .from(follows)
+                .where(eq(follows.followingId, userId));
+
+            if (followerRows.length > 0) {
+                const message = `${displayName} a laissé un commentaire sur un film`;
+                await tx.insert(notifications).values(
+                    followerRows.map((f) => ({
+                        userId: f.followerId,
+                        message,
+                        linkType: "movie",
+                        targetId: movieId,
+                    }))
+                );
+            }
+
+            const [withUser] = await tx
+                .select({
+                    id: comments.id,
+                    userId: comments.userId,
+                    externalMovieId: comments.externalMovieId,
+                    comment: comments.comment,
+                    createdAt: comments.createdAt,
+                    userEmail: users.email,
+                    userName: users.name,
+                })
+                .from(comments)
+                .leftJoin(users, eq(comments.userId, users.id))
+                .where(eq(comments.id, newComment.id))
+                .limit(1);
+            return withUser ?? newComment;
+        });
     },
 
     async getMovieComments(movieId: number) {

@@ -3,10 +3,10 @@ import { notifications } from "../db/schema";
 import { eq, and, desc, sql, isNull } from "drizzle-orm";
 
 export interface CreateNotificationOptions {
-    userId: number;
-    message: string;
-    linkType?: string | null;
-    targetId?: number | null;
+  userId: number;
+  message: string;
+  linkType?: string | null;
+  targetId?: number | null;
 }
 
 export const NotificationService = {
@@ -50,19 +50,19 @@ export const NotificationService = {
         };
     },
 
-    /** Create a notification for a user (e.g. on follow, comment, like). */
-    async create(options: CreateNotificationOptions) {
-        const [row] = await db
-            .insert(notifications)
-            .values({
-                userId: options.userId,
-                message: options.message,
-                linkType: options.linkType ?? null,
-                targetId: options.targetId ?? null,
-            })
-            .returning();
-        return row;
-    },
+  /** Create a notification for a user (e.g. on follow, comment, like). */
+  async create(options: CreateNotificationOptions) {
+    const [row] = await db
+      .insert(notifications)
+      .values({
+        userId: options.userId,
+        message: options.message,
+        linkType: options.linkType ?? null,
+        targetId: options.targetId ?? null,
+      })
+      .returning();
+    return row;
+  },
 
     /** Mark a single notification as read (must belong to userId). */
     async markAsRead(userId: number, notificationId: number) {
