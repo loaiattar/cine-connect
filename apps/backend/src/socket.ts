@@ -30,6 +30,7 @@ import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { getCorsAllowlist, getJwtSecret } from './config';
 import { MessageService } from './services/message.service';
+import { sanitizeUserText } from './utils/sanitize';
 
 const ROOM_PREFIX_FILM = 'film:';
 
@@ -105,8 +106,10 @@ export function createSocketServer(httpServer: HttpServer): Server {
 
     socket.on('message', async (payload: { roomId?: string; text?: string }) => {
       const roomId = typeof payload?.roomId === 'string' ? payload.roomId.trim() : '';
-      const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
-      if (!roomId || !text) return;
+      const raw = typeof payload?.text === 'string' ? payload.text.trim() : '';
+      if (!roomId || !raw) return;
+      const text = sanitizeUserText(raw);
+      if (!text) return;
       let createdAt: string = new Date().toISOString();
       try {
         const row = await MessageService.create(socket.data.userId ?? null, roomId, text);

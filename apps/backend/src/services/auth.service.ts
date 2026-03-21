@@ -5,7 +5,7 @@ import { and, eq, gt } from "drizzle-orm";
 import { getJwtSecret } from "../config";
 import { db } from "../db";
 import { users, profiles, refreshTokens } from "../db/schema";
-import { conflict, unauthorized } from "../utils";
+import { badRequest, conflict, unauthorized, sanitizeUserText } from "../utils";
 
 /** Access JWT lifetime in seconds (default 15 minutes). Override with JWT_ACCESS_EXPIRES_SECONDS. */
 function getAccessTokenExpiresSeconds(): number {
@@ -47,6 +47,11 @@ async function buildAuthPayload(userId: number, email: string) {
 
 export const AuthService = {
   async register(name: string, email: string, password: string) {
+    const safeName = sanitizeUserText(name);
+    if (!safeName) {
+      throw badRequest("Name is required");
+    }
+
     const existing = await db.query.users.findFirst({
       where: eq(users.email, email),
     });
@@ -58,7 +63,7 @@ export const AuthService = {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [newUser] = await db.insert(users).values({
-      name,
+      name: safeName,
       email,
       password: hashedPassword,
     }).returning();

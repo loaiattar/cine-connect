@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { messages, users } from '../db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
+import { sanitizeUserText } from '../utils';
 
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 100;
@@ -10,12 +11,16 @@ export const MessageService = {
    * Persist a chat message and return it (with optional sender email).
    */
   async create(senderId: number | null, roomId: string, content: string) {
+    const clean = sanitizeUserText(content);
+    if (!clean) {
+      return null;
+    }
     const [row] = await db
       .insert(messages)
       .values({
         senderId: senderId ?? null,
         roomId,
-        content,
+        content: clean,
       })
       .returning();
     return row;
