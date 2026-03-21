@@ -135,6 +135,7 @@ export const openApiSpec = {
           email: { type: "string" },
           createdAt: { type: "string", format: "date-time", nullable: true },
           followedAt: { type: "string", format: "date-time" },
+          avatarUrl: { type: "string", nullable: true },
         },
       },
       FollowersResponse: {

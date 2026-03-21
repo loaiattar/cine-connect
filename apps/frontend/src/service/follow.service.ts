@@ -7,6 +7,7 @@ export interface FollowUserRow {
   email: string;
   createdAt: string | null;
   followedAt: string | null;
+  avatarUrl?: string | null;
 }
 
 /** GET /api/users/:userId/followers or /following response */

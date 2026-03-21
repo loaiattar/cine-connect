@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "clean:cache": "node scripts/clear-ts-cache.cjs",
+    "predev": "node scripts/clear-ts-cache.cjs",
     "generate:routes": "tsr generate",
     "build": "pnpm run generate:routes && tsc -b && vite build",
     "lint": "eslint .",
