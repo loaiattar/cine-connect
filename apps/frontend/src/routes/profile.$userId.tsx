@@ -1,7 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
+import type { FollowUserRow } from "@/service/follow.service";
 import { Clapperboard, Loader2, User, UserPlus, UserMinus } from "lucide-react";
+import { useState } from "react";
+
+type ProfileConnectionsTab = "followers" | "following";
+
+function FollowListRow({ user: u }: { user: FollowUserRow }) {
+  const label = u.name?.trim() || u.email;
+  const avatar = u.avatarUrl?.trim() || null;
+  return (
+    <li>
+      <Link
+        to="/profile/$userId"
+        params={{ userId: String(u.id) }}
+        className="flex items-center gap-3 rounded-lg px-2 py-2 text-zinc-300 transition-colors hover:bg-zinc-800/60 hover:text-white"
+      >
+        {avatar ? (
+          <img src={avatar} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-800">
+            <User className="h-5 w-5 text-zinc-500" />
+          </div>
+        )}
+        <span className="min-w-0 truncate text-sm font-medium">{label}</span>
+      </Link>
+    </li>
+  );
+}
 
 export const Route = createFileRoute("/profile/$userId")({
   component: UserProfilePage,
@@ -31,10 +58,16 @@ function UserProfilePage() {
     followers,
     followersTotal,
     followersLoading,
+    followersError,
+    refetchFollowers,
     following,
     followingTotal,
     followingLoading,
+    followingError,
+    refetchFollowing,
   } = useFollow(isValidId ? userId : null, { fetchFollowers: true, fetchFollowing: true });
+
+  const [connectionsTab, setConnectionsTab] = useState<ProfileConnectionsTab>("followers");
 
   const displayName = user?.name ?? "Utilisateur";
   const avatarDisplay = profile?.avatarUrl ?? null;
@@ -164,52 +197,122 @@ function UserProfilePage() {
               </div>
             )}
 
-            {(followers.length > 0 || following.length > 0) && (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {followers.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnés ({followersTotal})</h2>
-                    <ul className="space-y-2">
-                      {followers.slice(0, 10).map((u) => (
-                        <li key={u.id}>
-                          <Link
-                            to="/profile/$userId"
-                            params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
-                          >
-                            {u.name || u.email}
-                          </Link>
-                        </li>
-                      ))}
-                      {followersTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followersTotal - 10} autres</li>
-                      )}
-                    </ul>
-                  </div>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
+              <div className="flex border-b border-zinc-800">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={connectionsTab === "followers"}
+                  onClick={() => setConnectionsTab("followers")}
+                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                    connectionsTab === "followers"
+                      ? "bg-zinc-800/80 text-white border-b-2 border-b-red-500 -mb-px"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Followers
+                  <span className="ml-1.5 tabular-nums text-zinc-500">({followersTotal})</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={connectionsTab === "following"}
+                  onClick={() => setConnectionsTab("following")}
+                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                    connectionsTab === "following"
+                      ? "bg-zinc-800/80 text-white border-b-2 border-b-red-500 -mb-px"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  Following
+                  <span className="ml-1.5 tabular-nums text-zinc-500">({followingTotal})</span>
+                </button>
+              </div>
+
+              <div className="p-4 min-h-[120px]" role="tabpanel">
+                {connectionsTab === "followers" && (
+                  <>
+                    {followersLoading && (
+                      <div className="flex flex-col items-center justify-center gap-2 py-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+                        <p className="text-sm text-zinc-500">Chargement des abonnés…</p>
+                      </div>
+                    )}
+                    {!followersLoading && followersError && (
+                      <div className="rounded-lg border border-red-900/50 bg-red-950/20 px-3 py-2 text-sm text-red-200">
+                        <p>{followersError.message}</p>
+                        <button
+                          type="button"
+                          onClick={() => refetchFollowers()}
+                          className="mt-2 text-xs underline hover:no-underline"
+                        >
+                          Réessayer
+                        </button>
+                      </div>
+                    )}
+                    {!followersLoading && !followersError && followers.length === 0 && (
+                      <p className="py-8 text-center text-sm text-zinc-500">Aucun abonné pour le moment.</p>
+                    )}
+                    {!followersLoading && !followersError && followers.length > 0 && (
+                      <>
+                        <ul className="space-y-0.5">
+                          {followers.map((u) => (
+                            <FollowListRow key={u.id} user={u} />
+                          ))}
+                        </ul>
+                        {followersTotal > followers.length && (
+                          <p className="mt-3 text-center text-xs text-zinc-500">
+                            {followers.length} sur {followersTotal} affichés
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
-                {following.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnements ({followingTotal})</h2>
-                    <ul className="space-y-2">
-                      {following.slice(0, 10).map((u) => (
-                        <li key={u.id}>
-                          <Link
-                            to="/profile/$userId"
-                            params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
-                          >
-                            {u.name || u.email}
-                          </Link>
-                        </li>
-                      ))}
-                      {followingTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followingTotal - 10} autres</li>
-                      )}
-                    </ul>
-                  </div>
+
+                {connectionsTab === "following" && (
+                  <>
+                    {followingLoading && (
+                      <div className="flex flex-col items-center justify-center gap-2 py-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+                        <p className="text-sm text-zinc-500">Chargement des abonnements…</p>
+                      </div>
+                    )}
+                    {!followingLoading && followingError && (
+                      <div className="rounded-lg border border-red-900/50 bg-red-950/20 px-3 py-2 text-sm text-red-200">
+                        <p>{followingError.message}</p>
+                        <button
+                          type="button"
+                          onClick={() => refetchFollowing()}
+                          className="mt-2 text-xs underline hover:no-underline"
+                        >
+                          Réessayer
+                        </button>
+                      </div>
+                    )}
+                    {!followingLoading && !followingError && following.length === 0 && (
+                      <p className="py-8 text-center text-sm text-zinc-500">
+                        Ne suit personne pour le moment.
+                      </p>
+                    )}
+                    {!followingLoading && !followingError && following.length > 0 && (
+                      <>
+                        <ul className="space-y-0.5">
+                          {following.map((u) => (
+                            <FollowListRow key={u.id} user={u} />
+                          ))}
+                        </ul>
+                        {followingTotal > following.length && (
+                          <p className="mt-3 text-center text-xs text-zinc-500">
+                            {following.length} sur {followingTotal} affichés
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
-            )}
+            </div>
           </div>
         )}
 

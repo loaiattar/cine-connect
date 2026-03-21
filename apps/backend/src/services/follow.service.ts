@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { follows, users } from "../db/schema";
+import { follows, profiles, users } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { badRequest, conflict, notFound } from "../utils";
 import { NotificationService } from "./notification.service";
@@ -66,9 +66,11 @@ export const FollowService = {
         email: users.email,
         createdAt: users.createdAt,
         followedAt: follows.createdAt,
+        avatarUrl: profiles.avatarUrl,
       })
       .from(follows)
       .innerJoin(users, eq(follows.followerId, users.id))
+      .leftJoin(profiles, eq(users.id, profiles.userId))
       .where(eq(follows.followingId, userId))
       .limit(limit)
       .offset(offset);
@@ -85,6 +87,7 @@ export const FollowService = {
         email: r.email,
         createdAt: r.createdAt,
         followedAt: r.followedAt,
+        avatarUrl: r.avatarUrl ?? null,
       })),
       total: count,
       limit,
@@ -107,9 +110,11 @@ export const FollowService = {
         email: users.email,
         createdAt: users.createdAt,
         followedAt: follows.createdAt,
+        avatarUrl: profiles.avatarUrl,
       })
       .from(follows)
       .innerJoin(users, eq(follows.followingId, users.id))
+      .leftJoin(profiles, eq(users.id, profiles.userId))
       .where(eq(follows.followerId, userId))
       .limit(limit)
       .offset(offset);
@@ -126,6 +131,7 @@ export const FollowService = {
         email: r.email,
         createdAt: r.createdAt,
         followedAt: r.followedAt,
+        avatarUrl: r.avatarUrl ?? null,
       })),
       total: count,
       limit,
