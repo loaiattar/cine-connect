@@ -36,10 +36,37 @@ export interface UpdateProfilePayload {
   favoriteGenre?: string;
 }
 
+/** GET /api/users/search — public fields only (no email). */
+export interface UserSearchRow {
+  id: number;
+  name: string | null;
+  avatarUrl: string | null;
+}
+
+export interface UserSearchResponse {
+  users: UserSearchRow[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface UserSearchOptions {
+  limit?: number;
+  offset?: number;
+}
+
 export const userService = {
   getMe: () => apiClient.get<GetMeResponse>("/api/users/me"),
   getPublicProfile: (userId: number) =>
     apiClient.get<GetPublicProfileResponse>(`/api/users/${userId}/profile`),
   updateProfile: (data: UpdateProfilePayload) =>
     apiClient.put<UserProfileRow>("/api/users/me", data),
+
+  searchUsers: (q: string, options?: UserSearchOptions) => {
+    const params = new URLSearchParams();
+    params.set("q", q);
+    if (options?.limit != null) params.set("limit", String(options.limit));
+    if (options?.offset != null) params.set("offset", String(options.offset));
+    return apiClient.get<UserSearchResponse>(`/api/users/search?${params.toString()}`);
+  },
 };
