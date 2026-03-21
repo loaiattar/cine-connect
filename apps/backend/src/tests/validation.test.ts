@@ -18,8 +18,8 @@ describe('Validation Error Handling', () => {
             .send({});
 
         expect(response.status).toBe(400);
-        expect(response.body.status).toBe('error');
-        expect(response.body.message).toBe('Validation Failed');
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Validation Failed');
         expect(response.body.errors[0].path).toBe('body.movieId');
     });
 
