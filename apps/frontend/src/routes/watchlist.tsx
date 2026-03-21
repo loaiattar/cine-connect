@@ -16,12 +16,6 @@ function getGenreNames(genreIds: number[] | undefined): string[] {
   return genreIds.map((id) => map.get(id) ?? "").filter(Boolean);
 }
 
-function unwrapMovie(raw: unknown): Movie | undefined {
-  if (raw == null) return undefined;
-  if (typeof raw === "object" && raw !== null && "data" in raw) return (raw as { data: Movie }).data;
-  return raw as Movie;
-}
-
 export const Route = createFileRoute("/watchlist")({
   beforeLoad: () => requireAuth(),
   component: WatchlistPage,
@@ -115,8 +109,7 @@ function WatchlistPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {watchlist.map((entry, index) => {
               const query = movieQueries[index];
-              const rawMovie = query?.data;
-              const movie = rawMovie != null ? unwrapMovie(rawMovie) : undefined;
+              const movie = query?.data;
               const isLoadingMovie = query?.isLoading ?? true;
 
               if (isLoadingMovie || !movie) {
