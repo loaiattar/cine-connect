@@ -3,6 +3,7 @@ export const ApiClientConfig = {
 } as const;
 
 import { useAuthStore } from '../stores/auth.store';
+import { updateSocketAuth } from './socket';
 
 export const HttpMethod = {
     GET: 'GET',
@@ -29,6 +30,58 @@ function parseFailureMessage(json: unknown, statusText: string): string {
     return `API Error: ${statusText}`;
 }
 
+/** Avoid refresh loop on auth endpoints that return 401 for wrong credentials. */
+function shouldTryRefreshOn401(endpoint: string): boolean {
+    const path = endpoint.split('?')[0];
+    return (
+        path !== '/api/auth/login' &&
+        path !== '/api/auth/register' &&
+        path !== '/api/auth/refresh'
+    );
+}
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function tryRefreshSession(): Promise<boolean> {
+    if (refreshInFlight) {
+        return refreshInFlight;
+    }
+    const p = (async (): Promise<boolean> => {
+        try {
+            const { refreshToken, user } = useAuthStore.getState();
+            if (refreshToken == null || refreshToken === '' || !user) return false;
+
+            const res = await fetch(`${ApiClientConfig.BASE_URL}/api/auth/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken }),
+            });
+            const json: unknown = await res.json().catch(() => null);
+
+            if (!res.ok || !json || typeof json !== 'object' || json === null || !('success' in json)) {
+                return false;
+            }
+            const o = json as Record<string, unknown>;
+            if (o.success !== true || !o.data || typeof o.data !== 'object' || o.data === null) {
+                return false;
+            }
+            const d = o.data as Record<string, unknown>;
+            if (typeof d.token !== 'string' || typeof d.refreshToken !== 'string') return false;
+            const uid = typeof d.userId === 'number' ? d.userId : Number(d.userId);
+            const email = typeof d.email === 'string' ? d.email : '';
+            useAuthStore.getState().setAuth(d.token, d.refreshToken, { userId: uid, email });
+            updateSocketAuth();
+            return true;
+        } catch {
+            return false;
+        } finally {
+            refreshInFlight = null;
+        }
+    })();
+    refreshInFlight = p;
+    return p;
+}
+
 export class ApiClient {
     private baseUrl: string;
 
@@ -38,9 +91,15 @@ export class ApiClient {
 
     /**
      * Returns unwrapped `data` from `{ success: true, data }`.
-     * Throws `ApiRequestError` on HTTP errors or `{ success: false, error }` with 2xx (should not happen).
+     * On 401, attempts one refresh-token rotation and retries the request once.
      */
-    async request<T>(endpoint: string, method: HttpMethod = HttpMethod.GET, body?: unknown, headers: Record<string, string> = {}): Promise<T> {
+    async request<T>(
+        endpoint: string,
+        method: HttpMethod = HttpMethod.GET,
+        body?: unknown,
+        headers: Record<string, string> = {},
+        retriedAfterRefresh = false
+    ): Promise<T> {
         const url = `${this.baseUrl}${endpoint}`;
         const token = useAuthStore.getState().token;
         const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
@@ -59,9 +118,22 @@ export class ApiClient {
         const json: unknown = await response.json().catch(() => null);
 
         if (!response.ok) {
+            if (
+                response.status === 401 &&
+                !retriedAfterRefresh &&
+                shouldTryRefreshOn401(endpoint)
+            ) {
+                const refreshed = await tryRefreshSession();
+                if (refreshed) {
+                    return this.request<T>(endpoint, method, body, headers, true);
+                }
+            }
+
             if (response.status === 401) {
                 useAuthStore.getState().clearAuth();
-                window.location.href = '/LoginPage';
+                if (typeof window !== 'undefined' && window.location.pathname !== '/LoginPage') {
+                    window.location.href = '/LoginPage';
+                }
             }
             throw {
                 status: response.status,
