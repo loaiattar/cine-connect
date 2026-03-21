@@ -139,4 +139,48 @@ describe('User profile REST endpoints', () => {
             expect(res.status).toBe(400);
         });
     });
+
+    describe('GET /api/users/:userId', () => {
+        it('returns 404 for unknown user id', async () => {
+            const res = await request(app).get('/api/users/999999999');
+            expect(res.status).toBe(404);
+        });
+
+        it('returns public profile with stats and no email when unauthenticated', async () => {
+            const suffix = Date.now();
+            const email = `pub-${suffix}@example.com`;
+            const { userId } = await AuthService.register('Public Api User', email, 'password123');
+
+            const res = await request(app).get(`/api/users/${userId}`);
+            expect(res.status).toBe(200);
+            expect(res.body).toMatchObject({
+                user: { id: userId, name: 'Public Api User' },
+                stats: { followersCount: 0, followingCount: 0 },
+            });
+            expect(res.body.user).not.toHaveProperty('email');
+            expect(res.body).not.toHaveProperty('isFollowing');
+        });
+
+        it('includes isFollowing for an authenticated viewer of another user', async () => {
+            const a = await AuthService.register('Viewer A', `v-a-${Date.now()}@ex.com`, 'password123');
+            const b = await AuthService.register('Target B', `t-b-${Date.now()}@ex.com`, 'password123');
+
+            const res = await request(app)
+                .get(`/api/users/${b.userId}`)
+                .set('Authorization', `Bearer ${a.token}`);
+            expect(res.status).toBe(200);
+            expect(res.body.isFollowing).toBe(false);
+
+            await request(app)
+                .post('/api/follows')
+                .set('Authorization', `Bearer ${a.token}`)
+                .send({ followingId: b.userId });
+
+            const res2 = await request(app)
+                .get(`/api/users/${b.userId}`)
+                .set('Authorization', `Bearer ${a.token}`);
+            expect(res2.status).toBe(200);
+            expect(res2.body.isFollowing).toBe(true);
+        });
+    });
 });
