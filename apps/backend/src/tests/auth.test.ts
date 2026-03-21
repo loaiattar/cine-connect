@@ -31,7 +31,8 @@ describe('Auth REST endpoints', () => {
                 .send({ name: 'New User', email: `register-${Date.now()}@example.com`, password: 'password123' });
 
             expect(res.status).toBe(201);
-            expect(res.body).toMatchObject({
+            expect(res.body.success).toBe(true);
+            expect(res.body.data).toMatchObject({
                 token: expect.any(String),
                 userId: expect.any(Number),
                 email: expect.stringMatching(/@/),
@@ -47,6 +48,7 @@ describe('Auth REST endpoints', () => {
                 .send({ name: 'Second', email, password: 'password456' });
 
             expect(res.status).toBe(409);
+            expect(res.body.success).toBe(false);
             expect(res.body.error).toBe('Email already registered');
         });
 
@@ -56,7 +58,8 @@ describe('Auth REST endpoints', () => {
                 .send({ name: '', email: 'not-an-email', password: 'short' });
 
             expect(invalid.status).toBe(400);
-            expect(invalid.body.message).toBe('Validation Failed');
+            expect(invalid.body.success).toBe(false);
+            expect(invalid.body.error).toBe('Validation Failed');
         });
     });
 
@@ -68,7 +71,8 @@ describe('Auth REST endpoints', () => {
             const res = await request(app).post('/api/auth/login').send({ email, password: 'password123' });
 
             expect(res.status).toBe(200);
-            expect(res.body).toMatchObject({
+            expect(res.body.success).toBe(true);
+            expect(res.body.data).toMatchObject({
                 token: expect.any(String),
                 userId: expect.any(Number),
                 email,
@@ -82,6 +86,7 @@ describe('Auth REST endpoints', () => {
             const res = await request(app).post('/api/auth/login').send({ email, password: 'wrongpassword' });
 
             expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
             expect(res.body.error).toBe('Invalid credentials');
         });
 
@@ -91,13 +96,15 @@ describe('Auth REST endpoints', () => {
                 .send({ email: 'nonexistent@example.com', password: 'password123' });
 
             expect(res.status).toBe(401);
+            expect(res.body.success).toBe(false);
             expect(res.body.error).toBe('Invalid credentials');
         });
 
         it.skipIf(() => !dbAvailable())('should return 400 for invalid body', async () => {
             const res = await request(app).post('/api/auth/login').send({ email: 'bad-email', password: '' });
             expect(res.status).toBe(400);
-            expect(res.body.message).toBe('Validation Failed');
+            expect(res.body.success).toBe(false);
+            expect(res.body.error).toBe('Validation Failed');
         });
     });
 
@@ -106,14 +113,15 @@ describe('Auth REST endpoints', () => {
         const registerRes = await request(app)
             .post('/api/auth/register')
             .send({ name: 'Protected User', email, password: 'password123' });
-        const { token, userId } = registerRes.body;
+        const { token, userId } = registerRes.body.data;
 
         const res = await request(app)
             .get(`/api/movies/favorites/${userId}`)
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.status).toBe(200);
-        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.success).toBe(true);
+        expect(Array.isArray(res.body.data)).toBe(true);
     });
 });
 
@@ -122,7 +130,7 @@ describe('Auth rate limiting', () => {
         const strictLimiter = rateLimit({
             windowMs: 60 * 1000,
             max: 2,
-            message: { error: 'Too many attempts. Please try again later.' },
+            message: { success: false, error: 'Too many attempts. Please try again later.' },
             standardHeaders: true,
             legacyHeaders: false,
         });
@@ -137,6 +145,7 @@ describe('Auth rate limiting', () => {
         expect(r1.status).toBe(200);
         expect(r2.status).toBe(200);
         expect(r3.status).toBe(429);
+        expect(r3.body.success).toBe(false);
         expect(r3.body.error).toBe('Too many attempts. Please try again later.');
     });
 });

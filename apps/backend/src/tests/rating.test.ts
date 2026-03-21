@@ -27,7 +27,8 @@ describe('Rating REST endpoints', () => {
         .send({ movieId, rating: 8 });
 
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({ movieId, rating: 8 });
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toMatchObject({ movieId, rating: 8 });
     });
 
     it('should upsert: second submit for same user/movie updates rating', async () => {
@@ -42,7 +43,8 @@ describe('Rating REST endpoints', () => {
         .send({ movieId, rating: 7 });
 
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({ movieId, rating: 7 });
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toMatchObject({ movieId, rating: 7 });
     });
 
     it('should return 401 when not authenticated', async () => {
@@ -61,7 +63,8 @@ describe('Rating REST endpoints', () => {
         .send({ movieId, rating: 0 });
 
       expect(resLow.status).toBe(400);
-      expect(resLow.body.message).toBe('Validation Failed');
+      expect(resLow.body.success).toBe(false);
+      expect(resLow.body.error).toBe('Validation Failed');
 
       const resHigh = await request(app)
         .post('/api/movies/rate')
@@ -77,11 +80,12 @@ describe('Rating REST endpoints', () => {
       const res = await request(app).get(`/api/movies/rating/${movieId}`);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('average');
-      expect(res.body).toHaveProperty('count');
-      expect(typeof res.body.average).toBe('number');
-      expect(typeof res.body.count).toBe('number');
-      expect(res.body.userRating).toBeUndefined();
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('average');
+      expect(res.body.data).toHaveProperty('count');
+      expect(typeof res.body.data.average).toBe('number');
+      expect(typeof res.body.data.count).toBe('number');
+      expect(res.body.data.userRating).toBeUndefined();
     });
 
     it('should return userRating when authenticated and user has rated', async () => {
@@ -95,7 +99,8 @@ describe('Rating REST endpoints', () => {
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toMatchObject({
         average: expect.any(Number),
         count: 1,
         userRating: 9,
@@ -121,8 +126,9 @@ describe('Rating REST endpoints', () => {
       const res = await request(app).get(`/api/movies/rating/${movieId}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.count).toBe(2);
-      expect(res.body.average).toBe(7); // (8+6)/2
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.count).toBe(2);
+      expect(res.body.data.average).toBe(7); // (8+6)/2
     });
   });
 });

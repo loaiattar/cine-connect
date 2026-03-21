@@ -64,9 +64,10 @@ describe('Movie Functional Tests - Favorites', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.action).toBe('added');
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.action).toBe('added');
 
-        expect(response.body.movieId).toBe(movieId);
+        expect(response.body.data.movieId).toBe(movieId);
 
     });
 
@@ -95,7 +96,8 @@ describe('Movie Functional Tests - Favorites', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.action).toBe('removed');
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.action).toBe('removed');
 
     });
 
@@ -135,9 +137,10 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.action).toBe('added');
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.action).toBe('added');
 
-        expect(response.body.movieId).toBe(movieId);
+        expect(response.body.data.movieId).toBe(movieId);
 
     });
 
@@ -164,7 +167,8 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.action).toBe('removed');
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.action).toBe('removed');
 
     });
 
@@ -189,7 +193,8 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.some((item: any) => item.externalMovieId === movieId)).toBe(true);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.some((item: any) => item.externalMovieId === movieId)).toBe(true);
 
     });
 
@@ -214,7 +219,8 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.status).toBe(200);
 
-        expect(response.body.action).toBe('removed');
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.action).toBe('removed');
 
     });
 
@@ -232,6 +238,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         expect(response.status).toBe(403);
 
+        expect(response.body.success).toBe(false);
         expect(response.body.error).toContain('Unauthorized');
 
     });
@@ -245,8 +252,9 @@ describe('Movie Functional Tests - Watchlist', () => {
             .send({ movieId, comment: commentText });
 
         expect(response.status).toBe(200);
-        expect(response.body.comment).toBe(commentText);
-        expect(response.body.userId).toBe(userId);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.comment).toBe(commentText);
+        expect(response.body.data.userId).toBe(userId);
     });
 
     it('should fetch all comments for a movie', async () => {
@@ -259,9 +267,10 @@ describe('Movie Functional Tests - Watchlist', () => {
             .get(`/api/movies/comments/${movieId}`);
 
         expect(response.status).toBe(200);
-        expect(Array.isArray(response.body)).toBe(true);
-        expect(response.body.length).toBeGreaterThan(0);
-        expect(response.body[0]).toHaveProperty('comment');
+        expect(response.body.success).toBe(true);
+        expect(Array.isArray(response.body.data)).toBe(true);
+        expect(response.body.data.length).toBeGreaterThan(0);
+        expect(response.body.data[0]).toHaveProperty('comment');
     });
 
     it('should NOT allow deleting another user\'s comment', async () => {
@@ -270,7 +279,7 @@ describe('Movie Functional Tests - Watchlist', () => {
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId, comment: "I own this comment" });
 
-        const commentId = commentRes.body.id;
+        const commentId = commentRes.body.data.id;
 
         const hacker = await AuthService.register('hacker', `hacker-${Date.now()}@example.com`, 'password123');
 
@@ -304,7 +313,8 @@ describe('Movie Functional Tests - Watchlist', () => {
             .query({ limit: 20 });
 
         expect(notifRes.status).toBe(200);
-        const list = notifRes.body.notifications ?? [];
+        expect(notifRes.body.success).toBe(true);
+        const list = notifRes.body.data?.notifications ?? [];
         expect(
             list.some(
                 (n: { message: string; linkType?: string | null; targetId?: number | null }) =>
@@ -328,6 +338,7 @@ describe('Movie Functional Tests - Search', () => {
             .get('/api/movies/search')
             .set('Authorization', `Bearer ${searchToken}`);
         expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
         expect(response.body.errors).toBeDefined();
     });
 
@@ -337,11 +348,12 @@ describe('Movie Functional Tests - Search', () => {
             .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'inception' });
         expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('page');
-        expect(response.body).toHaveProperty('results');
-        expect(response.body).toHaveProperty('total_pages');
-        expect(response.body).toHaveProperty('total_results');
-        expect(Array.isArray(response.body.results)).toBe(true);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data).toHaveProperty('page');
+        expect(response.body.data).toHaveProperty('results');
+        expect(response.body.data).toHaveProperty('total_pages');
+        expect(response.body.data).toHaveProperty('total_results');
+        expect(Array.isArray(response.body.data.results)).toBe(true);
     });
 
     it('should accept optional page and genre params', async () => {
@@ -350,7 +362,8 @@ describe('Movie Functional Tests - Search', () => {
             .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'matrix', page: 1 });
         expect(response.status).toBe(200);
-        expect(response.body.page).toBe(1);
-        expect(Array.isArray(response.body.results)).toBe(true);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.page).toBe(1);
+        expect(Array.isArray(response.body.data.results)).toBe(true);
     });
 });   
