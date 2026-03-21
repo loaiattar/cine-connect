@@ -42,6 +42,8 @@ function UserProfilePage() {
   const {
     user,
     profile,
+    stats,
+    isFollowingFromApi,
     isLoading,
     isError,
     error,
@@ -71,6 +73,12 @@ function UserProfilePage() {
 
   const displayName = user?.name ?? "Utilisateur";
   const avatarDisplay = profile?.avatarUrl ?? null;
+  const followersCountDisplay = stats?.followersCount ?? followersTotal;
+  const followingCountDisplay = stats?.followingCount ?? followingTotal;
+  const countsLoading =
+    stats == null && (followersLoading || followingLoading);
+  const showFollowing =
+    isFollowingFromApi !== undefined ? isFollowingFromApi : isFollowing;
 
   if (!isValidId) {
     return (
@@ -144,12 +152,12 @@ function UserProfilePage() {
                   <p className="text-sm text-zinc-400">{user.email}</p>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-400">
-                  {followersLoading || followingLoading ? (
+                  {countsLoading ? (
                     <span>Chargement…</span>
                   ) : (
                     <>
-                      <span><span className="font-semibold text-white">{followersTotal}</span> abonnés</span>
-                      <span><span className="font-semibold text-white">{followingTotal}</span> abonnements</span>
+                      <span><span className="font-semibold text-white">{followersCountDisplay}</span> abonnés</span>
+                      <span><span className="font-semibold text-white">{followingCountDisplay}</span> abonnements</span>
                     </>
                   )}
                 </div>
@@ -158,7 +166,7 @@ function UserProfilePage() {
                     {followError && (
                       <p className="text-sm text-red-400 mb-1">{followError.message}</p>
                     )}
-                    {isFollowing ? (
+                    {showFollowing ? (
                       <button
                         type="button"
                         onClick={() => unfollow(userId)}
@@ -211,7 +219,7 @@ function UserProfilePage() {
                   }`}
                 >
                   Followers
-                  <span className="ml-1.5 tabular-nums text-zinc-500">({followersTotal})</span>
+                  <span className="ml-1.5 tabular-nums text-zinc-500">({followersCountDisplay})</span>
                 </button>
                 <button
                   type="button"
@@ -225,7 +233,7 @@ function UserProfilePage() {
                   }`}
                 >
                   Following
-                  <span className="ml-1.5 tabular-nums text-zinc-500">({followingTotal})</span>
+                  <span className="ml-1.5 tabular-nums text-zinc-500">({followingCountDisplay})</span>
                 </button>
               </div>
 
@@ -260,9 +268,9 @@ function UserProfilePage() {
                             <FollowListRow key={u.id} user={u} />
                           ))}
                         </ul>
-                        {followersTotal > followers.length && (
+                        {followersCountDisplay > followers.length && (
                           <p className="mt-3 text-center text-xs text-zinc-500">
-                            {followers.length} sur {followersTotal} affichés
+                            {followers.length} sur {followersCountDisplay} affichés
                           </p>
                         )}
                       </>
@@ -302,9 +310,9 @@ function UserProfilePage() {
                             <FollowListRow key={u.id} user={u} />
                           ))}
                         </ul>
-                        {followingTotal > following.length && (
+                        {followingCountDisplay > following.length && (
                           <p className="mt-3 text-center text-xs text-zinc-500">
-                            {following.length} sur {followingTotal} affichés
+                            {following.length} sur {followingCountDisplay} affichés
                           </p>
                         )}
                       </>

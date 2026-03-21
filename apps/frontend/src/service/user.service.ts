@@ -31,7 +31,8 @@ export interface PublicProfileStats {
 export interface GetPublicProfileResponse {
   user: { id: number; name: string | null; createdAt: string | null };
   profile: UserProfileRow | null;
-  stats: PublicProfileStats;
+  /** Present on current GET /api/users/:userId; older clients may omit. */
+  stats?: PublicProfileStats;
   /** When the caller is logged in and viewing another user. */
   isFollowing?: boolean;
 }
