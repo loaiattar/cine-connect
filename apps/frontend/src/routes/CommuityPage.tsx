@@ -1,24 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clapperboard, Users } from "lucide-react";
+import { Clapperboard, Loader2, User, Users } from "lucide-react";
+import { useUserSearch } from "@/hooks/useUserSearch";
 
 export const Route = createFileRoute("/CommuityPage")({
   component: CommunautePage,
 });
 
-const membres = [
-  { id: 1, username: "Alice Martin", bio: "Passionnée de cinéma français.", films: 142 },
-  { id: 2, username: "Tom Dubois", bio: "Fan de science-fiction.", films: 89 },
-  { id: 3, username: "Sara Benali", bio: "J'adore les comédies romantiques.", films: 57 },
-  { id: 4, username: "Karim Leroy", bio: "Spécialiste des films noirs des années 50.", films: 315 },
-];
+const DEBOUNCE_MS = 350;
+const PAGE_SIZE = 20;
 
 function CommunautePage() {
-  const [recherche, setRecherche] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [page, setPage] = useState(1);
 
-  const resultats = membres.filter((m) =>
-    m.username.toLowerCase().includes(recherche.toLowerCase())
-  );
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedQuery(inputValue.trim());
+      setPage(1);
+    }, DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [inputValue]);
+
+  const limit = page * PAGE_SIZE;
+
+  const { data, isLoading, isError, error, isFetching } = useUserSearch(debouncedQuery, {
+    limit,
+    offset: 0,
+    enabled: debouncedQuery.length > 0,
+  });
+
+  const users = data?.users ?? [];
+  const total = data?.total ?? 0;
+  const hasMore = users.length < total;
+  const showEmpty =
+    debouncedQuery.length > 0 && !isLoading && !isError && users.length === 0 && !isFetching;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -47,29 +64,88 @@ function CommunautePage() {
         </div>
 
         <input
-          type="text"
-          placeholder="Rechercher un membre..."
-          value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
+          type="search"
+          placeholder="Rechercher un membre (nom ou e-mail)…"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          autoComplete="off"
           className="mb-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
         />
 
-        {resultats.length === 0 && (
-          <p className="text-center text-zinc-400">Aucun membre trouvé pour "{recherche}"</p>
+        {!debouncedQuery && (
+          <p className="text-center text-zinc-500 text-sm">
+            Saisissez un nom ou un e-mail pour rechercher des membres.
+          </p>
         )}
 
-        <ul className="space-y-3">
-          {resultats.map((membre) => (
-            <li
-              key={membre.id}
-              className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3"
-            >
-              <p className="font-semibold text-white">{membre.username}</p>
-              <p className="text-sm text-zinc-400">{membre.bio}</p>
-              <p className="mt-1 text-xs text-zinc-500">{membre.films} films vus</p>
-            </li>
-          ))}
-        </ul>
+        {debouncedQuery && isLoading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-12">
+            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
+            <p className="text-sm text-zinc-500">Recherche…</p>
+          </div>
+        )}
+
+        {debouncedQuery && isError && (
+          <p className="text-center text-red-400 text-sm">
+            {error instanceof Error ? error.message : "La recherche a échoué."}
+          </p>
+        )}
+
+        {showEmpty && (
+          <p className="text-center text-zinc-400">
+            Aucun membre trouvé pour « {debouncedQuery} »
+          </p>
+        )}
+
+        {debouncedQuery && users.length > 0 && (
+          <>
+            <ul className="space-y-3">
+              {users.map((membre) => {
+                const label = membre.name?.trim() || `Utilisateur #${membre.id}`;
+                const avatar = membre.avatarUrl?.trim() || null;
+                return (
+                  <li key={membre.id}>
+                    <Link
+                      to="/profile/$userId"
+                      params={{ userId: String(membre.id) }}
+                      className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+                    >
+                      {avatar ? (
+                        <img
+                          src={avatar}
+                          alt=""
+                          className="h-12 w-12 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-800">
+                          <User className="h-6 w-6 text-zinc-500" />
+                        </div>
+                      )}
+                      <span className="font-semibold text-white">{label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-6 flex flex-col items-center gap-2 text-sm text-zinc-500">
+              <span>
+                {users.length} sur {total} résultat
+                {total > 1 ? "s" : ""}
+              </span>
+              {hasMore && (
+                <button
+                  type="button"
+                  disabled={isFetching}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="rounded-lg border border-zinc-600 px-4 py-2 text-zinc-300 hover:bg-zinc-800 disabled:opacity-50"
+                >
+                  {isFetching ? "Chargement…" : "Charger plus"}
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
