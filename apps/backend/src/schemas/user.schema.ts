@@ -16,3 +16,11 @@ export const updateProfileSchema = z.object({
         favoriteGenre: z.string().max(100).optional(),
     }),
 });
+
+export const searchUsersSchema = z.object({
+    query: z.object({
+        q: z.string().max(100).optional().default(""),
+        limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+        offset: z.coerce.number().int().min(0).optional().default(0),
+    }),
+});
