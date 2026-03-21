@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { badRequest, forbidden, success } from "../utils";
-import { MovieService } from "../services/movie.service";
+import { MovieService } from "../services/movie";
 import { getSocketIo, filmRoomId } from "../socket";
 
 export const MovieController = {
