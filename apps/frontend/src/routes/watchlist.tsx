@@ -7,7 +7,6 @@ import MovieCard from "@/components/ui/CardFilm";
 import { getMovieImageUrl } from "@/lib/utils";
 import { moviesService } from "@/service/movies.service";
 import { MOVIE_GENRES } from "@cine-connect/shared";
-import type { Movie } from "@cine-connect/shared";
 import { Clapperboard, Loader2, Bookmark, Trash2 } from "lucide-react";
 
 function getGenreNames(genreIds: number[] | undefined): string[] {
