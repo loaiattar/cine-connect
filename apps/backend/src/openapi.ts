@@ -23,7 +23,8 @@ export const openApiSpec = {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
-        description: "JWT from POST /api/auth/register or POST /api/auth/login",
+        description:
+          "Short-lived JWT from POST /api/auth/register, /api/auth/login, or /api/auth/refresh. Use refresh token body flow when access token expires.",
       },
     },
     schemas: {
@@ -64,11 +65,22 @@ export const openApiSpec = {
       AuthResponse: {
         type: "object",
         properties: {
-          token: { type: "string", description: "JWT for Authorization header" },
+          token: { type: "string", description: "Access JWT (short-lived) for Authorization header" },
+          refreshToken: {
+            type: "string",
+            description: "Opaque refresh token; send to POST /api/auth/refresh for rotation (new access + new refresh)",
+          },
           userId: { type: "integer", description: "User ID" },
           email: { type: "string", format: "email" },
         },
-        required: ["token", "userId", "email"],
+        required: ["token", "refreshToken", "userId", "email"],
+      },
+      RefreshBody: {
+        type: "object",
+        required: ["refreshToken"],
+        properties: {
+          refreshToken: { type: "string", minLength: 1, description: "Current refresh token from login/register/previous refresh" },
+        },
       },
       RegisterBody: {
         type: "object",
@@ -315,7 +327,7 @@ export const openApiSpec = {
       post: {
         tags: ["Auth"],
         summary: "Register a new user",
-        description: "Creates an account and returns a JWT. Duplicate email returns 409.",
+        description: "Creates an account and returns access + refresh tokens. Duplicate email returns 409.",
         requestBody: {
           required: true,
           content: {
@@ -363,7 +375,7 @@ export const openApiSpec = {
       post: {
         tags: ["Auth"],
         summary: "Log in",
-        description: "Returns a JWT for valid email/password. Invalid credentials return 401.",
+        description: "Returns access + refresh tokens for valid email/password. Invalid credentials return 401.",
         requestBody: {
           required: true,
           content: {
@@ -400,6 +412,55 @@ export const openApiSpec = {
           },
           "401": {
             description: "Invalid credentials",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
+            },
+          },
+        },
+      },
+    },
+    "/api/auth/refresh": {
+      post: {
+        tags: ["Auth"],
+        summary: "Refresh tokens",
+        description:
+          "Exchanges a valid refresh token for a new access JWT and a new refresh token (rotation). The previous refresh token is invalidated.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/RefreshBody" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "New access and refresh tokens",
+            content: {
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: { $ref: "#/components/schemas/AuthResponse" },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          "400": {
+            description: "Validation failed",
+            content: {
+              "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
+            },
+          },
+          "401": {
+            description: "Invalid or expired refresh token",
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
             },

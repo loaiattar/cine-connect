@@ -13,6 +13,7 @@ export interface RegisterCredentials {
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
   userId: number;
   email: string;
 }
@@ -87,6 +88,30 @@ export const authService = {
         message = !parsed.ok ? parsed.error : `Erreur ${res.status}`;
       }
       throw { status: res.status, message, data: body } as AuthError & { data?: unknown };
+    }
+
+    const parsed = parseEnvelope(body);
+    if (!parsed.ok) {
+      throw { status: res.status, message: parsed.error } as AuthError;
+    }
+    return parsed.data as AuthResponse;
+  },
+
+  async refresh(refreshToken: string): Promise<AuthResponse> {
+    const res = await fetch(`${baseUrl}/api/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const parsed = parseEnvelope(body);
+      throw {
+        status: res.status,
+        message: !parsed.ok ? parsed.error : `Erreur ${res.status}`,
+      } as AuthError;
     }
 
     const parsed = parseEnvelope(body);

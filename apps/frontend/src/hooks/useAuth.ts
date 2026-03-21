@@ -28,7 +28,7 @@ export function useAuth(): UseAuthReturn {
   const login = useCallback(
     async (credentials: LoginCredentials) => {
       const res = await authService.login(credentials);
-      setAuth(res.token, { userId: res.userId, email: res.email });
+      setAuth(res.token, res.refreshToken, { userId: res.userId, email: res.email });
     },
     [setAuth]
   );
@@ -40,7 +40,7 @@ export function useAuth(): UseAuthReturn {
   const register = useCallback(
     async (credentials: RegisterCredentials) => {
       const res = await authService.register(credentials);
-      setAuth(res.token, { userId: res.userId, email: res.email });
+      setAuth(res.token, res.refreshToken, { userId: res.userId, email: res.email });
     },
     [setAuth]
   );

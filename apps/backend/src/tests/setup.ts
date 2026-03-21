@@ -9,6 +9,7 @@ import {
   notifications,
   follows,
   profiles,
+  refreshTokens,
 } from '../db/schema';
 import { sql } from 'drizzle-orm';
 
@@ -27,6 +28,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   if (!dbAvailable) return;
+  await db.delete(refreshTokens);
   await db.delete(comments);
   await db.delete(favorites);
   await db.delete(watchlists);

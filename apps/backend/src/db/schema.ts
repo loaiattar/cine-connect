@@ -8,6 +8,21 @@ export const users = pgTable("users", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
+/** Opaque refresh tokens are hashed (SHA-256) before storage; rotation replaces the row on each refresh. */
+export const refreshTokens = pgTable(
+    "refresh_tokens",
+    {
+        id: serial("id").primaryKey(),
+        userId: integer("user_id")
+            .notNull()
+            .references(() => users.id, { onDelete: "cascade" }),
+        tokenHash: text("token_hash").notNull().unique(),
+        expiresAt: timestamp("expires_at").notNull(),
+        createdAt: timestamp("created_at").defaultNow(),
+    },
+    (t) => [index("refresh_tokens_user_id_idx").on(t.userId)]
+);
+
 export const favorites = pgTable("favorites", {
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id, { onDelete: 'cascade' }),
