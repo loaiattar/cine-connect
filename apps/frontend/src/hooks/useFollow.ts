@@ -1,23 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-import {
-  followService,
-  type FollowUserRow,
-  type FollowListResponse,
-} from "@/service/follow.service";
+import { followService, type FollowUserRow } from "@/service/follow.service";
 import { useAuth } from "@/hooks/useAuth";
-
-function unwrapFollowList(raw: unknown): FollowListResponse | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    if (d != null && typeof d === "object" && "users" in d) return d as FollowListResponse;
-    return null;
-  }
-  if (typeof raw === "object" && "users" in raw && Array.isArray((raw as FollowListResponse).users))
-    return raw as FollowListResponse;
-  return null;
-}
 
 export interface UseFollowOptions {
   /** Fetch followers list for profileUserId (default true) */
@@ -77,7 +61,7 @@ export function useFollow(
     enabled: currentUserId != null && profileUserId != null && !isSelf,
   });
 
-  const myFollowing = unwrapFollowList(rawMyFollowing);
+  const myFollowing = rawMyFollowing;
   const isFollowing = useMemo(
     () =>
       !isSelf &&
@@ -137,7 +121,7 @@ export function useFollow(
 
   /** Followers of profileUserId */
   const {
-    data: rawFollowers,
+    data: followersData,
     isLoading: followersLoading,
     isError: followersIsError,
     error: followersError,
@@ -148,14 +132,12 @@ export function useFollow(
       followService.getFollowers(profileUserId!, { limit: listLimit, offset: 0 }),
     enabled: fetchFollowers && profileUserId != null,
   });
-
-  const followersData = unwrapFollowList(rawFollowers);
   const followers = followersData?.users ?? [];
   const followersTotal = followersData?.total ?? 0;
 
   /** Following of profileUserId */
   const {
-    data: rawFollowing,
+    data: followingData,
     isLoading: followingLoading,
     isError: followingIsError,
     error: followingError,
@@ -166,8 +148,6 @@ export function useFollow(
       followService.getFollowing(profileUserId!, { limit: listLimit, offset: 0 }),
     enabled: fetchFollowing && profileUserId != null,
   });
-
-  const followingData = unwrapFollowList(rawFollowing);
   const following = followingData?.users ?? [];
   const followingTotal = followingData?.total ?? 0;
 

@@ -3,26 +3,8 @@ import { useCallback } from "react";
 import {
   notificationService,
   type NotificationRow,
-  type NotificationsListResponse,
 } from "@/service/notification.service";
 import { useAuth } from "@/hooks/useAuth";
-
-function unwrapNotificationsList(raw: unknown): NotificationsListResponse | null {
-  if (raw == null) return null;
-  if (typeof raw === "object" && "data" in raw) {
-    const d = (raw as { data: unknown }).data;
-    if (d != null && typeof d === "object" && "notifications" in d)
-      return d as NotificationsListResponse;
-    return null;
-  }
-  if (
-    typeof raw === "object" &&
-    "notifications" in raw &&
-    Array.isArray((raw as NotificationsListResponse).notifications)
-  )
-    return raw as NotificationsListResponse;
-  return null;
-}
 
 export interface UseNotificationsOptions {
   limit?: number;
@@ -93,7 +75,7 @@ export function useNotifications(
     [markAllAsReadMutation]
   );
 
-  const data = unwrapNotificationsList(rawData);
+  const data = rawData ?? null;
   const notifications = data?.notifications ?? [];
   const total = data?.total ?? 0;
   const unreadCount = notifications.filter((n) => !n.readAt).length;

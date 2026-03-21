@@ -7,13 +7,6 @@ import {
   type TrendingResponse,
 } from "@/service/movies.service";
 
-/** Unwrap backend response (raw payload or ApiResponse envelope). */
-function unwrapData<T>(raw: unknown, hasDataKey: (r: unknown) => r is { data: T }): T | undefined {
-  if (raw == null) return undefined;
-  if (hasDataKey(raw)) return raw.data;
-  return raw as T; // backend often returns payload directly
-}
-
 /** Trending list item shape (for useMovieList). */
 export type TrendingMovieItem = NonNullable<TrendingResponse["results"]>[number];
 
@@ -29,16 +22,11 @@ export interface UseMovieListReturn {
  * Fetches trending movies (home list). Uses React Query for cache and loading/error state.
  */
 export function useMovieList(): UseMovieListReturn {
-  const { data: raw, isLoading, isError, error, refetch } = useQuery({
+  const { data: response, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["movies", "trending"],
     queryFn: () => moviesService.getTrending(),
   });
 
-  const response = unwrapData<TrendingResponse>(
-    raw,
-    (r): r is { data: TrendingResponse } =>
-      typeof r === "object" && r !== null && "data" in r && typeof (r as { data: unknown }).data === "object"
-  );
   const list = response?.results ?? [];
 
   return {
@@ -63,18 +51,11 @@ export interface UseMovieDetailReturn {
  */
 export function useMovieDetail(movieId: number): UseMovieDetailReturn {
   const enabled = Number.isInteger(movieId) && movieId > 0;
-  const { data: raw, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["movie", movieId],
     queryFn: () => moviesService.getMovieById(movieId),
     enabled,
   });
-
-  const data =
-    unwrapData<Movie>(
-      raw,
-      (r): r is { data: Movie } =>
-        typeof r === "object" && r !== null && "data" in r
-    ) ?? (raw as Movie | undefined);
 
   return {
     data,
@@ -108,18 +89,11 @@ export function useMovieSearch(
   const { page, genre, enabled = true } = options ?? {};
   const shouldRun = enabled && trimmed.length > 0;
 
-  const { data: raw, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["movies", "search", trimmed, page, genre],
     queryFn: () => moviesService.searchMovies(trimmed, { page, genre }),
     enabled: shouldRun,
   });
-
-  const response = unwrapData<SearchResponse>(
-    raw,
-    (r): r is { data: SearchResponse } =>
-      typeof r === "object" && r !== null && "data" in r
-  );
-  const data = response ?? (raw as SearchResponse | undefined);
 
   return {
     data,
