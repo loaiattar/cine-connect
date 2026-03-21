@@ -132,6 +132,30 @@ export function createSocketServer(httpServer: HttpServer): Server {
   return io;
 }
 
+/**
+ * Disconnect all Socket.io clients and close the Engine; clears the singleton.
+ * Call before httpServer.close() during graceful shutdown.
+ */
+export function closeSocketServer(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const io = socketIoInstance;
+    if (!io) {
+      resolve();
+      return;
+    }
+    try {
+      io.disconnectSockets(true);
+    } catch {
+      // ignore
+    }
+    io.close((err) => {
+      socketIoInstance = null;
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 /** Normalize room id for a film: use "film:{movieId}". */
 export function filmRoomId(movieId: number): string {
   return `${ROOM_PREFIX_FILM}${movieId}`;

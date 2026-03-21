@@ -71,3 +71,12 @@ function getConnectionString(): string {
 
 const client = postgres(getConnectionString());
 export const db = drizzle(client, { schema });
+
+let dbClosed = false;
+
+/** Closes the Postgres pool (postgres.js). Safe to call multiple times. */
+export async function closeDatabase(): Promise<void> {
+  if (dbClosed) return;
+  dbClosed = true;
+  await client.end({ timeout: 10 });
+}
