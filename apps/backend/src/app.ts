@@ -28,7 +28,8 @@ const app: Express = express();
 
 applyCors(app);
 
-// HTTP request logging (skip in tests to avoid noisy output)
+// HTTP request logging via morgan (skip in tests).
+// MORGAN_FORMAT: preset ("combined", "dev", "common", "short", "tiny") or a custom token string — see morgan docs.
 if (process.env.NODE_ENV !== 'test') {
   const logFormat =
     process.env.MORGAN_FORMAT ??
