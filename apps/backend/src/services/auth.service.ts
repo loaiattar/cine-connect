@@ -36,7 +36,9 @@ async function persistRefreshToken(userId: number): Promise<string> {
 
 function signAccessToken(userId: number, email: string): string {
   const options: SignOptions = { expiresIn: getAccessTokenExpiresSeconds() };
-  return jwt.sign({ userId, email }, getJwtSecret(), options);
+  // Unique per issuance so tokens differ even within the same second (register → refresh in CI).
+  const jti = randomBytes(16).toString("hex");
+  return jwt.sign({ userId, email, jti }, getJwtSecret(), options);
 }
 
 async function buildAuthPayload(userId: number, email: string) {

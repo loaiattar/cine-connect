@@ -17,4 +17,21 @@ describe("sanitizeUserText", () => {
   it("preserves plain text and apostrophes", () => {
     expect(sanitizeUserText("C'est un bon film!")).toBe("C'est un bon film!");
   });
+
+  it("returns empty string for empty input after trim", () => {
+    expect(sanitizeUserText("   ")).toBe("");
+    expect(sanitizeUserText("")).toBe("");
+  });
+
+  it("returns empty for non-string input", () => {
+    expect(sanitizeUserText(null as unknown as string)).toBe("");
+    expect(sanitizeUserText(undefined as unknown as string)).toBe("");
+    expect(sanitizeUserText(42 as unknown as string)).toBe("");
+  });
+
+  it("normalizes newlines in plain text", () => {
+    const out = sanitizeUserText("line1\nline2");
+    expect(out).toContain("line1");
+    expect(out).toContain("line2");
+  });
 });
