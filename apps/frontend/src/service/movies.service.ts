@@ -12,7 +12,7 @@ export interface FavoriteEntry {
     addedAt: string | null;
 }
 
-/** POST /api/movies/favorite — toggle add/remove; response shape */
+/** POST /api/v1/movies/favorite — toggle add/remove; response shape */
 export interface ToggleFavoriteResponse {
     action: "added" | "removed";
     movieId: number;
@@ -25,26 +25,26 @@ export interface WatchlistEntry {
     createdAt?: string | null;
 }
 
-/** POST /api/movies/watchlist — toggle add/remove; response shape */
+/** POST /api/v1/movies/watchlist — toggle add/remove; response shape */
 export interface ToggleWatchlistResponse {
     action: "added" | "removed";
     movieId: number;
 }
 
-/** GET /api/movies/rating/:movieId response */
+/** GET /api/v1/movies/rating/:movieId response */
 export interface MovieRatingResponse {
     average: number;
     count: number;
     userRating?: number | null;
 }
 
-/** POST /api/movies/rate body & response */
+/** POST /api/v1/movies/rate body & response */
 export interface SubmitRatingPayload {
     movieId: number;
     rating: number;
 }
 
-/** GET /api/movies/comments/:movieId — single comment with optional user info */
+/** GET /api/v1/movies/comments/:movieId — single comment with optional user info */
 export interface MovieCommentRow {
     id: number;
     userId: number | null;
@@ -67,7 +67,7 @@ export interface TrendingResponse {
     }>;
 }
 
-/** GET /api/movies/search — paginated search results (matches backend shape) */
+/** GET /api/v1/movies/search — paginated search results (matches backend shape) */
 export interface SearchResultItem {
     id: number;
     title?: string;
@@ -91,36 +91,36 @@ export interface SearchMoviesOptions {
 }
 
 export const moviesService = {
-    getMovies: () => apiClient.get<Movie[]>("/api/movies"),
-    getMovieById: (id: number) => apiClient.get<Movie>(`/api/movies/${id}`),
+    getMovies: () => apiClient.get<Movie[]>("/api/v1/movies"),
+    getMovieById: (id: number) => apiClient.get<Movie>(`/api/v1/movies/${id}`),
     getMovieRating: (movieId: number) =>
-        apiClient.get<MovieRatingResponse>(`/api/movies/rating/${movieId}`),
+        apiClient.get<MovieRatingResponse>(`/api/v1/movies/rating/${movieId}`),
     submitRating: (movieId: number, rating: number) =>
-        apiClient.post<SubmitRatingPayload>("/api/movies/rate", { movieId, rating }),
+        apiClient.post<SubmitRatingPayload>("/api/v1/movies/rate", { movieId, rating }),
     getMovieComments: (movieId: number) =>
-        apiClient.get<MovieCommentRow[]>(`/api/movies/comments/${movieId}`),
+        apiClient.get<MovieCommentRow[]>(`/api/v1/movies/comments/${movieId}`),
     addComment: (movieId: number, comment: string) =>
-        apiClient.post<MovieCommentRow>("/api/movies/comments", { movieId, comment }),
-    getTrending: () => apiClient.get<TrendingResponse>("/api/movies/trending"),
+        apiClient.post<MovieCommentRow>("/api/v1/movies/comments", { movieId, comment }),
+    getTrending: () => apiClient.get<TrendingResponse>("/api/v1/movies/trending"),
     searchMovies: (query: string, options?: SearchMoviesOptions) => {
         const params = new URLSearchParams();
         params.set("q", query.trim());
         if (options?.page != null) params.set("page", String(options.page));
         if (options?.genre != null) params.set("genre", String(options.genre));
-        return apiClient.get<SearchResponse>(`/api/movies/search?${params.toString()}`);
+        return apiClient.get<SearchResponse>(`/api/v1/movies/search?${params.toString()}`);
     },
     getGenres: (): Promise<Genre[]> => Promise.resolve([...MOVIE_GENRES]),
     getFavorites: (userId: number) =>
-        apiClient.get<FavoriteEntry[]>(`/api/movies/favorites/${userId}`),
+        apiClient.get<FavoriteEntry[]>(`/api/v1/movies/favorites/${userId}`),
     toggleFavorite: (movieId: number) =>
-        apiClient.post<ToggleFavoriteResponse>("/api/movies/favorite", { movieId }),
+        apiClient.post<ToggleFavoriteResponse>("/api/v1/movies/favorite", { movieId }),
     getWatchlist: (userId: number) =>
-        apiClient.get<WatchlistEntry[]>(`/api/movies/watchlist/${userId}`),
+        apiClient.get<WatchlistEntry[]>(`/api/v1/movies/watchlist/${userId}`),
     toggleWatchlist: (movieId: number) =>
-        apiClient.post<ToggleWatchlistResponse>("/api/movies/watchlist", { movieId }),
+        apiClient.post<ToggleWatchlistResponse>("/api/v1/movies/watchlist", { movieId }),
     removeFromWatchlist: (movieId: number) =>
-        apiClient.delete<{ action: string; movieId: number }>(`/api/movies/watchlist/${movieId}`),
-    createMovie: (movie: Movie) => apiClient.post<Movie>("/api/movies", movie),
-    updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/api/movies/${id}`, movie),
-    deleteMovie: (id: number) => apiClient.delete<Movie>(`/api/movies/${id}`),
+        apiClient.delete<{ action: string; movieId: number }>(`/api/v1/movies/watchlist/${movieId}`),
+    createMovie: (movie: Movie) => apiClient.post<Movie>("/api/v1/movies", movie),
+    updateMovie: (id: number, movie: Movie) => apiClient.put<Movie>(`/api/v1/movies/${id}`, movie),
+    deleteMovie: (id: number) => apiClient.delete<Movie>(`/api/v1/movies/${id}`),
 };

@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/api-client";
 
-/** Single notification from GET /api/notifications */
+/** Single notification from GET /api/v1/notifications */
 export interface NotificationRow {
   id: number;
   userId: number | null;
@@ -13,7 +13,7 @@ export interface NotificationRow {
   targetId?: number | null;
 }
 
-/** GET /api/notifications response */
+/** GET /api/v1/notifications response */
 export interface NotificationsListResponse {
   notifications: NotificationRow[];
   total: number;
@@ -27,22 +27,22 @@ export interface GetNotificationsOptions {
 }
 
 export const notificationService = {
-  /** GET /api/notifications — list current user's notifications */
+  /** GET /api/v1/notifications — list current user's notifications */
   getNotifications: (options?: GetNotificationsOptions) => {
     const params = new URLSearchParams();
     if (options?.limit != null) params.set("limit", String(options.limit));
     if (options?.offset != null) params.set("offset", String(options.offset));
     const q = params.toString();
     return apiClient.get<NotificationsListResponse>(
-      `/api/notifications${q ? `?${q}` : ""}`
+      `/api/v1/notifications${q ? `?${q}` : ""}`
     );
   },
 
-  /** PATCH /api/notifications/:id/read — mark one as read */
+  /** PATCH /api/v1/notifications/:id/read — mark one as read */
   markAsRead: (id: number) =>
-    apiClient.patch<NotificationRow>(`/api/notifications/${id}/read`),
+    apiClient.patch<NotificationRow>(`/api/v1/notifications/${id}/read`),
 
-  /** PATCH /api/notifications/read — mark all as read */
+  /** PATCH /api/v1/notifications/read — mark all as read */
   markAllAsRead: () =>
-    apiClient.patch<{ marked: boolean }>("/api/notifications/read"),
+    apiClient.patch<{ marked: boolean }>("/api/v1/notifications/read"),
 };
