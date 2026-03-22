@@ -116,12 +116,14 @@ app.get("/swagger", sendSwaggerHtml);
 app.get("/swagger/", sendSwaggerHtml);
 
 app.use(express.json());
-app.use('/api/auth', authRateLimiter, authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/follows', followRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/movies', movieRoutes);
+
+const API_V1 = '/api/v1';
+app.use(`${API_V1}/auth`, authRateLimiter, authRoutes);
+app.use(`${API_V1}/users`, userRoutes);
+app.use(`${API_V1}/follows`, followRoutes);
+app.use(`${API_V1}/messages`, messageRoutes);
+app.use(`${API_V1}/notifications`, notificationRoutes);
+app.use(`${API_V1}/movies`, movieRoutes);
 
 // 404: no route matched
 app.use((_req, _res, next) => next(notFound('Route not found')));

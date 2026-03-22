@@ -1,6 +1,6 @@
 /**
  * OpenAPI 3.x specification for CinéConnect API.
- * Served at /api/docs via swagger-ui-express.
+ * Served at /docs (Swagger UI) and /openapi.json.
  */
 
 export const openApiSpec = {
@@ -10,7 +10,7 @@ export const openApiSpec = {
     version: "1.0.0",
     description:
       "Backend API for CinéConnect: auth, movies, favorites, watchlist, and comments. " +
-      "JSON responses for `/api/*` routes use a consistent envelope: " +
+      "JSON responses for `/api/v1/*` routes use a consistent envelope: " +
       "`{ success: true, data }` on success, or `{ success: false, error, errors? }` on failure " +
       "(optional `errors` lists validation issues for 400).",
   },
@@ -24,7 +24,7 @@ export const openApiSpec = {
         scheme: "bearer",
         bearerFormat: "JWT",
         description:
-          "Short-lived JWT from POST /api/auth/register, /api/auth/login, or /api/auth/refresh. Use refresh token body flow when access token expires.",
+          "Short-lived JWT from POST /api/v1/auth/register, /api/v1/auth/login, or /api/v1/auth/refresh. Use refresh token body flow when access token expires.",
       },
     },
     schemas: {
@@ -68,7 +68,7 @@ export const openApiSpec = {
           token: { type: "string", description: "Access JWT (short-lived) for Authorization header" },
           refreshToken: {
             type: "string",
-            description: "Opaque refresh token; send to POST /api/auth/refresh for rotation (new access + new refresh)",
+            description: "Opaque refresh token; send to POST /api/v1/auth/refresh for rotation (new access + new refresh)",
           },
           userId: { type: "integer", description: "User ID" },
           email: { type: "string", format: "email" },
@@ -323,7 +323,7 @@ export const openApiSpec = {
     },
   },
   paths: {
-    "/api/auth/register": {
+    "/api/v1/auth/register": {
       post: {
         tags: ["Auth"],
         summary: "Register a new user",
@@ -371,7 +371,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/auth/login": {
+    "/api/v1/auth/login": {
       post: {
         tags: ["Auth"],
         summary: "Log in",
@@ -419,7 +419,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/auth/refresh": {
+    "/api/v1/auth/refresh": {
       post: {
         tags: ["Auth"],
         summary: "Refresh tokens",
@@ -468,7 +468,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/me": {
+    "/api/v1/users/me": {
       get: {
         tags: ["Users"],
         summary: "Get current user and profile",
@@ -549,7 +549,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/search": {
+    "/api/v1/users/search": {
       get: {
         tags: ["Users"],
         summary: "Search users by name or email",
@@ -589,7 +589,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/{userId}": {
+    "/api/v1/users/{userId}": {
       get: {
         tags: ["Users"],
         summary: "Get public user profile by ID",
@@ -626,7 +626,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/follows": {
+    "/api/v1/follows": {
       post: {
         tags: ["Follows"],
         summary: "Follow a user",
@@ -677,7 +677,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/follows/{userId}": {
+    "/api/v1/follows/{userId}": {
       delete: {
         tags: ["Follows"],
         summary: "Unfollow a user",
@@ -713,7 +713,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/{userId}/followers": {
+    "/api/v1/users/{userId}/followers": {
       get: {
         tags: ["Users"],
         summary: "List followers",
@@ -750,7 +750,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/{userId}/following": {
+    "/api/v1/users/{userId}/following": {
       get: {
         tags: ["Users"],
         summary: "List following",
@@ -787,7 +787,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/messages": {
+    "/api/v1/messages": {
       get: {
         tags: ["Messages"],
         summary: "Get message history for a room",
@@ -849,7 +849,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/{movieId}": {
+    "/api/v1/movies/{movieId}": {
       get: {
         tags: ["Movies"],
         summary: "Get movie details",
@@ -883,7 +883,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/favorite": {
+    "/api/v1/movies/favorite": {
       post: {
         tags: ["Movies"],
         summary: "Toggle favorite",
@@ -926,7 +926,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/favorites/{userId}": {
+    "/api/v1/movies/favorites/{userId}": {
       get: {
         tags: ["Movies"],
         summary: "Get user favorites",
@@ -955,7 +955,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/watchlist": {
+    "/api/v1/movies/watchlist": {
       post: {
         tags: ["Movies"],
         summary: "Add to watchlist (toggle)",
@@ -998,7 +998,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/watchlist/{userId}": {
+    "/api/v1/movies/watchlist/{userId}": {
       get: {
         tags: ["Movies"],
         summary: "Get user watchlist",
@@ -1027,7 +1027,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/watchlist/{movieId}": {
+    "/api/v1/movies/watchlist/{movieId}": {
       delete: {
         tags: ["Movies"],
         summary: "Remove movie from watchlist",
@@ -1068,7 +1068,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/comments/{movieId}": {
+    "/api/v1/movies/comments/{movieId}": {
       get: {
         tags: ["Movies"],
         summary: "Get comments for a movie",
@@ -1092,7 +1092,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/comments": {
+    "/api/v1/movies/comments": {
       post: {
         tags: ["Movies"],
         summary: "Add a comment",
@@ -1119,7 +1119,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/comments/{commentId}": {
+    "/api/v1/movies/comments/{commentId}": {
       delete: {
         tags: ["Movies"],
         summary: "Delete a comment",
@@ -1185,7 +1185,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/rate": {
+    "/api/v1/movies/rate": {
       post: {
         tags: ["Movies"],
         summary: "Submit or update rating",
@@ -1228,7 +1228,7 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/movies/rating/{movieId}": {
+    "/api/v1/movies/rating/{movieId}": {
       get: {
         tags: ["Movies"],
         summary: "Get rating for a film",

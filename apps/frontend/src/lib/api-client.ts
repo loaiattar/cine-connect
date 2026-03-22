@@ -1,6 +1,26 @@
 export const ApiClientConfig = {
     BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+    /** All JSON API routes are mounted under this prefix on the backend. */
+    API_V1_PREFIX: '/api/v1',
 } as const;
+
+/**
+ * Maps `/api/...` paths to `/api/v1/...`. Leaves paths already under `API_V1_PREFIX` unchanged.
+ */
+export function resolveVersionedApiPath(endpoint: string): string {
+    const q = endpoint.indexOf('?');
+    const pathPart = q >= 0 ? endpoint.slice(0, q) : endpoint;
+    const query = q >= 0 ? endpoint.slice(q) : '';
+    const { API_V1_PREFIX } = ApiClientConfig;
+    if (pathPart === API_V1_PREFIX || pathPart.startsWith(`${API_V1_PREFIX}/`)) {
+        return endpoint;
+    }
+    if (pathPart.startsWith('/api/')) {
+        return `${API_V1_PREFIX}${pathPart.slice('/api'.length)}${query}`;
+    }
+    const p = pathPart.startsWith('/') ? pathPart : `/${pathPart}`;
+    return `${API_V1_PREFIX}${p}${query}`;
+}
 
 import { useAuthStore } from '../stores/auth.store';
 import { updateSocketAuth } from './socket';
@@ -32,11 +52,11 @@ function parseFailureMessage(json: unknown, statusText: string): string {
 
 /** Avoid refresh loop on auth endpoints that return 401 for wrong credentials. */
 function shouldTryRefreshOn401(endpoint: string): boolean {
-    const path = endpoint.split('?')[0];
+    const path = resolveVersionedApiPath(endpoint.split('?')[0]);
     return (
-        path !== '/api/auth/login' &&
-        path !== '/api/auth/register' &&
-        path !== '/api/auth/refresh'
+        path !== `${ApiClientConfig.API_V1_PREFIX}/auth/login` &&
+        path !== `${ApiClientConfig.API_V1_PREFIX}/auth/register` &&
+        path !== `${ApiClientConfig.API_V1_PREFIX}/auth/refresh`
     );
 }
 
@@ -51,7 +71,7 @@ async function tryRefreshSession(): Promise<boolean> {
             const { refreshToken, user } = useAuthStore.getState();
             if (refreshToken == null || refreshToken === '' || !user) return false;
 
-            const res = await fetch(`${ApiClientConfig.BASE_URL}/api/auth/refresh`, {
+            const res = await fetch(`${ApiClientConfig.BASE_URL}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refreshToken }),
@@ -100,7 +120,7 @@ export class ApiClient {
         headers: Record<string, string> = {},
         retriedAfterRefresh = false
     ): Promise<T> {
-        const url = `${this.baseUrl}${endpoint}`;
+        const url = `${this.baseUrl}${resolveVersionedApiPath(endpoint)}`;
         const token = useAuthStore.getState().token;
         const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 

@@ -16,13 +16,13 @@ export interface UserMeRow {
   createdAt: string | null;
 }
 
-/** GET /api/users/me response */
+/** GET /api/v1/users/me response */
 export interface GetMeResponse {
   user: UserMeRow;
   profile: UserProfileRow | null;
 }
 
-/** GET /api/users/:userId (and legacy /profile) — public, no email */
+/** GET /api/v1/users/:userId (and legacy /profile) — public, no email */
 export interface PublicProfileStats {
   followersCount: number;
   followingCount: number;
@@ -31,13 +31,13 @@ export interface PublicProfileStats {
 export interface GetPublicProfileResponse {
   user: { id: number; name: string | null; createdAt: string | null };
   profile: UserProfileRow | null;
-  /** Present on current GET /api/users/:userId; older clients may omit. */
+  /** Present on current GET /api/v1/users/:userId; older clients may omit. */
   stats?: PublicProfileStats;
   /** When the caller is logged in and viewing another user. */
   isFollowing?: boolean;
 }
 
-/** PUT /api/users/me body; all fields optional */
+/** PUT /api/v1/users/me body; all fields optional */
 export interface UpdateProfilePayload {
   bio?: string;
   avatarUrl?: string;
@@ -45,7 +45,7 @@ export interface UpdateProfilePayload {
   favoriteGenre?: string;
 }
 
-/** GET /api/users/search — public fields only (no email). */
+/** GET /api/v1/users/search — public fields only (no email). */
 export interface UserSearchRow {
   id: number;
   name: string | null;
@@ -65,17 +65,17 @@ export interface UserSearchOptions {
 }
 
 export const userService = {
-  getMe: () => apiClient.get<GetMeResponse>("/api/users/me"),
+  getMe: () => apiClient.get<GetMeResponse>("/api/v1/users/me"),
   getPublicProfile: (userId: number) =>
-    apiClient.get<GetPublicProfileResponse>(`/api/users/${userId}`),
+    apiClient.get<GetPublicProfileResponse>(`/api/v1/users/${userId}`),
   updateProfile: (data: UpdateProfilePayload) =>
-    apiClient.put<UserProfileRow>("/api/users/me", data),
+    apiClient.put<UserProfileRow>("/api/v1/users/me", data),
 
   searchUsers: (q: string, options?: UserSearchOptions) => {
     const params = new URLSearchParams();
     params.set("q", q);
     if (options?.limit != null) params.set("limit", String(options.limit));
     if (options?.offset != null) params.set("offset", String(options.offset));
-    return apiClient.get<UserSearchResponse>(`/api/users/search?${params.toString()}`);
+    return apiClient.get<UserSearchResponse>(`/api/v1/users/search?${params.toString()}`);
   },
 };

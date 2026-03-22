@@ -7,10 +7,11 @@ REST API and real-time discussion (Socket.io) for CinéConnect.
 - **Base URL:** `http://localhost:3000` (or your `PORT`)
 - **Docs:** `/docs` or `/?docs=1`
 - **OpenAPI spec:** `/openapi.json`
-- **Auth:** `POST /api/auth/register`, `POST /api/auth/login` — use the returned JWT in `Authorization: Bearer <token>` for protected routes.
-- **Profile:** `GET /api/users/me` — current user and profile (requires auth); `PUT /api/users/me` — update profile (bio, avatarUrl, location, favoriteGenre; body validated with Zod; requires auth).
-- **Follows:** `POST /api/follows` — follow a user (body: `{ followingId }`; requires auth); `DELETE /api/follows/:userId` — unfollow (requires auth); `GET /api/users/:userId/followers` and `GET /api/users/:userId/following` — paginated lists (public; optional `limit`, `offset`).
-- **Chat history:** `GET /api/messages?room=<roomId>&limit=50&offset=0` — paginated message history for a room (requires auth).
+- **API prefix:** versioned JSON routes live under `/api/v1/` (e.g. `/api/v1/auth/login`).
+- **Auth:** `POST /api/v1/auth/register`, `POST /api/v1/auth/login` — use the returned JWT in `Authorization: Bearer <token>` for protected routes.
+- **Profile:** `GET /api/v1/users/me` — current user and profile (requires auth); `PUT /api/v1/users/me` — update profile (bio, avatarUrl, location, favoriteGenre; body validated with Zod; requires auth).
+- **Follows:** `POST /api/v1/follows` — follow a user (body: `{ followingId }`; requires auth); `DELETE /api/v1/follows/:userId` — unfollow (requires auth); `GET /api/v1/users/:userId/followers` and `GET /api/v1/users/:userId/following` — paginated lists (public; optional `limit`, `offset`).
+- **Chat history:** `GET /api/v1/messages?room=<roomId>&limit=50&offset=0` — paginated message history for a room (requires auth).
 
 ## WebSocket (Socket.io) — real-time discussion
 

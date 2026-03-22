@@ -4,9 +4,9 @@ import app from '../app';
 import { AuthService } from '../services/auth.service';
 
 describe('User profile REST endpoints', () => {
-    describe('GET /api/users/me', () => {
+    describe('GET /api/v1/users/me', () => {
         it('returns 401 when not authenticated', async () => {
-            const res = await request(app).get('/api/users/me');
+            const res = await request(app).get('/api/v1/users/me');
             expect(res.status).toBe(401);
             expect(res.body.success).toBe(false);
             expect(res.body.error).toMatch(/Unauthorized/);
@@ -15,11 +15,11 @@ describe('User profile REST endpoints', () => {
         it('returns current user and profile when authenticated', async () => {
             const email = `profile-get-${Date.now()}@example.com`;
             await AuthService.register('Profile User', email, 'password123');
-            const loginRes = await request(app).post('/api/auth/login').send({ email, password: 'password123' });
+            const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
             const { token } = loginRes.body.data;
 
             const res = await request(app)
-                .get('/api/users/me')
+                .get('/api/v1/users/me')
                 .set('Authorization', `Bearer ${token}`);
 
             expect(res.status).toBe(200);
@@ -39,20 +39,20 @@ describe('User profile REST endpoints', () => {
         });
     });
 
-    describe('PUT /api/users/me', () => {
+    describe('PUT /api/v1/users/me', () => {
         it('returns 401 when not authenticated', async () => {
-            const res = await request(app).put('/api/users/me').send({ bio: 'Hi' });
+            const res = await request(app).put('/api/v1/users/me').send({ bio: 'Hi' });
             expect(res.status).toBe(401);
         });
 
         it('updates profile and returns updated profile when authenticated', async () => {
             const email = `profile-put-${Date.now()}@example.com`;
             await AuthService.register('Update User', email, 'password123');
-            const loginRes = await request(app).post('/api/auth/login').send({ email, password: 'password123' });
+            const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
             const { token } = loginRes.body.data;
 
             const res = await request(app)
-                .put('/api/users/me')
+                .put('/api/v1/users/me')
                 .set('Authorization', `Bearer ${token}`)
                 .send({
                     bio: 'Movie lover',
@@ -70,7 +70,7 @@ describe('User profile REST endpoints', () => {
                 avatarUrl: 'https://example.com/avatar.png',
             });
 
-            const getRes = await request(app).get('/api/users/me').set('Authorization', `Bearer ${token}`);
+            const getRes = await request(app).get('/api/v1/users/me').set('Authorization', `Bearer ${token}`);
             expect(getRes.body.data.profile).toMatchObject({
                 bio: 'Movie lover',
                 location: 'Paris',
@@ -82,11 +82,11 @@ describe('User profile REST endpoints', () => {
         it('returns 400 for invalid body (e.g. invalid avatarUrl)', async () => {
             const email = `profile-valid-${Date.now()}@example.com`;
             await AuthService.register('Valid User', email, 'password123');
-            const loginRes = await request(app).post('/api/auth/login').send({ email, password: 'password123' });
+            const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
             const { token } = loginRes.body.data;
 
             const res = await request(app)
-                .put('/api/users/me')
+                .put('/api/v1/users/me')
                 .set('Authorization', `Bearer ${token}`)
                 .send({ avatarUrl: 'not-a-valid-url' });
 
@@ -96,9 +96,9 @@ describe('User profile REST endpoints', () => {
         });
     });
 
-    describe('GET /api/users/search', () => {
+    describe('GET /api/v1/users/search', () => {
         it('returns empty list when q is missing or blank', async () => {
-            const res = await request(app).get('/api/users/search');
+            const res = await request(app).get('/api/v1/users/search');
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
             expect(res.body.data).toMatchObject({
@@ -114,7 +114,7 @@ describe('User profile REST endpoints', () => {
             const email = `search-u1-${suffix}@example.com`;
             await AuthService.register('SearchUniqueNameAlpha', email, 'password123');
 
-            const res = await request(app).get('/api/users/search').query({ q: 'SearchUnique' });
+            const res = await request(app).get('/api/v1/users/search').query({ q: 'SearchUnique' });
             expect(res.status).toBe(200);
             expect(res.body.data.total).toBeGreaterThanOrEqual(1);
             const row = res.body.data.users.find((u: { name: string | null }) => u.name === 'SearchUniqueNameAlpha');
@@ -131,7 +131,7 @@ describe('User profile REST endpoints', () => {
             const email = `hidden-mail-${suffix}@example.com`;
             await AuthService.register('Hidden Mail User', email, 'password123');
 
-            const res = await request(app).get('/api/users/search').query({ q: `hidden-mail-${suffix}` });
+            const res = await request(app).get('/api/v1/users/search').query({ q: `hidden-mail-${suffix}` });
             expect(res.status).toBe(200);
             expect(res.body.data.users.length).toBeGreaterThanOrEqual(1);
             const row = res.body.data.users[0];
@@ -140,14 +140,14 @@ describe('User profile REST endpoints', () => {
         });
 
         it('returns 400 when q exceeds max length', async () => {
-            const res = await request(app).get('/api/users/search').query({ q: 'a'.repeat(101) });
+            const res = await request(app).get('/api/v1/users/search').query({ q: 'a'.repeat(101) });
             expect(res.status).toBe(400);
         });
     });
 
-    describe('GET /api/users/:userId', () => {
+    describe('GET /api/v1/users/:userId', () => {
         it('returns 404 for unknown user id', async () => {
-            const res = await request(app).get('/api/users/999999999');
+            const res = await request(app).get('/api/v1/users/999999999');
             expect(res.status).toBe(404);
         });
 
@@ -156,7 +156,7 @@ describe('User profile REST endpoints', () => {
             const email = `pub-${suffix}@example.com`;
             const { userId } = await AuthService.register('Public Api User', email, 'password123');
 
-            const res = await request(app).get(`/api/users/${userId}`);
+            const res = await request(app).get(`/api/v1/users/${userId}`);
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
             expect(res.body.data).toMatchObject({
@@ -172,18 +172,18 @@ describe('User profile REST endpoints', () => {
             const b = await AuthService.register('Target B', `t-b-${Date.now()}@ex.com`, 'password123');
 
             const res = await request(app)
-                .get(`/api/users/${b.userId}`)
+                .get(`/api/v1/users/${b.userId}`)
                 .set('Authorization', `Bearer ${a.token}`);
             expect(res.status).toBe(200);
             expect(res.body.data.isFollowing).toBe(false);
 
             await request(app)
-                .post('/api/follows')
+                .post('/api/v1/follows')
                 .set('Authorization', `Bearer ${a.token}`)
                 .send({ followingId: b.userId });
 
             const res2 = await request(app)
-                .get(`/api/users/${b.userId}`)
+                .get(`/api/v1/users/${b.userId}`)
                 .set('Authorization', `Bearer ${a.token}`);
             expect(res2.status).toBe(200);
             expect(res2.body.data.isFollowing).toBe(true);

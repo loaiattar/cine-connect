@@ -20,7 +20,7 @@ export interface UseChatRoomReturn {
 }
 
 /**
- * Loads message history for a room (GET /api/messages), joins the socket room,
+ * Loads message history for a room (GET /api/v1/messages), joins the socket room,
  * and keeps messages in sync via socket events (message_history, message).
  */
 export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {

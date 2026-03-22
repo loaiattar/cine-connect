@@ -38,7 +38,7 @@ function parseEnvelope(json: unknown): { ok: true; data: unknown } | { ok: false
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const res = await fetch(`${baseUrl}/api/auth/login`, {
+    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -65,7 +65,7 @@ export const authService = {
   },
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
-    const res = await fetch(`${baseUrl}/api/auth/register`, {
+    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -98,7 +98,7 @@ export const authService = {
   },
 
   async refresh(refreshToken: string): Promise<AuthResponse> {
-    const res = await fetch(`${baseUrl}/api/auth/refresh`, {
+    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
