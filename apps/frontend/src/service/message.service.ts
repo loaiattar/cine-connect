@@ -10,7 +10,7 @@ export interface ChatMessage {
   createdAt: string;
 }
 
-/** GET /api/messages response */
+/** GET /api/v1/messages response */
 export interface MessageHistoryResponse {
   messages: ChatMessage[];
   total: number;
@@ -25,12 +25,12 @@ export interface GetMessagesOptions {
 }
 
 export const messageService = {
-  /** GET /api/messages?room=...&limit=50&offset=0 — message history for a room */
+  /** GET /api/v1/messages?room=...&limit=50&offset=0 — message history for a room */
   getByRoom: (options: GetMessagesOptions) => {
     const params = new URLSearchParams();
     params.set("room", options.room);
     if (options.limit != null) params.set("limit", String(options.limit));
     if (options.offset != null) params.set("offset", String(options.offset));
-    return apiClient.get<MessageHistoryResponse>(`/api/messages?${params.toString()}`);
+    return apiClient.get<MessageHistoryResponse>(`/api/v1/messages?${params.toString()}`);
   },
 };
