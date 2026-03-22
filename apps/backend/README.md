@@ -66,8 +66,8 @@ socket.emit("message", { roomId: "global", text: "Hello!" }); // persisted to DB
 
 ## Tests
 
-- **Run tests:** `pnpm test` (runs Vitest; requires PostgreSQL and `TMDB_API_KEY` in test env).
-- **Coverage:** `pnpm test:coverage` — generates a coverage report (requires `@vitest/coverage-v8`). Coverage includes auth, movies (favorites, watchlist, comments), and rating endpoints.
+- **Run tests:** `pnpm test` (runs Vitest; requires PostgreSQL and `TMDB_API_KEY` in test env). Integration tests hit the real app and database; unit tests cover helpers (`apiResponse`, `AppError`, `sanitizeUserText`, `errorHandler`, `asyncHandler`) and HTTP edge cases (404, malformed JSON, unauthenticated API) without extra setup.
+- **Coverage:** `pnpm test:coverage` — generates a coverage report (requires `@vitest/coverage-v8`). Auth REST tests run whenever the suite runs (same as other DB-backed tests); ensure PostgreSQL is up so the full suite passes in CI.
 
 ## Environment
 
