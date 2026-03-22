@@ -34,6 +34,17 @@ export function errorHandler(
     return;
   }
 
+  // Malformed JSON body (express/body-parser)
+  if (
+    err &&
+    typeof err === "object" &&
+    "type" in err &&
+    (err as { type: string }).type === "entity.parse.failed"
+  ) {
+    res.status(400).json({ success: false, error: "Invalid JSON" });
+    return;
+  }
+
   if (err instanceof AppError) {
     res.status(err.statusCode).json({ success: false, error: err.message });
     return;
