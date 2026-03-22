@@ -25,9 +25,9 @@ function withDefaultStats(p: GetPublicProfileResponse): GetPublicProfileResponse
 export interface UseProfileReturn {
   user: ProfileUser | null;
   profile: UserProfileRow | null;
-  /** From GET /api/users/:userId only (follower/following counts). */
+  /** From GET /api/v1/users/:userId only (follower/following counts). */
   stats: PublicProfileStats | null;
-  /** From GET /api/users/:userId when logged in as another user (optional). */
+  /** From GET /api/v1/users/:userId when logged in as another user (optional). */
   isFollowingFromApi: boolean | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -41,8 +41,8 @@ export interface UseProfileReturn {
 
 /**
  * Fetches profile by user: when userId is omitted or equals the current user,
- * fetches GET /api/users/me and exposes updateProfile. For another user, fetches
- * GET /api/users/:userId (public profile, no email).
+ * fetches GET /api/v1/users/me and exposes updateProfile. For another user, fetches
+ * GET /api/v1/users/:userId (public profile, no email).
  */
 export function useProfile(userId?: number | null): UseProfileReturn {
   const queryClient = useQueryClient();
