@@ -19,10 +19,10 @@ describe('Rating REST endpoints', () => {
     userId = auth.userId;
   });
 
-  describe('POST /api/movies/rate', () => {
+  describe('POST /api/v1/movies/rate', () => {
     it('should submit a rating and return 200 with movieId and rating', async () => {
       const res = await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 8 });
 
@@ -33,12 +33,12 @@ describe('Rating REST endpoints', () => {
 
     it('should upsert: second submit for same user/movie updates rating', async () => {
       await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 3 });
 
       const res = await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 7 });
 
@@ -49,7 +49,7 @@ describe('Rating REST endpoints', () => {
 
     it('should return 401 when not authenticated', async () => {
       const res = await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .send({ movieId, rating: 5 });
 
       expect(res.status).toBe(401);
@@ -58,7 +58,7 @@ describe('Rating REST endpoints', () => {
 
     it('should return 400 for rating out of range (e.g. 0 or 11)', async () => {
       const resLow = await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 0 });
 
@@ -67,7 +67,7 @@ describe('Rating REST endpoints', () => {
       expect(resLow.body.error).toBe('Validation Failed');
 
       const resHigh = await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 11 });
 
@@ -75,9 +75,9 @@ describe('Rating REST endpoints', () => {
     });
   });
 
-  describe('GET /api/movies/rating/:movieId', () => {
+  describe('GET /api/v1/movies/rating/:movieId', () => {
     it('should return aggregate (average, count) without auth; no userRating', async () => {
-      const res = await request(app).get(`/api/movies/rating/${movieId}`);
+      const res = await request(app).get(`/api/v1/movies/rating/${movieId}`);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -90,12 +90,12 @@ describe('Rating REST endpoints', () => {
 
     it('should return userRating when authenticated and user has rated', async () => {
       await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 9 });
 
       const res = await request(app)
-        .get(`/api/movies/rating/${movieId}`)
+        .get(`/api/v1/movies/rating/${movieId}`)
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
@@ -109,7 +109,7 @@ describe('Rating REST endpoints', () => {
 
     it('should return aggregate with multiple ratings', async () => {
       await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ movieId, rating: 8 });
 
@@ -119,11 +119,11 @@ describe('Rating REST endpoints', () => {
         'password123'
       );
       await request(app)
-        .post('/api/movies/rate')
+        .post('/api/v1/movies/rate')
         .set('Authorization', `Bearer ${other.token}`)
         .send({ movieId, rating: 6 });
 
-      const res = await request(app).get(`/api/movies/rating/${movieId}`);
+      const res = await request(app).get(`/api/v1/movies/rating/${movieId}`);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);

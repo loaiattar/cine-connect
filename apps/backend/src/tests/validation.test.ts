@@ -13,7 +13,7 @@ describe('Validation Error Handling', () => {
 
     it('should return 400 when movieId is missing in toggle favorite', async () => {
         const response = await request(app)
-            .post('/api/movies/favorite')
+            .post('/api/v1/movies/favorite')
             .set('Authorization', `Bearer ${userToken}`)
             .send({});
 
@@ -25,7 +25,7 @@ describe('Validation Error Handling', () => {
 
     it('should return 400 when movieId is not a number in toggle favorite', async () => {
         const response = await request(app)
-            .post('/api/movies/favorite')
+            .post('/api/v1/movies/favorite')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId: 'invalid' });
 
@@ -35,7 +35,7 @@ describe('Validation Error Handling', () => {
 
     it('should return 400 when movieId is not numeric in get movie details', async () => {
         const response = await request(app)
-            .get('/api/movies/abc')
+            .get('/api/v1/movies/abc')
             .set('Authorization', `Bearer ${userToken}`);
 
         expect(response.status).toBe(400);
@@ -44,7 +44,7 @@ describe('Validation Error Handling', () => {
 
     it('should return 400 when comment is too short', async () => {
         const response = await request(app)
-            .post('/api/movies/comments')
+            .post('/api/v1/movies/comments')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId: 550, comment: '' });
 
@@ -54,7 +54,7 @@ describe('Validation Error Handling', () => {
 
     it('should return 400 when updating a comment with empty text', async () => {
         const response = await request(app)
-            .put('/api/movies/comments/123')
+            .put('/api/v1/movies/comments/123')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ comment: '' });
 
