@@ -5,10 +5,8 @@ import rateLimit from 'express-rate-limit';
 import app from '../app';
 import { AuthService } from '../services/auth.service';
 
-const dbAvailable = () => (globalThis as unknown as { __dbAvailable?: boolean }).__dbAvailable === true;
-
 describe('Auth - Registration (service)', () => {
-    it.skipIf(() => !dbAvailable())('should throw 409 when registering with an email that already exists', async () => {
+    it('should throw 409 when registering with an email that already exists', async () => {
         const email = 'duplicate@example.com';
 
         await AuthService.register('First', email, 'password123');
@@ -25,7 +23,7 @@ describe('Auth - Registration (service)', () => {
 
 describe('Auth REST endpoints', () => {
     describe('POST /api/v1/auth/register', () => {
-        it.skipIf(() => !dbAvailable())('should register and return token, userId, email (201)', async () => {
+        it('should register and return token, userId, email (201)', async () => {
             const res = await request(app)
                 .post('/api/v1/auth/register')
                 .send({ name: 'New User', email: `register-${Date.now()}@example.com`, password: 'password123' });
@@ -40,7 +38,7 @@ describe('Auth REST endpoints', () => {
             });
         });
 
-        it.skipIf(() => !dbAvailable())('should return 409 when email already exists', async () => {
+        it('should return 409 when email already exists', async () => {
             const email = `dup-${Date.now()}@example.com`;
             await request(app).post('/api/v1/auth/register').send({ name: 'First', email, password: 'password123' });
 
@@ -53,7 +51,7 @@ describe('Auth REST endpoints', () => {
             expect(res.body.error).toBe('Email already registered');
         });
 
-        it.skipIf(() => !dbAvailable())('should return 400 for invalid body (missing fields / bad email / short password)', async () => {
+        it('should return 400 for invalid body (missing fields / bad email / short password)', async () => {
             const invalid = await request(app)
                 .post('/api/v1/auth/register')
                 .send({ name: '', email: 'not-an-email', password: 'short' });
@@ -65,7 +63,7 @@ describe('Auth REST endpoints', () => {
     });
 
     describe('POST /api/v1/auth/login', () => {
-        it.skipIf(() => !dbAvailable())('should login and return token, userId, email (200)', async () => {
+        it('should login and return token, userId, email (200)', async () => {
             const email = `login-${Date.now()}@example.com`;
             await AuthService.register('Login User', email, 'password123');
 
@@ -81,7 +79,7 @@ describe('Auth REST endpoints', () => {
             });
         });
 
-        it.skipIf(() => !dbAvailable())('should return 401 for wrong password', async () => {
+        it('should return 401 for wrong password', async () => {
             const email = `wrongpw-${Date.now()}@example.com`;
             await AuthService.register('User', email, 'password123');
 
@@ -92,7 +90,7 @@ describe('Auth REST endpoints', () => {
             expect(res.body.error).toBe('Invalid credentials');
         });
 
-        it.skipIf(() => !dbAvailable())('should return 401 for unknown email', async () => {
+        it('should return 401 for unknown email', async () => {
             const res = await request(app)
                 .post('/api/v1/auth/login')
                 .send({ email: 'nonexistent@example.com', password: 'password123' });
@@ -102,7 +100,7 @@ describe('Auth REST endpoints', () => {
             expect(res.body.error).toBe('Invalid credentials');
         });
 
-        it.skipIf(() => !dbAvailable())('should return 400 for invalid body', async () => {
+        it('should return 400 for invalid body', async () => {
             const res = await request(app).post('/api/v1/auth/login').send({ email: 'bad-email', password: '' });
             expect(res.status).toBe(400);
             expect(res.body.success).toBe(false);
@@ -111,7 +109,7 @@ describe('Auth REST endpoints', () => {
     });
 
     describe('POST /api/v1/auth/refresh', () => {
-        it.skipIf(() => !dbAvailable())('returns new access and refresh tokens and rotates (200)', async () => {
+        it('returns new access and refresh tokens and rotates (200)', async () => {
             const email = `refresh-${Date.now()}@example.com`;
             const reg = await request(app)
                 .post('/api/v1/auth/register')
@@ -133,7 +131,7 @@ describe('Auth REST endpoints', () => {
             expect(second.body.success).toBe(false);
         });
 
-        it.skipIf(() => !dbAvailable())('returns 401 for invalid refresh token', async () => {
+        it('returns 401 for invalid refresh token', async () => {
             const res = await request(app)
                 .post('/api/v1/auth/refresh')
                 .send({ refreshToken: 'definitely-not-a-valid-token' });
@@ -142,7 +140,7 @@ describe('Auth REST endpoints', () => {
         });
     });
 
-    it.skipIf(() => !dbAvailable())('token from login works with authMiddleware on protected route', async () => {
+    it('token from login works with authMiddleware on protected route', async () => {
         const email = `protected-${Date.now()}@example.com`;
         const registerRes = await request(app)
             .post('/api/v1/auth/register')
