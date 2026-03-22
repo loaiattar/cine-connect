@@ -9,7 +9,7 @@ export const Route = createFileRoute("/users")({
   component: UsersPage,
 });
 
-// Données mock — à remplacer quand /api/users/search sera disponible
+// Données mock — à remplacer quand /api/v1/users/search sera disponible
 const mockUsers = [
   { id: 1, name: "Alice Martin", email: "alice@example.com" },
   { id: 2, name: "Tom Dubois", email: "tom@example.com" },
@@ -25,7 +25,7 @@ function UsersPage() {
 
   const followMutation = useMutation({
     mutationFn: (followingId: number) =>
-      apiClient.post("/api/follows/", { followingId }),
+      apiClient.post("/api/v1/follows", { followingId }),
     onSuccess: (_, followingId) => {
       setSuivis((prev) => [...prev, followingId]);
       queryClient.invalidateQueries({ queryKey: ["following"] });
