@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useCallback, useState } from "react";
 import { messageService, type ChatMessage } from "@/service/message.service";
-import { getSocket } from "@/lib/socket";
+import { getSocket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 
 export interface UseChatRoomOptions {
   roomId: string | null;
@@ -66,7 +66,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
   useEffect(() => {
     if (roomId == null || roomId === "") return;
     const socket = getSocket();
-    socket.emit("join_room", roomId);
+    joinSocketRoom(roomId);
 
     const onHistory = (payload: { roomId: string; messages: ChatMessage[] }) => {
       if (!Array.isArray(payload.messages)) return;
@@ -114,7 +114,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
     return () => {
       socket.off("message_history", onHistory);
       socket.off("message", onMessage);
-      socket.emit("leave_room", roomId);
+      leaveSocketRoom(roomId);
     };
   }, [roomId]);
 
