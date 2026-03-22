@@ -55,7 +55,7 @@ describe('Movie Functional Tests - Favorites', () => {
 
         const response = await request(app)
 
-            .post('/api/movies/favorite')
+            .post('/api/v1/movies/favorite')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -78,7 +78,7 @@ describe('Movie Functional Tests - Favorites', () => {
 
         await request(app)
 
-            .post('/api/movies/favorite')
+            .post('/api/v1/movies/favorite')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -87,7 +87,7 @@ describe('Movie Functional Tests - Favorites', () => {
 
         const response = await request(app)
 
-            .post('/api/movies/favorite')
+            .post('/api/v1/movies/favorite')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -128,7 +128,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         const response = await request(app)
 
-            .post('/api/movies/watchlist')
+            .post('/api/v1/movies/watchlist')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -149,7 +149,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         await request(app)
 
-            .post('/api/movies/watchlist')
+            .post('/api/v1/movies/watchlist')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -158,7 +158,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         const response = await request(app)
 
-            .post('/api/movies/watchlist')
+            .post('/api/v1/movies/watchlist')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -177,7 +177,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         await request(app)
 
-            .post('/api/movies/watchlist')
+            .post('/api/v1/movies/watchlist')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -186,7 +186,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         const response = await request(app)
 
-            .get(`/api/movies/watchlist/${userId}`)
+            .get(`/api/v1/movies/watchlist/${userId}`)
 
             .set('Authorization', `Bearer ${userToken}`);
 
@@ -203,7 +203,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         await request(app)
 
-            .post('/api/movies/watchlist')
+            .post('/api/v1/movies/watchlist')
 
             .set('Authorization', `Bearer ${userToken}`)
 
@@ -212,7 +212,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         const response = await request(app)
 
-            .delete(`/api/movies/watchlist/${movieId}`)
+            .delete(`/api/v1/movies/watchlist/${movieId}`)
 
             .set('Authorization', `Bearer ${userToken}`);
 
@@ -231,7 +231,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
         const response = await request(app)
 
-            .get(`/api/movies/watchlist/${otherUser.userId}`)
+            .get(`/api/v1/movies/watchlist/${otherUser.userId}`)
 
             .set('Authorization', `Bearer ${userToken}`);
 
@@ -247,7 +247,7 @@ describe('Movie Functional Tests - Watchlist', () => {
         const commentText = "This movie is a masterpiece!";
 
         const response = await request(app)
-            .post('/api/movies/comments')
+            .post('/api/v1/movies/comments')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId, comment: commentText });
 
@@ -259,12 +259,12 @@ describe('Movie Functional Tests - Watchlist', () => {
 
     it('should fetch all comments for a movie', async () => {
         await request(app)
-            .post('/api/movies/comments')
+            .post('/api/v1/movies/comments')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId, comment: "First comment" });
 
         const response = await request(app)
-            .get(`/api/movies/comments/${movieId}`);
+            .get(`/api/v1/movies/comments/${movieId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
@@ -275,7 +275,7 @@ describe('Movie Functional Tests - Watchlist', () => {
 
     it('should NOT allow deleting another user\'s comment', async () => {
         const commentRes = await request(app)
-            .post('/api/movies/comments')
+            .post('/api/v1/movies/comments')
             .set('Authorization', `Bearer ${userToken}`)
             .send({ movieId, comment: "I own this comment" });
 
@@ -284,7 +284,7 @@ describe('Movie Functional Tests - Watchlist', () => {
         const hacker = await AuthService.register('hacker', `hacker-${Date.now()}@example.com`, 'password123');
 
         const response = await request(app)
-            .delete(`/api/movies/comments/${commentId}`)
+            .delete(`/api/v1/movies/comments/${commentId}`)
             .set('Authorization', `Bearer ${hacker.token}`);
 
         expect(response.status).toBe(403);
@@ -296,19 +296,19 @@ describe('Movie Functional Tests - Watchlist', () => {
         const author = await AuthService.register('Author', `auth-${Date.now()}@example.com`, 'password123');
 
         await request(app)
-            .post('/api/follows')
+            .post('/api/v1/follows')
             .set('Authorization', `Bearer ${follower.token}`)
             .send({ followingId: author.userId });
 
         const commentRes = await request(app)
-            .post('/api/movies/comments')
+            .post('/api/v1/movies/comments')
             .set('Authorization', `Bearer ${author.token}`)
             .send({ movieId: mid, comment: 'Hello followers' });
 
         expect(commentRes.status).toBe(200);
 
         const notifRes = await request(app)
-            .get('/api/notifications')
+            .get('/api/v1/notifications')
             .set('Authorization', `Bearer ${follower.token}`)
             .query({ limit: 20 });
 
@@ -335,7 +335,7 @@ describe('Movie Functional Tests - Search', () => {
 
     it('should return 400 when search query is missing', async () => {
         const response = await request(app)
-            .get('/api/movies/search')
+            .get('/api/v1/movies/search')
             .set('Authorization', `Bearer ${searchToken}`);
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
@@ -344,7 +344,7 @@ describe('Movie Functional Tests - Search', () => {
 
     it('should return paginated search results for a valid query', async () => {
         const response = await request(app)
-            .get('/api/movies/search')
+            .get('/api/v1/movies/search')
             .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'inception' });
         expect(response.status).toBe(200);
@@ -358,7 +358,7 @@ describe('Movie Functional Tests - Search', () => {
 
     it('should accept optional page and genre params', async () => {
         const response = await request(app)
-            .get('/api/movies/search')
+            .get('/api/v1/movies/search')
             .set('Authorization', `Bearer ${searchToken}`)
             .query({ q: 'matrix', page: 1 });
         expect(response.status).toBe(200);
