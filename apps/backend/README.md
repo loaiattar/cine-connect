@@ -8,7 +8,7 @@ REST API and real-time discussion (Socket.io) for CinéConnect.
 - **Docs:** `/docs` or `/?docs=1`
 - **OpenAPI spec:** `/openapi.json`
 - **API prefix:** versioned JSON routes live under `/api/v1/` (e.g. `/api/v1/auth/login`).
-- **Auth:** `POST /api/v1/auth/register`, `POST /api/v1/auth/login` — use the returned JWT in `Authorization: Bearer <token>` for protected routes.
+- **Auth (httpOnly cookies):** `POST /api/v1/auth/register`, `POST /api/v1/auth/login` set `cc_access` (JWT) and `cc_refresh` (opaque refresh token) as **httpOnly** cookies (`path: /`). JSON responses include only `{ userId, email }` (no tokens in the body). **Production:** `Secure: true`, `SameSite: Lax` (see `src/utils/authCookies.ts`). **CSRF:** with `SameSite=Lax`, cross-site POSTs do not send cookies; for same-site SPAs, `fetch` with `credentials: 'include'` is enough. If you ever host the SPA on a different site than the API without same-site cookies, add explicit CSRF protection (e.g. double-submit or header token). `POST /api/v1/auth/refresh` reads `cc_refresh` from the cookie (rotation); `POST /api/v1/auth/logout` clears both cookies. Protected routes accept the access JWT from the **`cc_access` cookie** or, for tools/tests, `Authorization: Bearer <token>`.
 - **Profile:** `GET /api/v1/users/me` — current user and profile (requires auth); `PUT /api/v1/users/me` — update profile (bio, avatarUrl, location, favoriteGenre; body validated with Zod; requires auth).
 - **Follows:** `POST /api/v1/follows` — follow a user (body: `{ followingId }`; requires auth); `DELETE /api/v1/follows/:userId` — unfollow (requires auth); `GET /api/v1/users/:userId/followers` and `GET /api/v1/users/:userId/following` — paginated lists (public; optional `limit`, `offset`).
 - **Chat history:** `GET /api/v1/messages?room=<roomId>&limit=50&offset=0` — paginated message history for a room (requires auth).
@@ -19,11 +19,9 @@ The same server exposes a Socket.io endpoint for real-time chat. Use the **same 
 
 ### Connection and authentication
 
-- **Connect:** `io("http://localhost:3000")` (or your API origin).
-- **Optional auth:** Send the JWT so the server can attach the user to the socket:
-  - `io(url, { auth: { token: "<jwt>" } })`  
-  - or set `Authorization: Bearer <jwt>` in `extraHeaders` if your client supports it.
-- If no token or invalid token, the socket still connects; `userId` / `email` will be undefined (anonymous). CORS/origin validation uses the same env as the REST API (`FRONTEND_ORIGIN` / `CORS_ORIGINS`).
+- **Connect:** `io("http://localhost:3000")` (or your API origin). The browser client should use **`withCredentials: true`** so the handshake sends the **`cc_access`** cookie (same host as the API, or a proxied same-origin setup in dev).
+- **Optional (non-cookie clients):** `auth: { token: "<jwt>" }` is still supported for tooling.
+- If no valid session, the socket still connects; `userId` / `email` will be undefined (anonymous). CORS/origin validation uses the same env as the REST API (`FRONTEND_ORIGIN` / `CORS_ORIGINS`); credentialed browser clients need `credentials: true` on CORS.
 
 ### Room model
 
@@ -54,7 +52,7 @@ The same server exposes a Socket.io endpoint for real-time chat. Use the **same 
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000", {
-  auth: { token: "YOUR_JWT" }, // optional
+  withCredentials: true, // send cc_access cookie when same-origin / credentialed
 });
 
 socket.emit("join_room", "global");
