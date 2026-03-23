@@ -1,4 +1,5 @@
-# Runs backend functional tests on every push/PR using a PostgreSQL service container.
+# Typecheck (all packages) + backend functional tests on every push/PR.
+# Tests use a PostgreSQL service container.
 # Required: Add TMDB_API_KEY to repository Secrets (Settings → Secrets and variables → Actions).
 name: Tests
 
@@ -9,6 +10,27 @@ on:
     branches: ["**"]
 
 jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck monorepo
+        run: pnpm run typecheck
+
   backend-tests:
     runs-on: ubuntu-latest
 

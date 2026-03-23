@@ -42,6 +42,7 @@ Now you can use `./p gac`, `./p gg`, etc. instead of `pnpm gac`, `pnpm gg`.
 | `p db` | Start Docker database |
 | `p gen component <Name>` | Generate React component |
 | `p gg` | Show CLI menu |
+| `pnpm typecheck` | TypeScript check (shared, backend, frontend) — same as CI |
 
 ## Project Structure
 
@@ -67,9 +68,11 @@ pnpm build
 # Run linting
 pnpm lint
 
-# Type check entire monorepo
-pnpm tsc -b
+# Typecheck all packages (tsc --noEmit; frontend regenerates TanStack routes first)
+pnpm typecheck
 ```
+
+CI runs `pnpm typecheck` on every push and pull request (see `.github/workflows/tests.yml`).
 
 ## Docker (frontend build)
 
