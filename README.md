@@ -77,6 +77,20 @@ The frontend container is a static nginx bundle. **`VITE_*` variables are applie
 
 Details: `apps/frontend/README.md` (Docker & Vite).
 
+### Docker Compose healthchecks
+
+Services define **healthchecks** so Compose can wait for readiness:
+
+| Service   | Check |
+|-----------|--------|
+| **db** / **cine-db-test** | `pg_isready` (existing) |
+| **backend** | `GET /health` via Node `fetch` on `127.0.0.1:3000` — expects HTTP 200 when the DB is reachable |
+| **frontend** | `wget` to nginx on port 80 |
+
+**Startup order:** `backend` waits until **db** is healthy; **frontend** waits until **backend** is healthy (`depends_on: condition: service_healthy`).
+
+The same checks are mirrored as `HEALTHCHECK` in `apps/backend/Dockerfile` and `apps/frontend/Dockerfile` for standalone `docker run`.
+
 ## Backend environment
 
 See `apps/backend/.env.example`. In **production**, `JWT_SECRET` is required and must not be the test default; the app will fail to start if it is missing or insecure. In test, a fallback is allowed so tests can run without setting it.
