@@ -10,30 +10,33 @@ export interface AuthUser {
 }
 
 interface AuthState {
-  token: string | null;
-  refreshToken: string | null;
   user: AuthUser | null;
-  setAuth: (token: string, refreshToken: string, user: AuthUser) => void;
+  setUser: (user: AuthUser) => void;
   clearAuth: () => void;
   isAuthenticated: () => boolean;
 }
 
+/**
+ * Session tokens live in httpOnly cookies (set by the API). We only persist non-sensitive
+ * user fields for UX (e.g. show email in nav); cookies remain the source of truth for auth.
+ */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      token: null,
-      refreshToken: null,
       user: null,
-      setAuth: (token, refreshToken, user) => {
-        set({ token, refreshToken, user });
+      setUser: (user) => {
+        set({ user });
         updateSocketAuth();
       },
       clearAuth: () => {
-        set({ token: null, refreshToken: null, user: null });
+        set({ user: null });
         updateSocketAuth();
       },
-      isAuthenticated: () => !!get().token,
+      isAuthenticated: () => !!get().user,
     }),
-    { name: AUTH_STORAGE_KEY }
+    {
+      name: AUTH_STORAGE_KEY,
+      partialize: (state) => ({ user: state.user }),
+    }
   )
 );
