@@ -8,7 +8,7 @@ import { useState } from "react";
 type ProfileConnectionsTab = "followers" | "following";
 
 function FollowListRow({ user: u }: { user: FollowUserRow }) {
-  const label = u.name?.trim() || u.email;
+  const label = u.name?.trim() || "Utilisateur";
   const avatar = u.avatarUrl?.trim() || null;
   return (
     <li>

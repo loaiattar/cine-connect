@@ -2,6 +2,7 @@ import { db } from "../db";
 import { follows, profiles, users } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { badRequest, conflict, notFound } from "../utils";
+import type { PublicFollowListUser } from "../types/follow.types";
 import { NotificationService } from "./notification.service";
 
 export const FollowService = {
@@ -63,7 +64,6 @@ export const FollowService = {
       .select({
         id: users.id,
         name: users.name,
-        email: users.email,
         createdAt: users.createdAt,
         followedAt: follows.createdAt,
         avatarUrl: profiles.avatarUrl,
@@ -81,14 +81,15 @@ export const FollowService = {
       .where(eq(follows.followingId, userId));
 
     return {
-      users: rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        createdAt: r.createdAt,
-        followedAt: r.followedAt,
-        avatarUrl: r.avatarUrl ?? null,
-      })),
+      users: rows.map(
+        (r): PublicFollowListUser => ({
+          id: r.id,
+          name: r.name,
+          createdAt: r.createdAt,
+          followedAt: r.followedAt,
+          avatarUrl: r.avatarUrl ?? null,
+        })
+      ),
       total: count,
       limit,
       offset,
@@ -107,7 +108,6 @@ export const FollowService = {
       .select({
         id: users.id,
         name: users.name,
-        email: users.email,
         createdAt: users.createdAt,
         followedAt: follows.createdAt,
         avatarUrl: profiles.avatarUrl,
@@ -125,14 +125,15 @@ export const FollowService = {
       .where(eq(follows.followerId, userId));
 
     return {
-      users: rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        createdAt: r.createdAt,
-        followedAt: r.followedAt,
-        avatarUrl: r.avatarUrl ?? null,
-      })),
+      users: rows.map(
+        (r): PublicFollowListUser => ({
+          id: r.id,
+          name: r.name,
+          createdAt: r.createdAt,
+          followedAt: r.followedAt,
+          avatarUrl: r.avatarUrl ?? null,
+        })
+      ),
       total: count,
       limit,
       offset,

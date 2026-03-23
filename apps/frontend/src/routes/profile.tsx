@@ -298,7 +298,7 @@ function ProfilePage() {
                             params={{ userId: String(u.id) }}
                             className="text-sm text-zinc-300 hover:text-white transition-colors"
                           >
-                            {u.name || u.email}
+                            {u.name?.trim() || "Utilisateur"}
                           </Link>
                         </li>
                       ))}
@@ -319,7 +319,7 @@ function ProfilePage() {
                             params={{ userId: String(u.id) }}
                             className="text-sm text-zinc-300 hover:text-white transition-colors"
                           >
-                            {u.name || u.email}
+                            {u.name?.trim() || "Utilisateur"}
                           </Link>
                         </li>
                       ))}

@@ -1,10 +1,9 @@
 import { apiClient } from "@/lib/api-client";
 
-/** Single user in a followers/following list (from backend). */
+/** Single user in a followers/following list (from backend; public, no email). */
 export interface FollowUserRow {
   id: number;
-  name: string;
-  email: string;
+  name: string | null;
   createdAt: string | null;
   followedAt: string | null;
   avatarUrl?: string | null;
