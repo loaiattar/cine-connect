@@ -18,7 +18,10 @@
     "predev": "node scripts/clear-ts-cache.cjs",
     "dev": "turbo run dev",
     "test": "turbo run test",
-    "cine": "tsx cine.ts"
+    "cine": "tsx cine.ts",
+    "docker:up": "docker compose up -d --build",
+    "docker:up:quick": "docker compose up -d",
+    "docker:backend:rebuild": "docker compose build backend && docker compose up -d backend"
   },
   "keywords": [],
   "author": "",

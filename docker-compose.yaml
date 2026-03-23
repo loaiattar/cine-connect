@@ -1,3 +1,7 @@
+# Images are reused until you rebuild. After `git pull` or backend/frontend code changes, use:
+#   pnpm docker:up
+# or: docker compose up -d --build
+# Quick reuse (no rebuild): pnpm docker:up:quick
 services:
   db:
     image: postgres:15-alpine
