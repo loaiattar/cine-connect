@@ -1,4 +1,5 @@
 import { useAuthStore } from "../stores/auth.store";
+import { userMessageFromApiJson } from "./normalize-api-error";
 import { ApiClientConfig, resolveApiBaseUrl } from "./api-origin";
 
 export { ApiClientConfig, resolveApiBaseUrl } from "./api-origin";
@@ -37,13 +38,8 @@ export interface ApiRequestError {
   data: unknown;
 }
 
-function parseFailureMessage(json: unknown, statusText: string): string {
-  if (json && typeof json === "object" && json !== null) {
-    const o = json as Record<string, unknown>;
-    if (typeof o.error === "string") return o.error;
-    if (typeof o.message === "string") return o.message;
-  }
-  return `API Error: ${statusText}`;
+function parseFailureMessage(json: unknown, status: number, statusText: string): string {
+  return userMessageFromApiJson(json, status, statusText);
 }
 
 /** Avoid refresh loop on auth endpoints that return 401 for wrong credentials. */
@@ -149,7 +145,7 @@ export class ApiClient {
       }
       throw {
         status: response.status,
-        message: parseFailureMessage(json, response.statusText),
+        message: parseFailureMessage(json, response.status, response.statusText),
         data: json,
       } as ApiRequestError;
     }
@@ -166,7 +162,7 @@ export class ApiClient {
       if (o.success === false && typeof o.error === "string") {
         throw {
           status: response.status,
-          message: o.error,
+          message: userMessageFromApiJson(json, response.status, response.statusText),
           data: json,
         } as ApiRequestError;
       }
