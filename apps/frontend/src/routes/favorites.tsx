@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
-import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Heart, Loader2, Trash2, Bell } from "lucide-react";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { Heart, Loader2, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
@@ -13,10 +13,8 @@ export const Route = createFileRoute("/favorites")({
 
 function FavoritesPage() {
   const { user } = useAuth();
-  const { user: profileUser, profile } = useProfile();
+  const { user: profileUser } = useProfile();
   const displayName = profileUser?.name ?? user?.email ?? "";
-  const avatarUrl = profile?.avatarUrl ?? null;
-  const { unreadCount } = useNotifications({ limit: 100 });
   const {
     favorites,
     isLoading,
@@ -27,54 +25,7 @@ function FavoritesPage() {
   } = useFavorites();
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors">
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/notifications"
-              className="relative rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/profile"
-              className="flex items-center gap-2 rounded-full text-zinc-400 hover:text-white transition-colors"
-              title="Mon profil"
-            >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
-              ) : (
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-medium text-white">
-                  {displayName.slice(0, 1).toUpperCase() || "?"}
-                </span>
-              )}
-              <span className="text-sm">{displayName}</span>
-            </Link>
-            <Link
-              to="/"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              ← Accueil
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <AppNavLayout variant="account">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Heart className="h-8 w-8 text-red-500 fill-red-500" />
@@ -140,7 +91,7 @@ function FavoritesPage() {
           </ul>
         )}
       </main>
-    </div>
+    </AppNavLayout>
   );
 }
 

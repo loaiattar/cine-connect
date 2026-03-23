@@ -7,7 +7,8 @@ import MovieCard from "@/components/ui/CardFilm";
 import { getMovieImageUrl } from "@/lib/utils";
 import { moviesService } from "@/service/movies.service";
 import { MOVIE_GENRES } from "@cine-connect/shared";
-import { Clapperboard, Loader2, Bookmark, Trash2 } from "lucide-react";
+import { Loader2, Bookmark, Trash2 } from "lucide-react";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
 
 function getGenreNames(genreIds: number[] | undefined): string[] {
   if (!genreIds?.length) return [];
@@ -40,28 +41,7 @@ function WatchlistPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors"
-          >
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
-            </span>
-          </Link>
-          <Link
-            to="/"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            ← Accueil
-          </Link>
-        </div>
-      </header>
-
+    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Bookmark className="h-8 w-8 text-orange-400 fill-orange-400" />
@@ -180,6 +160,6 @@ function WatchlistPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppNavLayout>
   );
 }

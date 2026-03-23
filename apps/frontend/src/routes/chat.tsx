@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Loader2, MessageCircle, Send } from "lucide-react";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { Loader2, MessageCircle, Send } from "lucide-react";
 
 const DEFAULT_ROOMS = [
   { id: "global", label: "Général" },
@@ -53,29 +54,7 @@ function ChatPage() {
   const orderedMessages = messages;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4 shrink-0">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors"
-          >
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
-            </span>
-          </Link>
-          <Link
-            to="/"
-            className="text-sm text-zinc-400 hover:text-white transition-colors"
-          >
-            ← Accueil
-          </Link>
-        </div>
-      </header>
-
-      <div className="flex-1 flex min-h-0 mx-auto w-full max-w-5xl">
+    <AppNavLayout variant="simple" shell="chat">
         {/* Sidebar: room list */}
         <aside className="w-56 shrink-0 border-r border-zinc-800 flex flex-col">
           <div className="p-3 border-b border-zinc-800">
@@ -199,7 +178,6 @@ function ChatPage() {
             </>
           )}
         </main>
-      </div>
-    </div>
+    </AppNavLayout>
   );
 }
