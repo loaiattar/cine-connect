@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
-import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
-import { Clapperboard, Loader2, User, UserPlus, UserMinus, Bell } from "lucide-react";
+import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { useState } from "react";
 import type { UserProfileRow } from "@/service/user.service";
 
@@ -138,51 +138,13 @@ function ProfilePage() {
 
   const displayName = user?.name ?? user?.email ?? "";
   const avatarDisplay = profile?.avatarUrl ?? null;
-  const { unreadCount } = useNotifications({ limit: 100 });
-
   /** Key so the form remounts when profile loads or updates (e.g. after save), avoiding setState-in-effect */
   const profileFormKey = profile
     ? [profile.id, profile.bio, profile.avatarUrl, profile.location, profile.favoriteGenre].join("\0")
     : "none";
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors"
-          >
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/notifications"
-              className="relative rounded-full p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              ← Accueil
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <AppNavLayout variant="standard">
       <main className="mx-auto max-w-5xl px-6 py-10">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
@@ -334,6 +296,6 @@ function ProfilePage() {
           </div>
         )}
       </main>
-    </div>
+    </AppNavLayout>
   );
 }

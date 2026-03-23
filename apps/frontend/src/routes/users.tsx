@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Clapperboard, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { apiClient } from "../lib/api-client";
 import { useAuth } from "../hooks/useAuth";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
 
 export const Route = createFileRoute("/users")({
   component: UsersPage,
@@ -37,17 +38,7 @@ function UsersPage() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-extrabold text-xl text-white hover:text-zinc-300">
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span className="text-red-500">Ciné</span><span className="text-orange-400">Connect</span>
-          </Link>
-          <Link to="/" className="text-sm text-zinc-400 hover:text-white">← Accueil</Link>
-        </div>
-      </header>
-
+    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Users className="h-8 w-8 text-red-500" />
@@ -101,7 +92,7 @@ function UsersPage() {
           ))}
         </ul>
       </main>
-    </div>
+    </AppNavLayout>
   );
 }
 
