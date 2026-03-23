@@ -29,6 +29,10 @@ export const MessageService = {
   /**
    * Get paginated message history for a room, newest first.
    * Each item includes sender email when senderId is set.
+   *
+   * Backed by `messages_room_id_created_at_idx` (room_id, created_at) — expect an index scan on room_id
+   * with rows ordered by created_at. Verify with:
+   * `EXPLAIN (ANALYZE, BUFFERS) SELECT ... FROM messages WHERE room_id = $1 ORDER BY created_at DESC LIMIT 50;`
    */
   async getByRoom(roomId: string, limit = DEFAULT_LIMIT, offset = 0) {
     const capped = Math.min(Math.max(1, limit), MAX_LIMIT);
