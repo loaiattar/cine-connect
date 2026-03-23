@@ -84,7 +84,13 @@ export const profiles = pgTable("profiles", {
     favoriteGenre: text("favorite_genre"),
 });
 
-/** Chat messages (real-time discussion rooms). roomId matches Socket.io rooms (e.g. "global", "film:550"). */
+/**
+ * Chat messages (real-time discussion rooms). roomId matches Socket.io rooms (e.g. "global", "film:550").
+ *
+ * Index: `room_id` is the leading column so equality filters on room reuse the B-tree prefix.
+ * `created_at` is the second column so history queries (`WHERE room_id = ? ORDER BY created_at`)
+ * can scan in sort order without a separate sort step — preferable to a room_id-only index for pagination.
+ */
 export const messages = pgTable("messages", {
     id: serial("id").primaryKey(),
     senderId: integer("sender_id").references(() => users.id, { onDelete: "set null" }),
