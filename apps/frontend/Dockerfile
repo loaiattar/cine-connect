@@ -14,6 +14,15 @@ COPY packages ./packages
 
 RUN pnpm install --frozen-lockfile
 
+# Vite inlines `import.meta.env.VITE_*` at build time — must be set here, not at nginx runtime.
+ARG VITE_API_BASE_URL=http://localhost:3000
+ARG VITE_APP_NAME=CinéConnect
+# Optional TMDB image CDN base (must match `utils.ts` default if unchanged)
+ARG VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_APP_NAME=${VITE_APP_NAME}
+ENV VITE_TMDB_IMAGE_BASE_URL=${VITE_TMDB_IMAGE_BASE_URL}
+
 RUN pnpm run build --filter=frontend
 
 FROM nginx:stable-alpine

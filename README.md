@@ -71,6 +71,12 @@ pnpm lint
 pnpm tsc -b
 ```
 
+## Docker (frontend build)
+
+The frontend container is a static nginx bundle. **`VITE_*` variables are applied at image build time** (not when the container starts). For `docker compose`, set `VITE_API_BASE_URL` in the repo root `.env` — see `.env.example`. Rebuild after changing them: `docker compose build frontend`.
+
+Details: `apps/frontend/README.md` (Docker & Vite).
+
 ## Backend environment
 
 See `apps/backend/.env.example`. In **production**, `JWT_SECRET` is required and must not be the test default; the app will fail to start if it is missing or insecure. In test, a fallback is allowed so tests can run without setting it.
