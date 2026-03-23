@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import type { Movie } from "@cine-connect/shared";
 import {
   moviesService,
@@ -28,12 +29,13 @@ export function useMovieList(): UseMovieListReturn {
   });
 
   const list = response?.results ?? [];
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     data: list,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
   };
 }
@@ -57,11 +59,13 @@ export function useMovieDetail(movieId: number): UseMovieDetailReturn {
     enabled,
   });
 
+  const detailQueryError = useQueryDisplayError(isError, error);
+
   return {
     data,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: detailQueryError,
     refetch,
   };
 }
@@ -95,11 +99,13 @@ export function useMovieSearch(
     enabled: shouldRun,
   });
 
+  const searchQueryError = useQueryDisplayError(isError, error);
+
   return {
     data,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: searchQueryError,
     refetch,
   };
 }

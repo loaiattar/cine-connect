@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useDisplayApiError, useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import {
   moviesService,
   type MovieCommentRow,
@@ -62,20 +63,14 @@ export function useComments(movieId: number, options?: UseCommentsOptions): UseC
   );
 
   const comments = normalizeComments(rawData);
-  const addError =
-    addMutation.error instanceof Error
-      ? addMutation.error
-      : addMutation.error != null && typeof addMutation.error === "object" && "message" in addMutation.error
-        ? new Error(String((addMutation.error as { message: string }).message))
-        : addMutation.error != null
-          ? new Error(String(addMutation.error))
-          : null;
+  const addError = useDisplayApiError(addMutation.error);
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     comments,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     addComment,
     isSubmitting: addMutation.isPending,

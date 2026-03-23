@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Clapperboard, Loader2, User, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
+import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
 
 export const Route = createFileRoute("/CommuityPage")({
   component: CommunautePage,
@@ -30,6 +31,8 @@ function CommunautePage() {
     offset: 0,
     enabled: debouncedQuery.length > 0,
   });
+
+  const searchApiError = useNormalizedApiError(isError ? error : null);
 
   const users = data?.users ?? [];
   const total = data?.total ?? 0;
@@ -87,7 +90,7 @@ function CommunautePage() {
 
         {debouncedQuery && isError && (
           <p className="text-center text-red-400 text-sm">
-            {error instanceof Error ? error.message : "La recherche a échoué."}
+            {searchApiError?.message ?? "La recherche a échoué."}
           </p>
         )}
 

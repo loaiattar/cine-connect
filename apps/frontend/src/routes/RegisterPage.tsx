@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { normalizeApiError } from "@/lib/normalize-api-error";
 
 export const Route = createFileRoute("/RegisterPage")({
   component: RegisterPage,
@@ -57,8 +58,7 @@ function RegisterPage() {
       });
       navigate({ to: "/" });
     } catch (err: unknown) {
-      const authErr = err as { status?: number; message?: string };
-      setError(authErr.message ?? "Une erreur est survenue.");
+      setError(normalizeApiError(err).message);
     } finally {
       setSubmitting(false);
     }

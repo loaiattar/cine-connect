@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
+import { useDisplayApiError, useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import { followService, type FollowUserRow } from "@/service/follow.service";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -108,16 +109,9 @@ export function useFollow(
   );
 
   const isFollowLoading = followMutation.isPending || unfollowMutation.isPending;
-  const followError =
-    followMutation.error ?? unfollowMutation.error ?? null;
-  const normalizedFollowError =
-    followError instanceof Error
-      ? followError
-      : followError != null && typeof followError === "object" && "message" in followError
-        ? new Error(String((followError as { message: string }).message))
-        : followError != null
-          ? new Error(String(followError))
-          : null;
+  const normalizedFollowError = useDisplayApiError(
+    followMutation.error ?? unfollowMutation.error ?? null
+  );
 
   /** Followers of profileUserId */
   const {
@@ -151,6 +145,9 @@ export function useFollow(
   const following = followingData?.users ?? [];
   const followingTotal = followingData?.total ?? 0;
 
+  const followersDisplayError = useQueryDisplayError(followersIsError, followersError);
+  const followingDisplayError = useQueryDisplayError(followingIsError, followingError);
+
   return {
     isFollowing: isSelf ? false : isFollowing,
     follow,
@@ -160,22 +157,12 @@ export function useFollow(
     followers,
     followersTotal,
     followersLoading: followersLoading,
-    followersError:
-      followersIsError && followersError
-        ? followersError instanceof Error
-          ? followersError
-          : new Error(String(followersError))
-        : null,
+    followersError: followersDisplayError,
     refetchFollowers,
     following,
     followingTotal,
     followingLoading,
-    followingError:
-      followingIsError && followingError
-        ? followingError instanceof Error
-          ? followingError
-          : new Error(String(followingError))
-        : null,
+    followingError: followingDisplayError,
     refetchFollowing,
   };
 }

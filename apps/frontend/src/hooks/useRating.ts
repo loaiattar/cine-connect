@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDisplayApiError, useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import { useCallback } from "react";
 import {
   moviesService,
@@ -58,20 +59,14 @@ export function useRating(movieId: number): UseRatingReturn {
   );
 
   const rating = normalizeRating(rawData);
-  const submitError =
-    submitMutation.error instanceof Error
-      ? submitMutation.error
-      : submitMutation.error != null && typeof submitMutation.error === "object" && "message" in submitMutation.error
-        ? new Error(String((submitMutation.error as { message: string }).message))
-        : submitMutation.error != null
-          ? new Error(String(submitMutation.error))
-          : null;
+  const submitError = useDisplayApiError(submitMutation.error);
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     rating,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     setRating,
     isSubmitting: submitMutation.isPending,
