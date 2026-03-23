@@ -53,7 +53,7 @@ router.get(
   asyncHandler(MovieController.getMovieComments)
 );
 
-// GET /api/movies/:movieId — public; optional auth adds isFavorite, isOnWatchlist, comments
+// GET /api/movies/:movieId — public; optional Bearer JWT sets isFavorite / isOnWatchlist for that user only (no ?userId)
 router.get(
   "/:movieId",
   publicMovieReadRateLimiter,

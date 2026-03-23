@@ -855,8 +855,9 @@ export const openApiSpec = {
       get: {
         tags: ["Movies"],
         summary: "Get movie details",
-        description: "Returns movie details (e.g. from TMDB). Optional query userId for favorite/watchlist flags.",
-        security: [{ bearerAuth: [] }],
+        description:
+          "Returns movie details (e.g. from TMDB) plus comments. Without authentication, `isFavorite` and `isOnWatchlist` are false. With a valid Bearer JWT, those flags reflect **only** the authenticated user. The legacy `?userId=` query parameter is **not** supported (removed for privacy).",
+        security: [],
         parameters: [
           {
             name: "movieId",
@@ -865,22 +866,11 @@ export const openApiSpec = {
             schema: { type: "integer" },
             description: "Movie ID (numeric, e.g. TMDB id)",
           },
-          {
-            name: "userId",
-            in: "query",
-            required: false,
-            schema: { type: "integer" },
-            description: "Optional; if provided, response includes user-specific favorite/watchlist flags",
-          },
         ],
         responses: {
           "200": {
             description:
-              "Movie details in `{ success: true, data }` (TMDB-shaped object; exact fields vary).",
-          },
-          "401": {
-            description: "Missing or invalid token",
-            content: { "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } } },
+              "Movie details in `{ success: true, data }` (TMDB-shaped object; exact fields vary). Includes `isFavorite`, `isOnWatchlist`, `comments`.",
           },
         },
       },

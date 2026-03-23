@@ -27,10 +27,76 @@ vi.mock('../services/tmdb.service', async (importOriginal) => {
                 total_pages: 1,
                 total_results: 1,
             }),
+            getMovieDetails: vi.fn().mockImplementation((movieId: number) =>
+                Promise.resolve({
+                    id: movieId,
+                    title: 'Test Movie',
+                    overview: 'Test overview',
+                    poster_path: null,
+                })
+            ),
         },
     };
 });
 
+
+describe('GET /api/v1/movies/:movieId — movie details', () => {
+    const detailMovieId = 550;
+
+    it('returns TMDB-shaped data with no personalization when anonymous', async () => {
+        const res = await request(app).get(`/api/v1/movies/${detailMovieId}`);
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.id).toBe(detailMovieId);
+        expect(res.body.data.isFavorite).toBe(false);
+        expect(res.body.data.isOnWatchlist).toBe(false);
+        expect(Array.isArray(res.body.data.comments)).toBe(true);
+    });
+
+    it('ignores ?userId query (no leak of another user favorite/watchlist flags)', async () => {
+        const victim = await AuthService.register(
+            'Victim Detail',
+            `victim-detail-${Date.now()}@example.com`,
+            'password123'
+        );
+        await request(app)
+            .post('/api/v1/movies/favorite')
+            .set('Authorization', `Bearer ${victim.token}`)
+            .send({ movieId: detailMovieId });
+
+        const res = await request(app)
+            .get(`/api/v1/movies/${detailMovieId}`)
+            .query({ userId: victim.userId });
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.isFavorite).toBe(false);
+        expect(res.body.data.isOnWatchlist).toBe(false);
+    });
+
+    it('returns personalized flags when Bearer token is the same user', async () => {
+        const auth = await AuthService.register(
+            'Detail User',
+            `detail-${Date.now()}@example.com`,
+            'password123'
+        );
+        await request(app)
+            .post('/api/v1/movies/favorite')
+            .set('Authorization', `Bearer ${auth.token}`)
+            .send({ movieId: detailMovieId });
+        await request(app)
+            .post('/api/v1/movies/watchlist')
+            .set('Authorization', `Bearer ${auth.token}`)
+            .send({ movieId: detailMovieId });
+
+        const res = await request(app)
+            .get(`/api/v1/movies/${detailMovieId}`)
+            .set('Authorization', `Bearer ${auth.token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.isFavorite).toBe(true);
+        expect(res.body.data.isOnWatchlist).toBe(true);
+    });
+});
 
 describe('Movie Functional Tests - Favorites', () => {
 
