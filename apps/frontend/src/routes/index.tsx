@@ -106,13 +106,13 @@ function Index() {
           ) : (
             <>
               <Link
-                to="/RegisterPage"
+                to="/register"
                 className="rounded border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-4 py-2 text-sm font-bold"
               >
                 S'inscrire
               </Link>
               <Link
-                to="/LoginPage"
+                to="/login"
                 className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold"
               >
                 Se connecter
@@ -145,14 +145,14 @@ function Index() {
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/RegisterPage"
+              to="/register"
               className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2"
             >
               <Play className="w-4 h-4" />
               Commencer l'aventure
             </Link>
             <Link
-              to="/LoginPage"
+              to="/login"
               className="rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center"
             >
               Se connecter
@@ -250,7 +250,7 @@ function Index() {
         </ul>
 
         <Link
-          to="/RegisterPage"
+          to="/register"
           className="mt-8 inline-block rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold"
         >
           Rejoindre CinéConnect
@@ -264,7 +264,7 @@ function Index() {
           du 7ème art
         </p>
         <Link
-          to="/RegisterPage"
+          to="/register"
           className="mt-8 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-8 py-3 font-semibold inline-flex items-center gap-2"
         >
           <Play className="w-4 h-4" />
@@ -308,10 +308,10 @@ function Index() {
                 <Link to={"/favorites" as "/" | "/favorites"} className="hover:text-white transition-colors">Mes favoris</Link>
               </li>
               <li>
-                <Link to="/RegisterPage" className="hover:text-white transition-colors">S'inscrire</Link>
+                <Link to="/register" className="hover:text-white transition-colors">S'inscrire</Link>
               </li>
               <li>
-                <Link to="/LoginPage" className="hover:text-white transition-colors">Se connecter</Link>
+                <Link to="/login" className="hover:text-white transition-colors">Se connecter</Link>
               </li>
             </ul>
           </div>

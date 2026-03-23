@@ -12,15 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ChatRouteImport } from './routes/chat'
-import { Route as RegisterPageRouteImport } from './routes/RegisterPage'
-import { Route as ProfilePageRouteImport } from './routes/ProfilePage'
-import { Route as MovieDetailPageRouteImport } from './routes/MovieDetailPage'
-import { Route as LoginPageRouteImport } from './routes/LoginPage'
-import { Route as CommuityPageRouteImport } from './routes/CommuityPage'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
@@ -40,6 +38,11 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -50,39 +53,24 @@ const NotificationsRoute = NotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegisterPageRoute = RegisterPageRouteImport.update({
-  id: '/RegisterPage',
-  path: '/RegisterPage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfilePageRoute = ProfilePageRouteImport.update({
-  id: '/ProfilePage',
-  path: '/ProfilePage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MovieDetailPageRoute = MovieDetailPageRouteImport.update({
-  id: '/MovieDetailPage',
-  path: '/MovieDetailPage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginPageRoute = LoginPageRouteImport.update({
-  id: '/LoginPage',
-  path: '/LoginPage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommuityPageRoute = CommuityPageRouteImport.update({
-  id: '/CommuityPage',
-  path: '/CommuityPage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -103,15 +91,13 @@ const MovieMovieIdRoute = MovieMovieIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/CommuityPage': typeof CommuityPageRoute
-  '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
-  '/ProfilePage': typeof ProfilePageRoute
-  '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -120,15 +106,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/CommuityPage': typeof CommuityPageRoute
-  '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
-  '/ProfilePage': typeof ProfilePageRoute
-  '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -138,15 +122,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/CommuityPage': typeof CommuityPageRoute
-  '/LoginPage': typeof LoginPageRoute
-  '/MovieDetailPage': typeof MovieDetailPageRoute
-  '/ProfilePage': typeof ProfilePageRoute
-  '/RegisterPage': typeof RegisterPageRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -157,15 +139,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/CommuityPage'
-    | '/LoginPage'
-    | '/MovieDetailPage'
-    | '/ProfilePage'
-    | '/RegisterPage'
     | '/chat'
+    | '/community'
     | '/favorites'
+    | '/login'
     | '/notifications'
     | '/profile'
+    | '/register'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -174,15 +154,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/CommuityPage'
-    | '/LoginPage'
-    | '/MovieDetailPage'
-    | '/ProfilePage'
-    | '/RegisterPage'
     | '/chat'
+    | '/community'
     | '/favorites'
+    | '/login'
     | '/notifications'
     | '/profile'
+    | '/register'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -191,15 +169,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/CommuityPage'
-    | '/LoginPage'
-    | '/MovieDetailPage'
-    | '/ProfilePage'
-    | '/RegisterPage'
     | '/chat'
+    | '/community'
     | '/favorites'
+    | '/login'
     | '/notifications'
     | '/profile'
+    | '/register'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -209,15 +185,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CommuityPageRoute: typeof CommuityPageRoute
-  LoginPageRoute: typeof LoginPageRoute
-  MovieDetailPageRoute: typeof MovieDetailPageRoute
-  ProfilePageRoute: typeof ProfilePageRoute
-  RegisterPageRoute: typeof RegisterPageRoute
   ChatRoute: typeof ChatRoute
+  CommunityRoute: typeof CommunityRoute
   FavoritesRoute: typeof FavoritesRoute
+  LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
+  RegisterRoute: typeof RegisterRoute
   SearchRoute: typeof SearchRoute
   UsersRoute: typeof UsersRoute
   WatchlistRoute: typeof WatchlistRoute
@@ -247,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -261,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/favorites': {
       id: '/favorites'
       path: '/favorites'
@@ -268,46 +256,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/RegisterPage': {
-      id: '/RegisterPage'
-      path: '/RegisterPage'
-      fullPath: '/RegisterPage'
-      preLoaderRoute: typeof RegisterPageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ProfilePage': {
-      id: '/ProfilePage'
-      path: '/ProfilePage'
-      fullPath: '/ProfilePage'
-      preLoaderRoute: typeof ProfilePageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/MovieDetailPage': {
-      id: '/MovieDetailPage'
-      path: '/MovieDetailPage'
-      fullPath: '/MovieDetailPage'
-      preLoaderRoute: typeof MovieDetailPageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/LoginPage': {
-      id: '/LoginPage'
-      path: '/LoginPage'
-      fullPath: '/LoginPage'
-      preLoaderRoute: typeof LoginPageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/CommuityPage': {
-      id: '/CommuityPage'
-      path: '/CommuityPage'
-      fullPath: '/CommuityPage'
-      preLoaderRoute: typeof CommuityPageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -347,15 +307,13 @@ const ProfileRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CommuityPageRoute: CommuityPageRoute,
-  LoginPageRoute: LoginPageRoute,
-  MovieDetailPageRoute: MovieDetailPageRoute,
-  ProfilePageRoute: ProfilePageRoute,
-  RegisterPageRoute: RegisterPageRoute,
   ChatRoute: ChatRoute,
+  CommunityRoute: CommunityRoute,
   FavoritesRoute: FavoritesRoute,
+  LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
+  RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
   UsersRoute: UsersRoute,
   WatchlistRoute: WatchlistRoute,

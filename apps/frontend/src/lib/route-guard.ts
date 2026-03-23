@@ -1,7 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 import { useAuthStore } from "@/stores/auth.store";
 
-const LOGIN_PATH = "/LoginPage";
+const LOGIN_PATH = "/login";
 
 /**
  * Use in a route's beforeLoad. If there is no hydrated user in the store, redirects to login.

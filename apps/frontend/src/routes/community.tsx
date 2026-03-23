@@ -4,14 +4,14 @@ import { Clapperboard, Loader2, User, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
 
-export const Route = createFileRoute("/CommuityPage")({
-  component: CommunautePage,
+export const Route = createFileRoute("/community")({
+  component: CommunityPage,
 });
 
 const DEBOUNCE_MS = 350;
 const PAGE_SIZE = 20;
 
-function CommunautePage() {
+function CommunityPage() {
   const [inputValue, setInputValue] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -154,4 +154,4 @@ function CommunautePage() {
   );
 }
 
-export default CommunautePage;
+export default CommunityPage;
