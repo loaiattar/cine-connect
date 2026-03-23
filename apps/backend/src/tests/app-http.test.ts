@@ -52,5 +52,14 @@ describe("HTTP edge cases (no DB mutations)", () => {
     expect(res.status).toBe(200);
     expect(res.body.openapi).toBeDefined();
     expect(res.body.paths).toBeDefined();
+    expect(res.headers["content-security-policy"]).toBeDefined();
+  });
+
+  it("serves Swagger HTML at /docs with security headers", async () => {
+    const res = await request(app).get("/docs");
+    expect(res.status).toBe(200);
+    expect(res.text).toContain("swagger-ui");
+    expect(res.headers["content-security-policy"]).toBeDefined();
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
   });
 });

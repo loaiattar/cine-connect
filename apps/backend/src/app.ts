@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import { sql } from 'drizzle-orm';
 import { db } from './db';
@@ -27,6 +28,33 @@ function applyCors(app: Express): void {
 }
 
 const app: Express = express();
+
+/**
+ * HTTP security headers (Helmet).
+ *
+ * CSP exceptions for embedded Swagger UI (`/docs`, `/swagger`, `/?docs=1`):
+ * - `script-src` / `style-src`: `https://unpkg.com` (swagger-ui-dist@5), `'unsafe-inline'` (inline boot
+ *   script in `SWAGGER_HTML`), `'unsafe-eval'` (Swagger UI bundle uses dynamic code paths in the browser).
+ * - `connect-src` `'self'`: in-browser fetch of `/openapi.json` same-origin.
+ * - `img-src` / `font-src`: Swagger UI assets from CDN (`https:`, `data:`).
+ *
+ * See also: `apps/backend/README.md` → Security headers.
+ */
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+        connectSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        fontSrc: ["'self'", "https:", "data:"],
+      },
+    },
+  })
+);
 
 applyCors(app);
 
