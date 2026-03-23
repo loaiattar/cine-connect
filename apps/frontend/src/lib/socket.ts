@@ -1,7 +1,6 @@
 import { io, type Socket } from "socket.io-client";
 import { useEffect, useRef, useCallback } from "react";
-import { useAuthStore } from "@/stores/auth.store";
-import { ApiClientConfig } from "./api-client";
+import { socketHttpOrigin } from "./api-origin";
 
 const SOCKET_PATH = "/socket.io";
 
@@ -58,11 +57,10 @@ function attachSocketLifecycle(socket: Socket): void {
 
 export function getSocket(): Socket {
   if (!sharedSocket) {
-    const token = useAuthStore.getState().token;
-    const url = ApiClientConfig.BASE_URL.replace(/\/$/, "");
-    sharedSocket = io(url, {
+    const origin = socketHttpOrigin();
+    sharedSocket = io(origin, {
       path: SOCKET_PATH,
-      auth: token ? { token } : {},
+      withCredentials: true,
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: Number.POSITIVE_INFINITY,
@@ -94,7 +92,7 @@ export function joinSocketRoom(roomId: string): void {
 
 /**
  * Release interest in a room. Last subscriber emits `leave_room`.
- * Does not recreate the socket if it was cleared (e.g. auth refresh).
+ * Does not recreate the socket if it was cleared (e.g. after logout).
  */
 export function leaveSocketRoom(roomId: string): void {
   const id = roomId.trim();
@@ -112,7 +110,7 @@ export function leaveSocketRoom(roomId: string): void {
   }
 }
 
-/** Keep socket auth in sync with store (e.g. after login/logout). Forces reconnect with new token. */
+/** After login/logout or cookie rotation, drop the socket so the next use reconnects with current cookies. */
 export function updateSocketAuth(): void {
   if (sharedSocket) {
     sharedSocket.disconnect();

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { token, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const { data: trendingMovies, isLoading: trendingLoading } = useMovieList();
 
   const features = [
@@ -65,7 +65,7 @@ function Index() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {token ? (
+          {isAuthenticated ? (
             <>
               <Link
                 to="/search"
@@ -97,7 +97,7 @@ function Index() {
               </Link>
               <button
                 type="button"
-                onClick={logout}
+                onClick={() => void logout()}
                 className="rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors px-4 py-2 text-sm font-bold"
               >
                 Se déconnecter
