@@ -68,8 +68,8 @@ function UsersPage() {
                 <p className="text-sm text-zinc-400">{user.email}</p>
               </div>
               <Link
-                to="/ProfilePage"
-                search={{ userId: String(user.id) }}
+                to="/profile/$userId"
+                params={{ userId: String(user.id) }}
                 className="text-sm text-zinc-400 hover:text-white transition-colors"
               >
                 Voir profil

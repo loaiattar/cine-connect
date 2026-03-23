@@ -139,8 +139,8 @@ export class ApiClient {
 
       if (response.status === 401) {
         useAuthStore.getState().clearAuth();
-        if (typeof window !== "undefined" && window.location.pathname !== "/LoginPage") {
-          window.location.href = "/LoginPage";
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+          window.location.href = "/login";
         }
       }
       throw {

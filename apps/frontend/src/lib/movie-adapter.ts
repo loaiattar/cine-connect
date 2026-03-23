@@ -2,7 +2,7 @@ import type { Movie } from "@cine-connect/shared";
 import { getMovieImageUrl } from "./utils";
 
 /**
- * Display shape used by MovieHero, MovieDetailPage, and cards.
+ * Display shape used by MovieHero, movie detail route, and cards.
  * Derived from API Movie (TMDB-shaped) so the UI can stay stable.
  */
 export interface MovieDisplay {

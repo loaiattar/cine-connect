@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeApiError } from "@/lib/normalize-api-error";
 
-export const Route = createFileRoute("/RegisterPage")({
+export const Route = createFileRoute("/register")({
   component: RegisterPage,
 });
 
@@ -158,7 +158,7 @@ function RegisterPage() {
 
         <p className="mt-8 text-center text-sm text-gray-500">
           Vous avez déjà un compte ?{" "}
-          <Link to="/LoginPage" className="text-[#f6ad55] hover:underline">
+          <Link to="/login" className="text-[#f6ad55] hover:underline">
             Se connecter
           </Link>
         </p>
