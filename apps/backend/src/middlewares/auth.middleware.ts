@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { getJwtSecret } from "../config";
+import type { RequestUser } from "../types/auth.types";
 import { getAccessTokenFromRequest } from "../utils/authCookies";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +19,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
             return res.status(401).json({ error: "Invalid token payload" });
         }
 
-        req.user = { userId: decoded.userId };
+        req.user = { userId: decoded.userId } satisfies RequestUser;
         next();
     } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
@@ -36,7 +37,7 @@ export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFu
     try {
         const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
         if (decoded.userId) {
-            req.user = { userId: decoded.userId };
+            req.user = { userId: decoded.userId } satisfies RequestUser;
         }
     } catch {
         // ignore invalid token
