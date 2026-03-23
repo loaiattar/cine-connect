@@ -10,7 +10,9 @@ const router: Router = Router();
 router.post("/register", validate(registerSchema), asyncHandler(AuthController.register));
 // POST /api/auth/login
 router.post("/login", validate(loginSchema), asyncHandler(AuthController.login));
-// POST /api/auth/refresh — new access + refresh (rotation); no Bearer required
+// POST /api/auth/refresh — cookie `cc_refresh`; rotates tokens; no Bearer required
 router.post("/refresh", validate(refreshSchema), asyncHandler(AuthController.refresh));
+// POST /api/auth/logout — clears auth cookies
+router.post("/logout", asyncHandler(AuthController.logout));
 
 export default router;

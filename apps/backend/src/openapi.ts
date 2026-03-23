@@ -24,7 +24,7 @@ export const openApiSpec = {
         scheme: "bearer",
         bearerFormat: "JWT",
         description:
-          "Short-lived JWT from POST /api/v1/auth/register, /api/v1/auth/login, or /api/v1/auth/refresh. Use refresh token body flow when access token expires.",
+          "Optional: short-lived access JWT. Browsers should rely on httpOnly cookie `cc_access` set by login/register/refresh (send `credentials: 'include'`). Bearer header still supported for API clients and tests.",
       },
     },
     schemas: {
@@ -62,25 +62,14 @@ export const openApiSpec = {
           },
         },
       },
-      AuthResponse: {
+      AuthSessionResponse: {
         type: "object",
+        description: "Public session fields. Access and refresh tokens are httpOnly cookies (`cc_access`, `cc_refresh`), not returned in JSON.",
         properties: {
-          token: { type: "string", description: "Access JWT (short-lived) for Authorization header" },
-          refreshToken: {
-            type: "string",
-            description: "Opaque refresh token; send to POST /api/v1/auth/refresh for rotation (new access + new refresh)",
-          },
-          userId: { type: "integer", description: "User ID" },
+          userId: { type: "integer" },
           email: { type: "string", format: "email" },
         },
-        required: ["token", "refreshToken", "userId", "email"],
-      },
-      RefreshBody: {
-        type: "object",
-        required: ["refreshToken"],
-        properties: {
-          refreshToken: { type: "string", minLength: 1, description: "Current refresh token from login/register/previous refresh" },
-        },
+        required: ["userId", "email"],
       },
       RegisterBody: {
         type: "object",
@@ -339,7 +328,13 @@ export const openApiSpec = {
         },
         responses: {
           "201": {
-            description: "User registered; returns token and user info",
+            description: "User registered; Set-Cookie for session; JSON userId and email",
+            headers: {
+              "Set-Cookie": {
+                schema: { type: "string" },
+                description: "cc_access, cc_refresh",
+              },
+            },
             content: {
               "application/json": {
                 schema: {
@@ -348,7 +343,7 @@ export const openApiSpec = {
                     {
                       type: "object",
                       properties: {
-                        data: { $ref: "#/components/schemas/AuthResponse" },
+                        data: { $ref: "#/components/schemas/AuthSessionResponse" },
                       },
                       required: ["data"],
                     },
@@ -387,7 +382,13 @@ export const openApiSpec = {
         },
         responses: {
           "200": {
-            description: "Login successful; returns token and user info",
+            description: "Login successful; Set-Cookie; JSON userId and email",
+            headers: {
+              "Set-Cookie": {
+                schema: { type: "string" },
+                description: "cc_access, cc_refresh",
+              },
+            },
             content: {
               "application/json": {
                 schema: {
@@ -396,7 +397,7 @@ export const openApiSpec = {
                     {
                       type: "object",
                       properties: {
-                        data: { $ref: "#/components/schemas/AuthResponse" },
+                        data: { $ref: "#/components/schemas/AuthSessionResponse" },
                       },
                       required: ["data"],
                     },
@@ -423,20 +424,18 @@ export const openApiSpec = {
     "/api/v1/auth/refresh": {
       post: {
         tags: ["Auth"],
-        summary: "Refresh tokens",
+        summary: "Refresh session",
         description:
-          "Exchanges a valid refresh token for a new access JWT and a new refresh token (rotation). The previous refresh token is invalidated.",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: { $ref: "#/components/schemas/RefreshBody" },
-            },
-          },
-        },
+          "Reads httpOnly cookie `cc_refresh`, rotates refresh in the database, issues new `cc_access` and `cc_refresh` cookies. No JSON body required. Previous refresh value is invalidated.",
         responses: {
           "200": {
-            description: "New access and refresh tokens",
+            description: "New cookies set; JSON userId and email",
+            headers: {
+              "Set-Cookie": {
+                schema: { type: "string" },
+                description: "cc_access, cc_refresh",
+              },
+            },
             content: {
               "application/json": {
                 schema: {
@@ -445,7 +444,7 @@ export const openApiSpec = {
                     {
                       type: "object",
                       properties: {
-                        data: { $ref: "#/components/schemas/AuthResponse" },
+                        data: { $ref: "#/components/schemas/AuthSessionResponse" },
                       },
                       required: ["data"],
                     },
@@ -461,9 +460,41 @@ export const openApiSpec = {
             },
           },
           "401": {
-            description: "Invalid or expired refresh token",
+            description: "Invalid, expired, or missing refresh cookie",
             content: {
               "application/json": { schema: { $ref: "#/components/schemas/ApiFailure" } },
+            },
+          },
+        },
+      },
+    },
+    "/api/v1/auth/logout": {
+      post: {
+        tags: ["Auth"],
+        summary: "Log out",
+        description: "Clears `cc_access` and `cc_refresh` cookies.",
+        responses: {
+          "200": {
+            description: "Cookies cleared",
+            content: {
+              "application/json": {
+                schema: {
+                  allOf: [
+                    { $ref: "#/components/schemas/ApiSuccessEnvelope" },
+                    {
+                      type: "object",
+                      properties: {
+                        data: {
+                          type: "object",
+                          properties: { loggedOut: { type: "boolean" } },
+                          required: ["loggedOut"],
+                        },
+                      },
+                      required: ["data"],
+                    },
+                  ],
+                },
+              },
             },
           },
         },

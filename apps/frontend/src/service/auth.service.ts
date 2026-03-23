@@ -1,4 +1,4 @@
-import { ApiClientConfig } from "../lib/api-client";
+import { ApiClientConfig } from "../lib/api-origin";
 
 export interface LoginCredentials {
   email: string;
@@ -11,9 +11,8 @@ export interface RegisterCredentials {
   password: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  refreshToken: string;
+/** Public session fields only; JWTs are httpOnly cookies set by the API. */
+export interface AuthSessionResponse {
   userId: number;
   email: string;
 }
@@ -37,9 +36,36 @@ function parseEnvelope(json: unknown): { ok: true; data: unknown } | { ok: false
 }
 
 export const authService = {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+  /**
+   * If a valid `cc_refresh` cookie exists, rotates tokens and returns session payload.
+   * Used on app load when Zustand has no user yet.
+   */
+  async restoreSession(): Promise<AuthSessionResponse | null> {
+    try {
+      const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) return null;
+      const parsed = parseEnvelope(body);
+      if (!parsed.ok) return null;
+      const d = parsed.data as Record<string, unknown>;
+      const userId = typeof d.userId === "number" ? d.userId : Number(d.userId);
+      const email = typeof d.email === "string" ? d.email : "";
+      if (!Number.isFinite(userId) || !email) return null;
+      return { userId, email };
+    } catch {
+      return null;
+    }
+  },
+
+  async login(credentials: LoginCredentials): Promise<AuthSessionResponse> {
     const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/login`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
@@ -61,12 +87,13 @@ export const authService = {
     if (!parsed.ok) {
       throw { status: res.status, message: parsed.error } as AuthError;
     }
-    return parsed.data as AuthResponse;
+    return parsed.data as AuthSessionResponse;
   },
 
-  async register(credentials: RegisterCredentials): Promise<AuthResponse> {
+  async register(credentials: RegisterCredentials): Promise<AuthSessionResponse> {
     const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/register`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
@@ -94,30 +121,14 @@ export const authService = {
     if (!parsed.ok) {
       throw { status: res.status, message: parsed.error } as AuthError;
     }
-    return parsed.data as AuthResponse;
+    return parsed.data as AuthSessionResponse;
   },
 
-  async refresh(refreshToken: string): Promise<AuthResponse> {
-    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
+  async logout(): Promise<void> {
+    await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/logout`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
-    });
-
-    const body = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      const parsed = parseEnvelope(body);
-      throw {
-        status: res.status,
-        message: !parsed.ok ? parsed.error : `Erreur ${res.status}`,
-      } as AuthError;
-    }
-
-    const parsed = parseEnvelope(body);
-    if (!parsed.ok) {
-      throw { status: res.status, message: parsed.error } as AuthError;
-    }
-    return parsed.data as AuthResponse;
+    }).catch(() => undefined);
   },
 };

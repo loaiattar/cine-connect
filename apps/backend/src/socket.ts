@@ -27,8 +27,10 @@
 
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import { parse as parseCookieHeader } from 'cookie';
 import jwt from 'jsonwebtoken';
 import { getCorsAllowlist, getJwtSecret } from './config';
+import { COOKIE_ACCESS } from './utils/authCookies';
 import { MessageService } from './services/message.service';
 import { sanitizeUserText } from './utils/sanitize';
 
@@ -41,11 +43,18 @@ export function getSocketIo(): Server | null {
   return socketIoInstance;
 }
 
-function getCorsOptions(): { origin: string[] | boolean } {
+function getCorsOptions(): {
+  origin: string[] | boolean;
+  credentials: boolean;
+} {
   const allowlist = getCorsAllowlist();
-  if (allowlist.length > 0) return { origin: allowlist };
-  if (process.env.NODE_ENV === 'production') return { origin: false };
-  return { origin: true }; // dev: allow any origin
+  if (allowlist.length > 0) {
+    return { origin: allowlist, credentials: true };
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return { origin: false, credentials: false };
+  }
+  return { origin: true, credentials: true };
 }
 
 export function createSocketServer(httpServer: HttpServer): Server {
@@ -55,7 +64,11 @@ export function createSocketServer(httpServer: HttpServer): Server {
   });
 
   io.use((socket, next) => {
+    const cookieHeader = socket.handshake.headers.cookie;
+    const cookies = cookieHeader ? parseCookieHeader(cookieHeader) : {};
+    const fromCookie = cookies[COOKIE_ACCESS];
     const token =
+      (typeof fromCookie === 'string' && fromCookie) ||
       (socket.handshake.auth as { token?: string })?.token ||
       (socket.handshake.headers?.authorization as string)?.replace(/^Bearer\s+/i, '');
     if (!token) {

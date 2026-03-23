@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clapperboard, Users } from "lucide-react";
 import { apiClient } from "../lib/api-client";
-import { useAuthStore } from "../stores/auth.store";
+import { useAuth } from "../hooks/useAuth";
 
 export const Route = createFileRoute("/users")({
   component: UsersPage,
@@ -20,7 +20,7 @@ const mockUsers = [
 function UsersPage() {
   const [recherche, setRecherche] = useState("");
   const [suivis, setSuivis] = useState<number[]>([]);
-  const isLoggedIn = !!useAuthStore((s) => s.token);
+  const { isAuthenticated: isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
 
   const followMutation = useMutation({

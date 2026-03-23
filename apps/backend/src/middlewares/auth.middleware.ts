@@ -1,15 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { getJwtSecret } from "../config";
+import { getAccessTokenFromRequest } from "../utils/authCookies";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
+    const token = getAccessTokenFromRequest(req);
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
         return res.status(401).json({ success: false, error: "Unauthorized: No token provided" });
     }
-
-    const token = authHeader.split(" ")[1];
 
     try {
         const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
@@ -30,11 +29,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
 /** Same as authMiddleware but does not return 401: if no/invalid token, continues without req.user. */
 export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    const token = getAccessTokenFromRequest(req);
+    if (!token) {
         return next();
     }
-    const token = authHeader.split(" ")[1];
     try {
         const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
         if (decoded.userId) {

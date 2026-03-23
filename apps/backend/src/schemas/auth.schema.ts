@@ -17,8 +17,7 @@ export const loginSchema = z.object({
     }),
 });
 
+/** Refresh uses httpOnly `cc_refresh` cookie only; body is ignored. */
 export const refreshSchema = z.object({
-    body: z.object({
-        refreshToken: z.string().min(1, "Refresh token is required"),
-    }),
+    body: z.any(),
 });
