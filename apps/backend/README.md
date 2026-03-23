@@ -69,6 +69,22 @@ socket.emit("message", { roomId: "global", text: "Hello!" }); // persisted to DB
 - **Run tests:** `pnpm test` (runs Vitest; requires PostgreSQL and `TMDB_API_KEY` in test env). Integration tests hit the real app and database; unit tests cover helpers (`apiResponse`, `AppError`, `sanitizeUserText`, `errorHandler`, `asyncHandler`) and HTTP edge cases (404, malformed JSON, unauthenticated API) without extra setup.
 - **Coverage:** `pnpm test:coverage` — generates a coverage report (requires `@vitest/coverage-v8`). Auth REST tests run whenever the suite runs (same as other DB-backed tests); ensure PostgreSQL is up so the full suite passes in CI.
 
+## Security headers
+
+The API uses [Helmet](https://helmetjs.github.io/) early in the Express stack (`src/app.ts`) for standard headers (e.g. `X-Content-Type-Options`, `X-DNS-Prefetch-Control`, frameguard, etc.) and a **Content-Security-Policy** tuned for this app.
+
+**CSP exceptions** (required for in-browser Swagger UI at `/docs`, `/swagger`, and related routes):
+
+| Directive     | Values | Why |
+|---------------|--------|-----|
+| `script-src`  | `'self'`, `'unsafe-inline'`, `'unsafe-eval'`, `https://unpkg.com` | Inline boot script in the HTML shell; Swagger UI bundle from unpkg; dynamic eval paths inside Swagger. |
+| `style-src`   | `'self'`, `'unsafe-inline'`, `https://unpkg.com` | Swagger UI CSS from unpkg; inline styles. |
+| `connect-src` | `'self'` | Browser fetches `/openapi.json` same-origin. |
+| `img-src`     | `'self'`, `data:`, `https:` | Icons / assets from CDNs or data URLs. |
+| `font-src`    | `'self'`, `https:`, `data:` | Fonts loaded by Swagger UI from HTTPS. |
+
+`crossOriginEmbedderPolicy` is disabled so typical cross-origin browser clients (SPA + API) are not blocked by default COEP behavior on JSON responses.
+
 ## Environment
 
 - `DATABASE_URL` — PostgreSQL connection string.
