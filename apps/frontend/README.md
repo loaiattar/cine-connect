@@ -1,4 +1,43 @@
-# React + TypeScript + Vite
+# CinéConnect frontend (React + TypeScript + Vite)
+
+## Docker image and `VITE_*` build arguments
+
+The production image (`apps/frontend/Dockerfile`) runs `pnpm build` with environment variables **baked in by Vite**. Nginx only serves static files; it does **not** inject API URLs at runtime.
+
+| Build arg / env | Default | Purpose |
+|-----------------|---------|---------|
+| `VITE_API_BASE_URL` | `http://localhost:3000` | Backend origin (no trailing slash). Must be reachable from the **browser**. |
+| `VITE_APP_NAME` | `CinéConnect` | Optional branding (reserved for future use). |
+| `VITE_TMDB_IMAGE_BASE_URL` | `https://image.tmdb.org/t/p` | TMDB poster base URL. |
+
+**docker compose** (from monorepo root): add `VITE_API_BASE_URL` to root `.env` (see `../../.env.example`). Compose passes it as a build arg. Then:
+
+```bash
+docker compose build frontend
+docker compose up
+```
+
+**Manual image build:**
+
+```bash
+docker build -f apps/frontend/Dockerfile --build-arg VITE_API_BASE_URL=https://api.example.com -t cine-frontend ..
+```
+
+(context must be monorepo root because the Dockerfile copies workspace files.)
+
+### Smoke-test
+
+1. Start stack: `docker compose up` (backend on `3000`, frontend on `8080`).  
+2. Open `http://localhost:8080`.  
+3. In DevTools → Network, confirm XHR/fetch targets your configured API host (`/api/v1/...`).
+
+### CI (GitHub Actions)
+
+Workflow `.github/workflows/docker-deploy.yml` passes `VITE_API_BASE_URL` from repository **Variables** (`vars.VITE_API_BASE_URL`). Set that variable in the repo settings for production deploys (public API URL).
+
+---
+
+## React + TypeScript + Vite (template)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
