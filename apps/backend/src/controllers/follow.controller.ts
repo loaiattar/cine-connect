@@ -4,14 +4,14 @@ import { FollowService } from "../services/follow.service";
 
 export const FollowController = {
   async follow(req: Request, res: Response) {
-    const followerId = (req as any).user.userId;
+    const followerId = req.user!.userId;
     const { followingId } = req.body;
     const result = await FollowService.follow(followerId, followingId);
     return success(res, result, 201);
   },
 
   async unfollow(req: Request, res: Response) {
-    const followerId = (req as any).user.userId;
+    const followerId = req.user!.userId;
     const userId = Number(req.params.userId);
     const result = await FollowService.unfollow(followerId, userId);
     return success(res, result ?? { unfollowed: true });

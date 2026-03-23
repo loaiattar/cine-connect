@@ -5,7 +5,7 @@ import { notFound } from "../utils";
 
 export const NotificationController = {
     async list(req: Request, res: Response) {
-        const userId = (req as any).user.userId;
+        const userId = req.user!.userId;
         const limit = Number(req.query.limit) || 50;
         const offset = Number(req.query.offset) || 0;
         const unreadOnly = req.query.unreadOnly === "true" || req.query.unreadOnly === "1";
@@ -14,7 +14,7 @@ export const NotificationController = {
     },
 
     async markAsRead(req: Request, res: Response) {
-        const userId = (req as any).user.userId;
+        const userId = req.user!.userId;
         const notificationId = Number(req.params.id);
         const result = await NotificationService.markAsRead(userId, notificationId);
         if (!result) throw notFound("Notification not found");
@@ -22,7 +22,7 @@ export const NotificationController = {
     },
 
     async markAllAsRead(req: Request, res: Response) {
-        const userId = (req as any).user.userId;
+        const userId = req.user!.userId;
         const result = await NotificationService.markAllAsRead(userId);
         return success(res, result);
     },
