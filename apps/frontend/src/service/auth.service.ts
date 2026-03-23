@@ -1,4 +1,5 @@
 import { ApiClientConfig } from "../lib/api-origin";
+import { parseApiEnvelope, userMessageFromApiJson } from "../lib/normalize-api-error";
 
 export interface LoginCredentials {
   email: string;
@@ -24,17 +25,6 @@ export interface AuthError {
 
 const baseUrl = ApiClientConfig.BASE_URL;
 
-function parseEnvelope(json: unknown): { ok: true; data: unknown } | { ok: false; error: string; errors?: unknown } {
-  if (json && typeof json === "object" && json !== null && "success" in json) {
-    const o = json as Record<string, unknown>;
-    if (o.success === true && "data" in o) return { ok: true, data: o.data };
-    if (o.success === false && typeof o.error === "string") {
-      return { ok: false, error: o.error, errors: o.errors };
-    }
-  }
-  return { ok: false, error: "Réponse invalide du serveur." };
-}
-
 export const authService = {
   /**
    * If a valid `cc_refresh` cookie exists, rotates tokens and returns session payload.
@@ -50,7 +40,7 @@ export const authService = {
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) return null;
-      const parsed = parseEnvelope(body);
+      const parsed = parseApiEnvelope(body);
       if (!parsed.ok) return null;
       const d = parsed.data as Record<string, unknown>;
       const userId = typeof d.userId === "number" ? d.userId : Number(d.userId);
@@ -73,17 +63,14 @@ export const authService = {
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      const parsed = parseEnvelope(body);
       const message =
         res.status === 401
           ? "Identifiants incorrects"
-          : parsed.ok
-            ? `Erreur ${res.status}`
-            : parsed.error || `Erreur ${res.status}`;
+          : userMessageFromApiJson(body, res.status);
       throw { status: res.status, message } as AuthError;
     }
 
-    const parsed = parseEnvelope(body);
+    const parsed = parseApiEnvelope(body);
     if (!parsed.ok) {
       throw { status: res.status, message: parsed.error } as AuthError;
     }
@@ -101,23 +88,11 @@ export const authService = {
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      const parsed = parseEnvelope(body);
-      let message: string;
-      if (res.status === 409) {
-        message = "Cet email est déjà utilisé.";
-      } else if (res.status === 400) {
-        const errs = parsed.ok ? undefined : (parsed.errors as Array<{ message?: string }> | undefined);
-        message =
-          (!parsed.ok && parsed.error) ||
-          errs?.[0]?.message ||
-          "Données invalides.";
-      } else {
-        message = !parsed.ok ? parsed.error : `Erreur ${res.status}`;
-      }
+      const message = userMessageFromApiJson(body, res.status);
       throw { status: res.status, message, data: body } as AuthError & { data?: unknown };
     }
 
-    const parsed = parseEnvelope(body);
+    const parsed = parseApiEnvelope(body);
     if (!parsed.ok) {
       throw { status: res.status, message: parsed.error } as AuthError;
     }
