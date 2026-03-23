@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import app from '../app';
 import { AuthService } from '../services/auth.service';
+import { cookieHeaderFromResponse } from './cookieHelpers';
 
 describe('User profile REST endpoints', () => {
     describe('GET /api/v1/users/me', () => {
@@ -16,11 +17,11 @@ describe('User profile REST endpoints', () => {
             const email = `profile-get-${Date.now()}@example.com`;
             await AuthService.register('Profile User', email, 'password123');
             const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
-            const { token } = loginRes.body.data;
+            const cookie = cookieHeaderFromResponse(loginRes);
 
             const res = await request(app)
                 .get('/api/v1/users/me')
-                .set('Authorization', `Bearer ${token}`);
+                .set('Cookie', cookie);
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
@@ -49,11 +50,11 @@ describe('User profile REST endpoints', () => {
             const email = `profile-put-${Date.now()}@example.com`;
             await AuthService.register('Update User', email, 'password123');
             const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
-            const { token } = loginRes.body.data;
+            const cookie = cookieHeaderFromResponse(loginRes);
 
             const res = await request(app)
                 .put('/api/v1/users/me')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Cookie', cookie)
                 .send({
                     bio: 'Movie lover',
                     location: 'Paris',
@@ -70,7 +71,7 @@ describe('User profile REST endpoints', () => {
                 avatarUrl: 'https://example.com/avatar.png',
             });
 
-            const getRes = await request(app).get('/api/v1/users/me').set('Authorization', `Bearer ${token}`);
+            const getRes = await request(app).get('/api/v1/users/me').set('Cookie', cookie);
             expect(getRes.body.data.profile).toMatchObject({
                 bio: 'Movie lover',
                 location: 'Paris',
@@ -83,11 +84,11 @@ describe('User profile REST endpoints', () => {
             const email = `profile-valid-${Date.now()}@example.com`;
             await AuthService.register('Valid User', email, 'password123');
             const loginRes = await request(app).post('/api/v1/auth/login').send({ email, password: 'password123' });
-            const { token } = loginRes.body.data;
+            const cookie = cookieHeaderFromResponse(loginRes);
 
             const res = await request(app)
                 .put('/api/v1/users/me')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Cookie', cookie)
                 .send({ avatarUrl: 'not-a-valid-url' });
 
             expect(res.status).toBe(400);
