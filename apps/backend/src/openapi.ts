@@ -160,14 +160,15 @@ export const openApiSpec = {
       },
       FollowListUser: {
         type: "object",
+        description: "Public follower/following list entry (no email)",
         properties: {
           id: { type: "integer" },
           name: { type: "string", nullable: true },
-          email: { type: "string" },
           createdAt: { type: "string", format: "date-time", nullable: true },
           followedAt: { type: "string", format: "date-time" },
           avatarUrl: { type: "string", nullable: true },
         },
+        required: ["id", "name", "createdAt", "followedAt", "avatarUrl"],
       },
       FollowersResponse: {
         type: "object",
@@ -754,7 +755,8 @@ export const openApiSpec = {
       get: {
         tags: ["Users"],
         summary: "List following",
-        description: "Returns users that the given user is following. Paginated. Public (no auth required).",
+        description:
+          "Returns users that the given user is following. Paginated. Public (no auth required). Each user includes id, name, profile avatar, and follow timestamps — email is never included.",
         parameters: [
           { name: "userId", in: "path", required: true, schema: { type: "integer" } },
           { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
