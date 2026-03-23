@@ -189,4 +189,81 @@ describe('User profile REST endpoints', () => {
             expect(res2.body.data.isFollowing).toBe(true);
         });
     });
+
+    describe('GET /api/v1/users/:userId/followers', () => {
+        it('returns 404 for unknown user id', async () => {
+            const res = await request(app).get('/api/v1/users/999999999/followers');
+            expect(res.status).toBe(404);
+        });
+
+        it('lists followers without email in each user row', async () => {
+            const follower = await AuthService.register(
+                'Follower Listed',
+                `fol-list-${Date.now()}@example.com`,
+                'password123'
+            );
+            const target = await AuthService.register(
+                'Target Listed',
+                `tar-list-${Date.now()}@example.com`,
+                'password123'
+            );
+
+            await request(app)
+                .post('/api/v1/follows')
+                .set('Authorization', `Bearer ${follower.token}`)
+                .send({ followingId: target.userId });
+
+            const res = await request(app).get(`/api/v1/users/${target.userId}/followers`);
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.total).toBe(1);
+            expect(res.body.data.users).toHaveLength(1);
+            const row = res.body.data.users[0];
+            expect(row).toMatchObject({
+                id: follower.userId,
+                name: 'Follower Listed',
+                avatarUrl: null,
+            });
+            expect(row).not.toHaveProperty('email');
+            expect(row).toHaveProperty('followedAt');
+            expect(row).toHaveProperty('createdAt');
+        });
+    });
+
+    describe('GET /api/v1/users/:userId/following', () => {
+        it('returns 404 for unknown user id', async () => {
+            const res = await request(app).get('/api/v1/users/999999999/following');
+            expect(res.status).toBe(404);
+        });
+
+        it('lists following without email in each user row', async () => {
+            const viewer = await AuthService.register(
+                'Viewer Following',
+                `view-f-${Date.now()}@example.com`,
+                'password123'
+            );
+            const followed = await AuthService.register(
+                'Followed User',
+                `fol-u-${Date.now()}@example.com`,
+                'password123'
+            );
+
+            await request(app)
+                .post('/api/v1/follows')
+                .set('Authorization', `Bearer ${viewer.token}`)
+                .send({ followingId: followed.userId });
+
+            const res = await request(app).get(`/api/v1/users/${viewer.userId}/following`);
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.total).toBe(1);
+            const row = res.body.data.users[0];
+            expect(row).toMatchObject({
+                id: followed.userId,
+                name: 'Followed User',
+                avatarUrl: null,
+            });
+            expect(row).not.toHaveProperty('email');
+        });
+    });
 });
