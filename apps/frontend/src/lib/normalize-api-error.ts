@@ -3,8 +3,6 @@
  * and thrown API error objects from the shared `apiClient` (status + message + optional JSON body).
  */
 
-export type ApiValidationIssue = { path?: string; message?: string };
-
 export type ParsedApiEnvelope =
   | { ok: true; data: unknown }
   | { ok: false; error: string; errors?: unknown };
