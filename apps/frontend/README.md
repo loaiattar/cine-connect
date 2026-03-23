@@ -35,6 +35,15 @@ docker build -f apps/frontend/Dockerfile --build-arg VITE_API_BASE_URL=https://a
 
 Workflow `.github/workflows/docker-deploy.yml` passes `VITE_API_BASE_URL` from repository **Variables** (`vars.VITE_API_BASE_URL`). Set that variable in the repo settings for production deploys (public API URL).
 
+## Local dev: Vite proxy and httpOnly auth cookies
+
+The API stores JWTs in **`cc_access` / `cc_refresh`** (httpOnly cookies). The SPA uses **`fetch(..., { credentials: 'include' })`** and Socket.io **`withCredentials: true`**.
+
+- **Recommended:** leave **`VITE_API_BASE_URL` unset** (or empty) in dev so requests go to the Vite dev server origin. `vite.config.ts` proxies **`/api`** and **`/socket.io`** to the backend (`VITE_API_PROXY_TARGET`, default `http://localhost:3000`). Cookies stay **first-party**, so **SameSite=Lax** works for same-site POSTs (e.g. refresh) without extra CSRF headers.
+- **Cross-origin dev:** set **`VITE_API_BASE_URL=http://localhost:3000`** (or your API URL). The browser must treat the SPA origin as allowed in the backend CORS config (`credentials: true` on both sides).
+
+On startup, `main.tsx` waits for Zustand persist hydration, then may call **`POST /api/v1/auth/refresh`** once to repopulate the store from cookies if there is no cached user.
+
 ---
 
 ## React + TypeScript + Vite (template)

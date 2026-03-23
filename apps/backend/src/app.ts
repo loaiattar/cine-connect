@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { sql } from 'drizzle-orm';
@@ -19,11 +20,11 @@ import { authRateLimiter } from './middlewares/rateLimit.middleware';
 function applyCors(app: Express): void {
   const allowlist = getCorsAllowlist();
   if (allowlist.length > 0) {
-    app.use(cors({ origin: allowlist }));
+    app.use(cors({ origin: allowlist, credentials: true }));
   } else if (process.env.NODE_ENV === 'production') {
     app.use(cors({ origin: false }));
   } else {
-    app.use(cors());
+    app.use(cors({ origin: true, credentials: true }));
   }
 }
 
@@ -57,6 +58,12 @@ app.use(
 );
 
 applyCors(app);
+
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+app.use(cookieParser());
 
 // HTTP request logging via morgan (skip in tests).
 // MORGAN_FORMAT: preset ("combined", "dev", "common", "short", "tiny") or a custom token string — see morgan docs.

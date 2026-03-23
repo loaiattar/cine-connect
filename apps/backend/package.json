@@ -25,6 +25,8 @@
     "@cine-connect/shared": "workspace:*",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
+    "cookie": "^1.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
@@ -42,6 +44,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.10",
