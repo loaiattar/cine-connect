@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useCallback, useState } from "react";
+import { useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import { messageService, type ChatMessage } from "@/service/message.service";
 import { getSocket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 
@@ -127,13 +128,14 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
   }));
   const liveMessages = roomId ? messagesByRoom[roomId] ?? [] : [];
   const messages = liveMessages.length > 0 ? liveMessages : apiOrdered;
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     messages,
     total: liveMessages.length > 0 ? liveMessages.length : total,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     sendMessage,
     isSending: sendMutation.isPending,

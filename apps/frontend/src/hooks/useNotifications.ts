@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useDisplayApiError, useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import {
   notificationService,
   type NotificationRow,
@@ -81,22 +82,17 @@ export function useNotifications(
   const unreadCount = notifications.filter((n) => !n.readAt).length;
 
   const isMarking = markAsReadMutation.isPending || markAllAsReadMutation.isPending;
-  const markErr = markAsReadMutation.error ?? markAllAsReadMutation.error;
-  const markError =
-    markErr instanceof Error
-      ? markErr
-      : markErr != null && typeof markErr === "object" && "message" in markErr
-        ? new Error(String((markErr as { message: string }).message))
-        : markErr != null
-          ? new Error(String(markErr))
-          : null;
+  const markError = useDisplayApiError(
+    markAsReadMutation.error ?? markAllAsReadMutation.error ?? null
+  );
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     notifications,
     total,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     markAsRead,
     markAllAsRead,

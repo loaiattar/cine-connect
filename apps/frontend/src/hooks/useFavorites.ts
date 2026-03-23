@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import {
   moviesService,
   type FavoriteEntry,
@@ -74,12 +75,13 @@ export function useFavorites(): UseFavoritesReturn {
   );
 
   const favorites = normalizeFavorites(rawData);
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     favorites,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     toggleFavorite,
     addFavorite,

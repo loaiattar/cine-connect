@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDisplayApiError, useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import { useCallback } from "react";
 import {
   userService,
@@ -90,16 +91,8 @@ export function useProfile(userId?: number | null): UseProfileReturn {
   const error = isSelf ? meQuery.error : publicQuery.error;
   const refetch = isSelf ? meQuery.refetch : publicQuery.refetch;
 
-  const updateError =
-    updateMutation.error instanceof Error
-      ? updateMutation.error
-      : updateMutation.error != null &&
-          typeof updateMutation.error === "object" &&
-          "message" in updateMutation.error
-        ? new Error(String((updateMutation.error as { message: string }).message))
-        : updateMutation.error != null
-          ? new Error(String(updateMutation.error))
-          : null;
+  const updateError = useDisplayApiError(updateMutation.error);
+  const displayQueryError = useQueryDisplayError(isError, error);
 
   return {
     user,
@@ -108,7 +101,7 @@ export function useProfile(userId?: number | null): UseProfileReturn {
     isFollowingFromApi,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: displayQueryError,
     refetch,
     updateProfile,
     isUpdating: updateMutation.isPending,
