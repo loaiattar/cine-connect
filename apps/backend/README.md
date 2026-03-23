@@ -69,6 +69,10 @@ socket.emit("message", { roomId: "global", text: "Hello!" }); // persisted to DB
 - **Run tests:** `pnpm test` (runs Vitest; requires PostgreSQL and `TMDB_API_KEY` in test env). Integration tests hit the real app and database; unit tests cover helpers (`apiResponse`, `AppError`, `sanitizeUserText`, `errorHandler`, `asyncHandler`) and HTTP edge cases (404, malformed JSON, unauthenticated API) without extra setup.
 - **Coverage:** `pnpm test:coverage` — generates a coverage report (requires `@vitest/coverage-v8`). Auth REST tests run whenever the suite runs (same as other DB-backed tests); ensure PostgreSQL is up so the full suite passes in CI.
 
+## API breaking changes
+
+- **GET `/api/v1/movies/:movieId` — removed `?userId=` query (privacy).** Personalized favorite/watchlist flags use **only** the authenticated user from the Bearer JWT (`optionalAuthMiddleware`). Unauthenticated requests always get `isFavorite: false` and `isOnWatchlist: false`. Clients must not rely on passing another user’s id in the query string.
+
 ## Security headers
 
 The API uses [Helmet](https://helmetjs.github.io/) early in the Express stack (`src/app.ts`) for standard headers (e.g. `X-Content-Type-Options`, `X-DNS-Prefetch-Control`, frameguard, etc.) and a **Content-Security-Policy** tuned for this app.
