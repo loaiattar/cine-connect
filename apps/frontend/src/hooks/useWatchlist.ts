@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useQueryDisplayError } from "@/hooks/useNormalizedApiError";
 import {
   moviesService,
   type WatchlistEntry,
@@ -84,12 +85,13 @@ export function useWatchlist(): UseWatchlistReturn {
 
   const watchlist = normalizeWatchlist(rawData);
   const isToggling = toggleMutation.isPending || removeMutation.isPending;
+  const queryError = useQueryDisplayError(isError, error);
 
   return {
     watchlist,
     isLoading,
     isError,
-    error: error instanceof Error ? error : isError && error ? new Error(String(error)) : null,
+    error: queryError,
     refetch,
     toggleWatchlist,
     addToWatchlist,
