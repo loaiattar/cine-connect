@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { normalizeApiError } from "@/lib/normalize-api-error";
 
 export const Route = createFileRoute("/LoginPage")({
   component: LoginPage,
@@ -43,8 +44,7 @@ function LoginPage() {
       await login({ email: email.trim(), password });
       navigate({ to: "/" });
     } catch (err: unknown) {
-      const authErr = err as { status?: number; message?: string };
-      setError(authErr.message ?? "Identifiants incorrects");
+      setError(normalizeApiError(err).message);
     } finally {
       setSubmitting(false);
     }
