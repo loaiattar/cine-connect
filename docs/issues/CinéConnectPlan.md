@@ -124,5 +124,3 @@ Those features should **reuse** `GlassPanel` + shell when built so the product s
 - [ ] Lighthouse / manual check: keyboard + visible focus on nav and buttons.
 
 ---
-
-*Last updated: aligns with “photo 2 only” direction — glass streaming style, not bento wireframe.*
