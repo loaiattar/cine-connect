@@ -1,6 +1,6 @@
 node_modules/
 .pnpm-debug.log
-.env
+Pkg.
 .env.test
 .env.local
 dist/
