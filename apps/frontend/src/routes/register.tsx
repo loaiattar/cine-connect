@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeApiError } from "@/lib/normalize-api-error";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
+import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
@@ -65,26 +67,27 @@ function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a]">
+    <div className="flex min-h-dvh bg-app-base">
       {/* Colonne gauche : formulaire */}
       <div className="flex flex-1 flex-col justify-center overflow-y-auto px-8 py-10 md:px-12">
         <Link
           to="/"
-          className="mb-8 w-fit text-sm text-gray-400 transition-colors hover:text-white"
+          className="mb-8 w-fit text-sm text-ink-secondary transition-colors hover:text-ink"
         >
           ← Retour
         </Link>
 
         <div className="mb-6 flex items-center gap-2 text-2xl font-bold">
-          <span>🎬</span>
+          <span aria-hidden>🎬</span>
           <span>
-            <span className="text-[#e53e3e]">Ciné</span>
-            <span className="text-[#f6ad55]">Connect</span>
+            <span className="text-accent-red">Ciné</span>
+            <span className="text-ink">Connect</span>
           </span>
         </div>
 
-        <h1 className="mb-2 text-4xl font-bold text-white">Créer un compte</h1>
-        <p className="mb-8 text-gray-400">Rejoignez la communauté des cinéphiles</p>
+        <GlassPanel className="max-w-lg space-y-6">
+        <h1 className="text-4xl font-bold text-ink">Créer un compte</h1>
+        <p className="text-ink-secondary">Rejoignez la communauté des cinéphiles</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -97,8 +100,8 @@ function RegisterPage() {
           )}
 
           <div>
-            <label htmlFor="register-name" className="mb-1 block text-sm font-medium text-white">
-              Nom d'utilisateur
+            <label htmlFor="register-name" className="mb-1 block text-sm font-medium text-ink">
+              Nom d&apos;utilisateur
             </label>
             <input
               id="register-name"
@@ -107,13 +110,13 @@ function RegisterPage() {
               placeholder="JohnDoe"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-gray-600 bg-[#1a1a1a] px-4 py-2.5 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+              className={glassInputClass}
               disabled={submitting}
             />
           </div>
 
           <div>
-            <label htmlFor="register-email" className="mb-1 block text-sm font-medium text-white">
+            <label htmlFor="register-email" className="mb-1 block text-sm font-medium text-ink">
               Email
             </label>
             <input
@@ -123,13 +126,13 @@ function RegisterPage() {
               placeholder="votre@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-600 bg-[#1a1a1a] px-4 py-2.5 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+              className={glassInputClass}
               disabled={submitting}
             />
           </div>
 
           <div>
-            <label htmlFor="register-password" className="mb-1 block text-sm font-medium text-white">
+            <label htmlFor="register-password" className="mb-1 block text-sm font-medium text-ink">
               Mot de passe
             </label>
             <input
@@ -139,62 +142,59 @@ function RegisterPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-600 bg-[#1a1a1a] px-4 py-2.5 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+              className={glassInputClass}
               disabled={submitting}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-ink-muted">
               Minimum {MIN_PASSWORD_LENGTH} caractères
             </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-lg bg-[#e53e3e] py-3 font-semibold text-white transition-colors hover:bg-[#c53030] disabled:opacity-50"
-          >
+          <PrimaryButton type="submit" disabled={submitting} className="w-full py-3">
             {submitting ? "Création du compte…" : "Créer mon compte"}
-          </button>
+          </PrimaryButton>
         </form>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-ink-muted">
           Vous avez déjà un compte ?{" "}
-          <Link to="/login" className="text-[#f6ad55] hover:underline">
+          <Link to="/login" className="text-accent-red-hover hover:underline">
             Se connecter
           </Link>
         </p>
+        </GlassPanel>
       </div>
 
       {/* Colonne droite : panneau info (caché sur petit écran) */}
-      <div className="hidden flex-1 flex-col justify-center overflow-y-auto bg-[#111111] px-12 py-10 md:flex">
-        <div className="rounded-2xl bg-[#1a1a1a] p-8">
-          <h2 className="mb-4 text-3xl font-bold text-white">
-            Rejoignez <span className="text-[#e53e3e]">8,547</span> cinéphiles
+      <div className="hidden flex-1 flex-col justify-center overflow-y-auto border-l border-[var(--glass-border)] bg-[var(--glass-bg)] px-12 py-10 backdrop-blur-[var(--glass-blur)] md:flex">
+        <GlassPanel className="!p-8">
+          <h2 className="mb-4 text-3xl font-bold text-ink">
+            Rejoignez <span className="text-accent-red">8,547</span> cinéphiles
           </h2>
-          <p className="mb-8 text-gray-400">
+          <p className="mb-8 text-ink-secondary">
             Découvrez une communauté passionnée qui partage, discute et recommande les meilleurs films.
           </p>
           <div className="mb-4 flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e53e3e]">🎬</div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent-red text-lg" aria-hidden>🎬</div>
             <div>
-              <p className="font-bold text-white">+12,500 films</p>
-              <p className="text-sm text-gray-400">Dans notre catalogue</p>
+              <p className="font-bold text-ink">+12,500 films</p>
+              <p className="text-sm text-ink-secondary">Dans notre catalogue</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f6ad55]">👤</div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] text-lg ring-1 ring-[var(--glass-border)]" aria-hidden>👤</div>
             <div>
-              <p className="font-bold text-white">+45,000 critiques</p>
-              <p className="text-sm text-gray-400">Publiées par nos membres</p>
+              <p className="font-bold text-ink">+45,000 critiques</p>
+              <p className="text-sm text-ink-secondary">Publiées par nos membres</p>
             </div>
           </div>
-        </div>
-        <div className="mt-6 rounded-2xl bg-[#1a1a1a] p-8">
-          <div className="mb-4 text-yellow-400">★★★★★</div>
-          <p className="mb-4 italic text-white">
-            "CinéConnect a complètement changé ma façon de découvrir le cinéma. La communauté est incroyable !"
+        </GlassPanel>
+        <GlassPanel className="mt-6 !p-8">
+          <div className="mb-4 text-ink-secondary">★★★★★</div>
+          <p className="mb-4 italic text-ink">
+            &quot;CinéConnect a complètement changé ma façon de découvrir le cinéma. La communauté est incroyable !&quot;
           </p>
-          <p className="text-sm text-gray-400">— Sophie, membre depuis 2024</p>
-        </div>
+          <p className="text-sm text-ink-secondary">— Sophie, membre depuis 2024</p>
+        </GlassPanel>
       </div>
     </div>
   );

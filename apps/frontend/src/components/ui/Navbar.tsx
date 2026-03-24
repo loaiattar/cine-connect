@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Clapperboard, Search, Users, User } from "lucide-react";
+import { glassHeaderClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 
 type CineConnectNavbarProps = {
   onSearch?: (query: string) => void;
@@ -7,8 +9,8 @@ type CineConnectNavbarProps = {
   onProfileClick?: () => void;
 };
 
-const btnClass =
-  "w-10 h-10 rounded-full bg-[#1a1a1a] ring-1 ring-[#2a2a2a] flex items-center justify-center text-gray-400 hover:text-white hover:ring-[#e50914]";
+const iconBtnClass =
+  "flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-ink-secondary transition-colors hover:border-accent-red/40 hover:text-ink";
 
 const CineConnectNavbar = ({
   onSearch,
@@ -30,41 +32,37 @@ const CineConnectNavbar = ({
   };
 
   return (
-    <nav className="w-full h-16 bg-[#0d0d0d] border-b border-[#2a2a2a] flex items-center px-6 gap-5">
-      <a href="/" className="flex items-center gap-2 shrink-0 no-underline">
-        <Clapperboard size={28} className="text-primary" />
-        <span
-          className="text-xl font-bold"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          <span className="text-white">Ciné</span>
-          <span className="text-primary">Connect</span>
+    <nav
+      className={cn(
+        "flex h-16 w-full items-center gap-5 border-b border-[var(--glass-border)] px-6",
+        glassHeaderClass
+      )}
+    >
+      <a href="/" className="flex shrink-0 items-center gap-2 no-underline">
+        <Clapperboard size={28} className="text-accent-red" aria-hidden />
+        <span className="text-xl font-bold">
+          <span className="text-ink">Ciné</span>
+          <span className="text-accent-red">Connect</span>
         </span>
       </a>
 
-      {/* Barre de recherche */}
-      <div className="flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full px-4 h-10 w-full max-w-lg hover:border-[#e50914] focus-within:border-[#e50914]">
-        <Search size={16} className="text-gray-500" />
+      <div className="flex h-10 w-full max-w-lg flex-1 items-center gap-2 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 transition-colors focus-within:border-accent-red/50 hover:border-[var(--glass-border-strong)]">
+        <Search size={16} className="text-ink-muted" aria-hidden />
         <input
           type="text"
           placeholder="Rechercher un film..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="bg-transparent outline-none text-white text-sm w-full placeholder:text-gray-500"
+          className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-muted"
         />
       </div>
 
-      {/* Boutons a droite */}
       <div className="ml-auto flex items-center gap-3">
-        <button onClick={onFriendsClick} aria-label="Amis" className={btnClass}>
+        <button type="button" onClick={onFriendsClick} aria-label="Amis" className={iconBtnClass}>
           <Users size={18} />
         </button>
-        <button
-          onClick={onProfileClick}
-          aria-label="Profil"
-          className={btnClass}
-        >
+        <button type="button" onClick={onProfileClick} aria-label="Profil" className={iconBtnClass}>
           <User size={18} />
         </button>
       </div>

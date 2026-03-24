@@ -3,6 +3,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
 import { Bell, Loader2, Check, CheckCheck } from "lucide-react";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { GlassPanel } from "@/components/glass";
 
 export const Route = createFileRoute("/notifications")({
   beforeLoad: () => requireAuth(),
@@ -41,10 +42,10 @@ function NotificationsPage() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Bell className="h-8 w-8 text-red-500" />
+            <Bell className="h-8 w-8 text-accent-red" aria-hidden />
             <div>
-              <h1 className="text-2xl font-bold text-white">Notifications</h1>
-              <p className="text-sm text-zinc-400">
+              <h1 className="text-2xl font-bold text-ink">Notifications</h1>
+              <p className="text-sm text-ink-secondary">
                 {total} notification{total !== 1 ? "s" : ""}
                 {unreadCount > 0 && ` · ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`}
               </p>
@@ -55,7 +56,7 @@ function NotificationsPage() {
               type="button"
               onClick={() => markAllAsRead()}
               disabled={isMarking}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:opacity-50"
             >
               <CheckCheck className="h-4 w-4" />
               Tout marquer lu
@@ -71,8 +72,8 @@ function NotificationsPage() {
 
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
-            <p className="text-zinc-400">Chargement des notifications…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-ink-secondary">Chargement des notifications…</p>
           </div>
         )}
 
@@ -90,10 +91,10 @@ function NotificationsPage() {
         )}
 
         {!isLoading && !isError && notifications.length === 0 && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
-            <Bell className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
-            <p className="text-zinc-400">Aucune notification.</p>
-          </div>
+          <GlassPanel className="py-12 text-center">
+            <Bell className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+            <p className="text-ink-secondary">Aucune notification.</p>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && notifications.length > 0 && (
@@ -110,23 +111,25 @@ function NotificationsPage() {
 
               const content = (
                 <div className="min-w-0 flex-1">
-                  <p className="text-zinc-200">{n.message}</p>
-                  <p className="mt-1 text-xs text-zinc-500">{formatDate(n.createdAt)}</p>
+                  <p className="text-ink">{n.message}</p>
+                  <p className="mt-1 text-xs text-ink-muted">{formatDate(n.createdAt)}</p>
                 </div>
               );
 
               return (
                 <li
                   key={n.id}
-                  className={`flex items-start justify-between gap-4 rounded-lg border px-4 py-3 ${
-                    n.readAt ? "border-zinc-800 bg-zinc-900/30" : "border-zinc-700 bg-zinc-900/50"
+                  className={`flex items-start justify-between gap-4 rounded-2xl border px-4 py-3 ${
+                    n.readAt
+                      ? "border-[var(--glass-border)] bg-[var(--glass-bg)]/50"
+                      : "border-[var(--glass-border-strong)] bg-[var(--glass-bg)]"
                   }`}
                 >
                   {linkToProfile ? (
                     <Link
                       to="/profile/$userId"
                       params={{ userId: String(n.targetId!) }}
-                      className="min-w-0 flex-1 block hover:bg-zinc-800/50 rounded -m-2 p-2 transition-colors"
+                      className="-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]"
                     >
                       {content}
                     </Link>
@@ -134,7 +137,7 @@ function NotificationsPage() {
                     <Link
                       to="/movie/$movieId"
                       params={{ movieId: String(n.targetId!) }}
-                      className="min-w-0 flex-1 block hover:bg-zinc-800/50 rounded -m-2 p-2 transition-colors"
+                      className="-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]"
                     >
                       {content}
                     </Link>
@@ -146,7 +149,7 @@ function NotificationsPage() {
                       type="button"
                       onClick={() => markAsRead(n.id)}
                       disabled={isMarking}
-                      className="shrink-0 rounded p-2 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors disabled:opacity-50"
+                      className="shrink-0 rounded-lg p-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink disabled:opacity-50"
                       title="Marquer comme lu"
                       aria-label="Marquer comme lu"
                     >

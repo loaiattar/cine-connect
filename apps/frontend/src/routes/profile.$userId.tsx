@@ -4,6 +4,9 @@ import { useFollow } from "@/hooks/useFollow";
 import type { FollowUserRow } from "@/service/follow.service";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { PrimaryButton } from "@/components/glass";
+import { navLinkOutlineClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 type ProfileConnectionsTab = "followers" | "following";
@@ -16,13 +19,13 @@ function FollowListRow({ user: u }: { user: FollowUserRow }) {
       <Link
         to="/profile/$userId"
         params={{ userId: String(u.id) }}
-        className="flex items-center gap-3 rounded-lg px-2 py-2 text-zinc-300 transition-colors hover:bg-zinc-800/60 hover:text-white"
+        className="flex items-center gap-3 rounded-xl px-2 py-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
       >
         {avatar ? (
           <img src={avatar} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-800">
-            <User className="h-5 w-5 text-zinc-500" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
+            <User className="h-5 w-5 text-ink-muted" />
           </div>
         )}
         <span className="min-w-0 truncate text-sm font-medium">{label}</span>
@@ -83,9 +86,9 @@ function UserProfilePage() {
 
   if (!isValidId) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4 px-4">
-        <p className="text-red-400">Profil invalide.</p>
-        <Link to="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-app-base px-4 text-ink">
+        <p className="text-red-300">Profil invalide.</p>
+        <Link to="/" className="text-sm text-ink-secondary transition-colors hover:text-ink">
           ← Accueil
         </Link>
       </div>
@@ -97,8 +100,8 @@ function UserProfilePage() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
-            <p className="text-zinc-400">Chargement du profil…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-ink-secondary">Chargement du profil…</p>
           </div>
         )}
 
@@ -125,50 +128,49 @@ function UserProfilePage() {
                   className="h-20 w-20 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800">
-                  <User className="h-10 w-10 text-zinc-500" />
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
+                  <User className="h-10 w-10 text-ink-muted" />
                 </div>
               )}
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-white">{displayName}</h1>
+                <h1 className="text-2xl font-bold text-ink">{displayName}</h1>
                 {user.email != null && user.email !== "" && (
-                  <p className="text-sm text-zinc-400">{user.email}</p>
+                  <p className="text-sm text-ink-secondary">{user.email}</p>
                 )}
-                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-400">
+                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-ink-secondary">
                   {countsLoading ? (
                     <span>Chargement…</span>
                   ) : (
                     <>
-                      <span><span className="font-semibold text-white">{followersCountDisplay}</span> abonnés</span>
-                      <span><span className="font-semibold text-white">{followingCountDisplay}</span> abonnements</span>
+                      <span><span className="font-semibold text-ink">{followersCountDisplay}</span> abonnés</span>
+                      <span><span className="font-semibold text-ink">{followingCountDisplay}</span> abonnements</span>
                     </>
                   )}
                 </div>
                 {!isCurrentUser && (
                   <div className="mt-3">
                     {followError && (
-                      <p className="text-sm text-red-400 mb-1">{followError.message}</p>
+                      <p className="mb-1 text-sm text-red-300">{followError.message}</p>
                     )}
                     {showFollowing ? (
                       <button
                         type="button"
                         onClick={() => unfollow(userId)}
                         disabled={isFollowLoading}
-                        className="inline-flex items-center gap-2 rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                        className={cn(navLinkOutlineClass, "inline-flex items-center gap-2")}
                       >
                         <UserMinus className="h-4 w-4" />
                         Ne plus suivre
                       </button>
                     ) : (
-                      <button
+                      <PrimaryButton
                         type="button"
                         onClick={() => follow(userId)}
                         disabled={isFollowLoading}
-                        className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                        icon={<UserPlus className="h-4 w-4" aria-hidden />}
                       >
-                        <UserPlus className="h-4 w-4" />
                         Suivre
-                      </button>
+                      </PrimaryButton>
                     )}
                   </div>
                 )}
@@ -177,19 +179,19 @@ function UserProfilePage() {
 
             {profile?.bio && (
               <div>
-                <h2 className="text-lg font-semibold text-white mb-2">Bio</h2>
-                <p className="text-zinc-300">{profile.bio}</p>
+                <h2 className="mb-2 text-lg font-semibold text-ink">Bio</h2>
+                <p className="text-ink-secondary">{profile.bio}</p>
               </div>
             )}
             {(profile?.location || profile?.favoriteGenre) && (
-              <div className="flex gap-6 text-sm text-zinc-400">
+              <div className="flex gap-6 text-sm text-ink-secondary">
                 {profile?.location && <span>Ville: <br /> {profile.location}</span>}
                 {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
               </div>
             )}
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
-              <div className="flex border-b border-zinc-800">
+            <div className="overflow-hidden rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)]">
+              <div className="flex border-b border-[var(--glass-border)]">
                 <button
                   type="button"
                   role="tab"
@@ -197,12 +199,12 @@ function UserProfilePage() {
                   onClick={() => setConnectionsTab("followers")}
                   className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                     connectionsTab === "followers"
-                      ? "bg-zinc-800/80 text-white border-b-2 border-b-red-500 -mb-px"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "-mb-px border-b-2 border-b-accent-red bg-[var(--glass-bg-elevated)] text-ink"
+                      : "text-ink-secondary hover:text-ink"
                   }`}
                 >
                   Followers
-                  <span className="ml-1.5 tabular-nums text-zinc-500">({followersCountDisplay})</span>
+                  <span className="ml-1.5 tabular-nums text-ink-muted">({followersCountDisplay})</span>
                 </button>
                 <button
                   type="button"
@@ -211,12 +213,12 @@ function UserProfilePage() {
                   onClick={() => setConnectionsTab("following")}
                   className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                     connectionsTab === "following"
-                      ? "bg-zinc-800/80 text-white border-b-2 border-b-red-500 -mb-px"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      ? "-mb-px border-b-2 border-b-accent-red bg-[var(--glass-bg-elevated)] text-ink"
+                      : "text-ink-secondary hover:text-ink"
                   }`}
                 >
                   Following
-                  <span className="ml-1.5 tabular-nums text-zinc-500">({followingCountDisplay})</span>
+                  <span className="ml-1.5 tabular-nums text-ink-muted">({followingCountDisplay})</span>
                 </button>
               </div>
 
@@ -225,8 +227,8 @@ function UserProfilePage() {
                   <>
                     {followersLoading && (
                       <div className="flex flex-col items-center justify-center gap-2 py-8">
-                        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
-                        <p className="text-sm text-zinc-500">Chargement des abonnés…</p>
+                        <Loader2 className="h-8 w-8 animate-spin text-accent-red" aria-hidden />
+                        <p className="text-sm text-ink-muted">Chargement des abonnés…</p>
                       </div>
                     )}
                     {!followersLoading && followersError && (
@@ -308,9 +310,9 @@ function UserProfilePage() {
         )}
 
         {!isLoading && !isError && !user && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
-            <p className="text-zinc-400">Ce profil n’existe pas ou a été supprimé.</p>
-            <Link to="/" className="mt-4 inline-block text-sm text-red-500 hover:text-red-400">
+          <div className="rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[var(--glass-bg)] px-6 py-12 text-center backdrop-blur-[var(--glass-blur)]">
+            <p className="text-ink-secondary">Ce profil n’existe pas ou a été supprimé.</p>
+            <Link to="/" className="mt-4 inline-block text-sm text-accent-red transition-colors hover:text-accent-red-hover">
               ← Retour à l’accueil
             </Link>
           </div>

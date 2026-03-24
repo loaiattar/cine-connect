@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeApiError } from "@/lib/normalize-api-error";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
+import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -51,25 +53,26 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-4 py-10">
+    <div className="flex min-h-dvh items-center justify-center bg-app-base px-4 py-10">
       <div className="w-full max-w-md">
         <Link
           to="/"
-          className="mb-6 inline-block text-sm text-gray-400 transition-colors hover:text-white"
+          className="mb-6 inline-block text-sm text-ink-secondary transition-colors hover:text-ink"
         >
-          ← Retour à l'accueil
+          ← Retour à l&apos;accueil
         </Link>
 
         <div className="mb-6 flex items-center gap-2 text-2xl font-bold">
-          <span>🎬</span>
+          <span aria-hidden>🎬</span>
           <span>
-            <span className="text-[#e53e3e]">Ciné</span>
-            <span className="text-[#f6ad55]">Connect</span>
+            <span className="text-accent-red">Ciné</span>
+            <span className="text-ink">Connect</span>
           </span>
         </div>
 
-        <h1 className="mb-2 text-3xl font-bold text-white">Se connecter</h1>
-        <p className="mb-8 text-gray-400">Bon retour parmi les cinéphiles</p>
+        <GlassPanel className="space-y-6">
+        <h1 className="text-3xl font-bold text-ink">Se connecter</h1>
+        <p className="text-ink-secondary">Bon retour parmi les cinéphiles</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -82,7 +85,7 @@ function LoginPage() {
           )}
 
           <div>
-            <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-white">
+            <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-ink">
               Email
             </label>
             <input
@@ -92,13 +95,13 @@ function LoginPage() {
               placeholder="votre@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-600 bg-[#1a1a1a] px-4 py-2.5 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+              className={glassInputClass}
               disabled={submitting}
             />
           </div>
 
           <div>
-            <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-white">
+            <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-ink">
               Mot de passe
             </label>
             <input
@@ -108,26 +111,23 @@ function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-gray-600 bg-[#1a1a1a] px-4 py-2.5 text-white placeholder-gray-500 outline-none transition-colors focus:border-[#e53e3e]"
+              className={glassInputClass}
               disabled={submitting}
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-lg bg-[#e53e3e] py-3 font-semibold text-white transition-colors hover:bg-[#c53030] disabled:opacity-50"
-          >
+          <PrimaryButton type="submit" disabled={submitting} className="w-full py-3">
             {submitting ? "Connexion…" : "Se connecter"}
-          </button>
+          </PrimaryButton>
         </form>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-ink-muted">
           Pas encore de compte ?{" "}
-          <Link to="/register" className="text-[#f6ad55] hover:underline">
-            S'inscrire
+          <Link to="/register" className="text-accent-red-hover hover:underline">
+            S&apos;inscrire
           </Link>
         </p>
+        </GlassPanel>
       </div>
     </div>
   );

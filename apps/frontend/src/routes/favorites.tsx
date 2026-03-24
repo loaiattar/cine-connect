@@ -5,6 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { requireAuth } from "@/lib/route-guard";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { Heart, Loader2, Trash2 } from "lucide-react";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 
 export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
@@ -28,19 +29,17 @@ function FavoritesPage() {
     <AppNavLayout variant="account">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
-          <Heart className="h-8 w-8 text-red-500 fill-red-500" />
+          <Heart className="h-8 w-8 fill-accent-red text-accent-red" aria-hidden />
           <div>
-            <h1 className="text-2xl font-bold text-white">Mes favoris</h1>
-            <p className="text-sm text-zinc-400">
-              {displayName}
-            </p>
+            <h1 className="text-2xl font-bold text-ink">Mes favoris</h1>
+            <p className="text-sm text-ink-secondary">{displayName}</p>
           </div>
         </div>
 
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
-            <p className="text-zinc-400">Chargement de vos favoris…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-ink-secondary">Chargement de vos favoris…</p>
           </div>
         )}
 
@@ -51,27 +50,28 @@ function FavoritesPage() {
         )}
 
         {!isLoading && !isError && favorites.length === 0 && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
-            <Heart className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
-            <p className="text-zinc-400">Aucun film en favori pour le moment.</p>
-            <Link to="/" className="mt-6 inline-block rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition-colors">
-              Découvrir des films
-            </Link>
-          </div>
+          <GlassPanel className="py-12 text-center">
+            <Heart className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+            <p className="text-ink-secondary">Aucun film en favori pour le moment.</p>
+            <PrimaryButton asChild className="mt-6">
+              <Link to="/">Découvrir des films</Link>
+            </PrimaryButton>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && favorites.length > 0 && (
           <ul className="space-y-3">
             {favorites.map((fav) => (
-              <li key={fav.id} className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
-                <span className="text-zinc-300">
-                  Film #<span className="font-mono text-white">{fav.externalMovieId}</span>
+              <li key={fav.id}>
+                <GlassPanel className="flex items-center justify-between !py-3">
+                <span className="text-ink-secondary">
+                  Film #<span className="font-mono text-ink">{fav.externalMovieId}</span>
                 </span>
                 <div className="flex items-center gap-3">
                   <Link
                     to="/movie/$movieId"
                     params={{ movieId: String(fav.externalMovieId) }}
-                    className="text-sm font-medium text-red-500 hover:text-red-400 transition-colors"
+                    className="text-sm font-medium text-accent-red transition-colors hover:text-accent-red-hover"
                   >
                     Voir la fiche →
                   </Link>
@@ -79,13 +79,14 @@ function FavoritesPage() {
                     type="button"
                     onClick={() => removeFavorite(fav.externalMovieId)}
                     disabled={isToggling}
-                    className="rounded p-1.5 text-zinc-400 hover:bg-red-950/50 hover:text-red-400 transition-colors disabled:opacity-50"
+                    className="rounded-lg p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-ghost hover:text-accent-red-hover disabled:opacity-50"
                     title="Retirer des favoris"
                     aria-label="Retirer des favoris"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
+                </GlassPanel>
               </li>
             ))}
           </ul>

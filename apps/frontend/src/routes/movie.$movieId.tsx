@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
 import CommentSection from "@/components/ui/CommentSectionComponent";
@@ -7,7 +7,8 @@ import type { Movie } from "@cine-connect/shared";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieDetail } from "@/hooks/useMovies";
 import { useRating } from "@/hooks/useRating";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 
 export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetailPage,
@@ -31,8 +32,8 @@ function MovieDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-red-500" aria-hidden />
+      <div className="flex min-h-dvh items-center justify-center bg-app-base">
+        <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
         <span className="sr-only">Chargement du film…</span>
       </div>
     );
@@ -41,15 +42,11 @@ function MovieDetailPage() {
   if (isError || !movie) {
     const message = error && typeof error === "object" && "message" in error ? String((error as { message: string }).message) : "Ce film est introuvable.";
     return (
-      <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center gap-4 px-4">
-        <p className="text-red-400 text-center">{message}</p>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/" })}
-          className="rounded-lg bg-zinc-700 px-4 py-2 text-white hover:bg-zinc-600 transition-colors"
-        >
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-app-base px-4">
+        <p className="text-center text-red-300">{message}</p>
+        <PrimaryButton type="button" onClick={() => navigate({ to: "/" })}>
           Retour à l&apos;accueil
-        </button>
+        </PrimaryButton>
       </div>
     );
   }
@@ -57,7 +54,7 @@ function MovieDetailPage() {
   const currentUser = user?.email ?? undefined;
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-dvh bg-app-base">
       <MovieHero
         title={movie.title}
         year={movie.year}
@@ -68,13 +65,15 @@ function MovieDetailPage() {
         onBack={() => navigate({ to: "/" })}
       />
 
-      <div className="w-full space-y-6 py-6 px-4">
-        <section>
-          <h2 className="text-white font-bold text-lg mb-3">Synopsis</h2>
-          <p className="text-gray-300 leading-relaxed text-sm">{movie.synopsis}</p>
-        </section>
+      <div className="w-full space-y-6 px-4 py-6">
+        <GlassPanel>
+          <section>
+            <h2 className="mb-3 text-lg font-bold text-ink">Synopsis</h2>
+            <p className="text-sm leading-relaxed text-ink-secondary">{movie.synopsis}</p>
+          </section>
+        </GlassPanel>
 
-        <section className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-4">
+        <GlassPanel>
           <RateMovie
             {...({
               average: ratingPayload?.average,
@@ -88,12 +87,12 @@ function MovieDetailPage() {
             } satisfies RateMovieProps)}
           />
           {ratingSubmitting && (
-            <p className="text-gray-400 text-sm mt-2">Enregistrement…</p>
+            <p className="mt-2 text-sm text-ink-secondary">Enregistrement…</p>
           )}
           {ratingError && (
-            <p className="text-red-400 text-sm mt-2">{ratingError.message}</p>
+            <p className="mt-2 text-sm text-red-300">{ratingError.message}</p>
           )}
-        </section>
+        </GlassPanel>
 
         <section>
           <CommentSection
@@ -105,14 +104,11 @@ function MovieDetailPage() {
       </div>
 
       <div className="px-4 pb-8">
-        <div className="bg-red-950 border border-red-800 rounded-xl p-8">
-          <button
-            type="button"
-            className="bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg px-6 py-2 mx-auto block transition-colors"
-          >
-            Ouvrir le chat
-          </button>
-        </div>
+        <GlassPanel className="text-center">
+          <PrimaryButton asChild icon={<MessageCircle className="h-5 w-5" aria-hidden />}>
+            <Link to="/chat">Ouvrir le chat</Link>
+          </PrimaryButton>
+        </GlassPanel>
       </div>
     </div>
   );

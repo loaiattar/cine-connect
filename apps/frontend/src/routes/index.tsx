@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
-import MovieCard from "@/components/ui/CardFilm";
-import { getMovieImageUrl } from "@/lib/utils";
+import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
+import { glassHeaderClass, navLinkOutlineClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -30,130 +31,116 @@ function Index() {
       icon: Clapperboard,
       title: "Catalogue Immense",
       text: "Explorez des milliers de films avec des filtres avancés par genre, année et note",
-      color: "text-red-500",
+      color: "text-accent-red",
     },
     {
       icon: Star,
       title: "Notez & Critiquez",
       text: "Partagez vos avis avec un système de notation par étoiles et des critiques détaillées",
-      color: "text-yellow-400",
+      color: "text-ink-secondary",
     },
     {
       icon: Users,
       title: "Communauté Active",
       text: "Suivez d'autres cinéphiles et construisez votre réseau de passionnés de cinéma",
-      color: "text-red-500",
+      color: "text-accent-red",
     },
     {
       icon: MessageCircle,
       title: "Chat en Temps Réel",
       text: "Discutez en direct avec la communauté et échangez en privé avec vos abonnés",
-      color: "text-yellow-400",
+      color: "text-ink-secondary",
     },
   ];
 
   return (
-    <div className="bg-black text-white">
-      <header className="flex items-center justify-between px-8 py-5 bg-gradient-to-b from-black/90 to-transparent sticky top-0 z-50 backdrop-blur-sm border-b border-zinc-800/50">
+    <div className="min-h-dvh bg-app-base text-ink">
+      <header
+        className={cn(
+          "flex items-center justify-between px-6 py-5 sm:px-8",
+          glassHeaderClass
+        )}
+      >
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 font-extrabold text-2xl tracking-tight">
-            <Clapperboard className="text-red-500 w-6 h-6" />
+          <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
+            <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
             <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
+              <span className="text-accent-red">Ciné</span>
+              <span className="text-ink">Connect</span>
             </span>
-          </div>
+          </Link>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           {isAuthenticated ? (
             <>
-              <Link
-                to="/search"
-                className="rounded border border-zinc-500 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
-              >
-                <Search className="w-4 h-4" />
+              <Link to="/search" className={navLinkOutlineClass}>
+                <Search className="h-4 w-4" />
                 Recherche
               </Link>
-              <Link
-                to={"/favorites" as "/" | "/favorites"}
-                className="rounded border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
-              >
-                <Heart className="w-4 h-4" />
-                Mes favoris
+              <Link to={"/favorites" as "/" | "/favorites"} className={navLinkOutlineClass}>
+                <Heart className="h-4 w-4" />
+                Favoris
               </Link>
-              <Link
-                to="/watchlist"
-                className="rounded border border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
-              >
-                <Bookmark className="w-4 h-4" />
+              <Link to="/watchlist" className={navLinkOutlineClass}>
+                <Bookmark className="h-4 w-4" />
                 À voir
               </Link>
-              <Link
-                to="/chat"
-                className="rounded border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors px-4 py-2 text-sm font-bold inline-flex items-center gap-1.5"
-              >
-                <MessageCircle className="w-4 h-4" />
+              <Link to="/chat" className={navLinkOutlineClass}>
+                <MessageCircle className="h-4 w-4" />
                 Chat
               </Link>
               <button
                 type="button"
                 onClick={() => void logout()}
-                className="rounded bg-zinc-700 hover:bg-zinc-600 text-white transition-colors px-4 py-2 text-sm font-bold"
+                className="rounded-xl border border-[var(--glass-border)] px-4 py-2 text-sm font-medium text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
               >
-                Se déconnecter
+                Déconnexion
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/register"
-                className="rounded border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-4 py-2 text-sm font-bold"
-              >
-                S'inscrire
+              <Link to="/register" className={navLinkOutlineClass}>
+                S&apos;inscrire
               </Link>
-              <Link
-                to="/login"
-                className="rounded bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-5 py-2 text-sm font-bold"
-              >
-                Se connecter
-              </Link>
+              <PrimaryButton asChild>
+                <Link to="/login">Se connecter</Link>
+              </PrimaryButton>
             </>
           )}
         </div>
       </header>
-      <section className="relative px-6 py-20 text-center border-b border-zinc-800 overflow-hidden">
+      <section className="relative overflow-hidden border-b border-[var(--glass-border)] px-6 py-20 text-center">
         <img
           src={bgImage}
           alt=""
           className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
         />
         <div className="relative z-10 mx-auto max-w-3xl">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight flex items-center justify-center gap-3">
-            <Clapperboard className="text-red-500 w-12 h-12" />
+          <h1 className="flex items-center justify-center gap-3 text-5xl font-bold tracking-tight sm:text-6xl">
+            <Clapperboard className="h-12 w-12 text-accent-red" aria-hidden />
             <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
+              <span className="text-accent-red">Ciné</span>
+              <span className="text-ink">Connect</span>
             </span>
           </h1>
-          <p className="mt-6 text-xl text-zinc-100">
+          <p className="mt-6 text-xl text-ink">
             La plateforme collaborative pour les passionnés de cinéma
           </p>
-          <p className="mt-3 text-zinc-400">
+          <p className="mt-3 text-ink-secondary">
             Découvrez, notez et discutez de vos films préférés avec une
             communauté de cinéphiles du monde entier
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register"
-              className="rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center gap-2"
-            >
-              <Play className="w-4 h-4" />
-              Commencer l'aventure
-            </Link>
+          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <PrimaryButton asChild icon={<Play className="h-4 w-4" aria-hidden />}>
+              <Link to="/register">Commencer l&apos;aventure</Link>
+            </PrimaryButton>
             <Link
               to="/login"
-              className="rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-900 transition-colors px-6 py-3 font-semibold inline-flex items-center justify-center"
+              className={cn(
+                navLinkOutlineClass,
+                "justify-center px-6 py-3 text-base font-semibold"
+              )}
             >
               Se connecter
             </Link>
@@ -161,19 +148,19 @@ function Index() {
         </div>
       </section>
 
-      <section className="px-6 py-16 border-b border-zinc-800">
-        <h2 className="text-4xl font-bold text-center mb-2">
+      <section className="border-b border-[var(--glass-border)] px-6 py-16">
+        <h2 className="mb-2 text-center text-4xl font-bold text-ink">
           Découvrir les films du moment
         </h2>
-        <p className="text-center text-zinc-400 mb-8">
+        <p className="mb-8 text-center text-ink-secondary">
           Cliquez sur un film pour voir sa fiche
         </p>
         {trendingLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" aria-hidden />
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {trendingMovies.slice(0, 10).map((m) => {
               const year = m.release_date ? new Date(m.release_date).getFullYear() : 0;
               return (
@@ -181,15 +168,17 @@ function Index() {
                   key={m.id}
                   to="/movie/$movieId"
                   params={{ movieId: String(m.id) }}
-                  className="block focus:outline-none focus:ring-2 focus:ring-red-500 rounded-xl overflow-hidden"
+                  className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base"
                 >
-                  <MovieCard
-                    id={m.id}
+                  <PosterCard
                     title={m.title ?? "Sans titre"}
-                    year={Number.isNaN(year) ? 0 : year}
-                    rating={typeof m.vote_average === "number" ? Math.round(m.vote_average * 10) / 10 : 0}
-                    imageUrl={getMovieImageUrl(m.poster_path ?? "")}
-                    genres={[]}
+                    posterPath={m.poster_path ?? ""}
+                    year={Number.isNaN(year) ? undefined : year}
+                    rating={
+                      typeof m.vote_average === "number"
+                        ? Math.round(m.vote_average * 10) / 10
+                        : undefined
+                    }
                   />
                 </Link>
               );
@@ -198,143 +187,135 @@ function Index() {
         )}
       </section>
 
-      <section className="px-6 py-16 border-b border-zinc-800">
-        <h2 className="text-4xl font-bold text-center">
-          Pourquoi <span className="text-red-500">CinéConnect</span> ?
+      <section className="border-b border-[var(--glass-border)] px-6 py-16">
+        <h2 className="text-center text-4xl font-bold text-ink">
+          Pourquoi <span className="text-accent-red">CinéConnect</span> ?
         </h2>
-        <p className="text-center text-zinc-400 mt-3">
+        <p className="mt-3 text-center text-ink-secondary">
           Une expérience cinématographique complète et sociale
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <article
-                key={feature.title}
-                className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-6"
-              >
-                <Icon className={`w-7 h-7 ${feature.color}`} />
-                <h3 className="mt-4 text-2xl font-semibold">{feature.title}</h3>
-                <p className="mt-2 text-zinc-400">{feature.text}</p>
-              </article>
+              <GlassPanel key={feature.title}>
+                <article>
+                  <Icon className={cn("h-7 w-7", feature.color)} aria-hidden />
+                  <h3 className="mt-4 text-2xl font-semibold text-ink">{feature.title}</h3>
+                  <p className="mt-2 text-ink-secondary">{feature.text}</p>
+                </article>
+              </GlassPanel>
             );
           })}
         </div>
       </section>
 
-      <section className="px-6 py-16 border-b border-zinc-800">
-        <h2 className="text-4xl font-bold">
-          Une expérience <span className="text-yellow-400">immersive</span>
+      <section className="border-b border-[var(--glass-border)] px-6 py-16">
+        <h2 className="text-4xl font-bold text-ink">
+          Une expérience <span className="text-accent-red">immersive</span>
         </h2>
-        <p className="mt-4 text-zinc-400">
-          Plongez dans l'univers du cinéma avec une interface professionnelle
+        <p className="mt-4 text-ink-secondary">
+          Plongez dans l&apos;univers du cinéma avec une interface professionnelle
           conçue pour les vrais passionnés.
         </p>
 
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 space-y-4 text-ink">
           <li className="flex items-start gap-3">
-            <span className="text-red-500">●</span>
+            <span className="text-accent-red">●</span>
             <span>
               Fiches films détaillées avec bandes-annonces et synopsis
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-red-500">●</span>
+            <span className="text-accent-red">●</span>
             <span>Statistiques personnelles et historique de visionnage</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-red-500">●</span>
+            <span className="text-accent-red">●</span>
             <span>Recommandations personnalisées basées sur vos goûts</span>
           </li>
         </ul>
 
-        <Link
-          to="/register"
-          className="mt-8 inline-block rounded-lg bg-red-600 hover:bg-red-500 transition-colors px-6 py-3 font-semibold"
-        >
-          Rejoindre CinéConnect
-        </Link>
+        <PrimaryButton asChild className="mt-8">
+          <Link to="/register">Rejoindre CinéConnect</Link>
+        </PrimaryButton>
       </section>
 
-      <section className="px-6 py-20 text-center border-b border-zinc-800">
-        <h2 className="text-5xl font-bold">Prêt à rejoindre la communauté ?</h2>
-        <p className="mt-4 text-zinc-400">
+      <section className="border-b border-[var(--glass-border)] px-6 py-20 text-center">
+        <h2 className="text-5xl font-bold text-ink">Prêt à rejoindre la communauté ?</h2>
+        <p className="mt-4 text-ink-secondary">
           Des milliers de cinéphiles vous attendent pour partager leur passion
           du 7ème art
         </p>
-        <Link
-          to="/register"
-          className="mt-8 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 transition-colors px-8 py-3 font-semibold inline-flex items-center gap-2"
-        >
-          <Play className="w-4 h-4" />
-          Commencer maintenant
-        </Link>
+        <PrimaryButton asChild icon={<Play className="h-4 w-4" aria-hidden />} className="mt-8">
+          <Link to="/register">Commencer maintenant</Link>
+        </PrimaryButton>
       </section>
 
-      <footer className="border-t border-zinc-800 px-6 pt-10 pb-6 text-white">
+      <footer className="border-t border-[var(--glass-border)] px-6 pb-6 pt-10 text-ink">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 font-bold text-lg mb-2">
-              <Clapperboard className="text-red-500 w-5 h-5" />
+            <div className="mb-2 flex items-center gap-2 text-lg font-bold">
+              <Clapperboard className="h-5 w-5 text-accent-red" aria-hidden />
               <span>
-                <span className="text-red-500">Ciné</span>
-                <span className="text-orange-400">Connect</span>
+                <span className="text-accent-red">Ciné</span>
+                <span className="text-ink">Connect</span>
               </span>
             </div>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-ink-secondary">
               La plateforme collaborative pour les passionnés de cinéma.
             </p>
-            <div className="flex items-center gap-2 mt-4 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+            <div className="mt-4 flex cursor-pointer items-center gap-2 text-ink-secondary transition-colors hover:text-ink">
               <Mail className="w-4 h-4" />
               <span className="text-sm">contact@cineconnect.fr</span>
             </div>
           </div>
           <div>
-            <p className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-3">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-ink-secondary">
               Navigation
             </p>
-            <ul className="space-y-2 text-sm text-zinc-400">
+            <ul className="space-y-2 text-sm text-ink-secondary">
               <li>
-                <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
+                <Link to="/" className="transition-colors hover:text-ink">Accueil</Link>
               </li>
-              <li className="hover:text-white cursor-pointer transition-colors">
+              <li className="cursor-pointer transition-colors hover:text-ink">
                 Catalogue
               </li>
-              <li className="hover:text-white cursor-pointer transition-colors">
+              <li className="cursor-pointer transition-colors hover:text-ink">
                 Communauté
               </li>
               <li>
-                <Link to={"/favorites" as "/" | "/favorites"} className="hover:text-white transition-colors">Mes favoris</Link>
+                <Link to={"/favorites" as "/" | "/favorites"} className="transition-colors hover:text-ink">Mes favoris</Link>
               </li>
               <li>
-                <Link to="/register" className="hover:text-white transition-colors">S'inscrire</Link>
+                <Link to="/register" className="transition-colors hover:text-ink">S&apos;inscrire</Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-white transition-colors">Se connecter</Link>
+                <Link to="/login" className="transition-colors hover:text-ink">Se connecter</Link>
               </li>
             </ul>
           </div>
           <div>
-            <p className="text-sm font-semibold text-zinc-300 uppercase tracking-widest mb-3">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-ink-secondary">
               Légal
             </p>
-            <ul className="space-y-2 text-sm text-zinc-400">
-              <li className="hover:text-white cursor-pointer transition-colors">
+            <ul className="space-y-2 text-sm text-ink-secondary">
+              <li className="cursor-pointer transition-colors hover:text-ink">
                 Mentions légales
               </li>
-              <li className="hover:text-white cursor-pointer transition-colors">
+              <li className="cursor-pointer transition-colors hover:text-ink">
                 Politique de confidentialité
               </li>
-              <li className="hover:text-white cursor-pointer transition-colors">
+              <li className="cursor-pointer transition-colors hover:text-ink">
                 CGU
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-zinc-800 pt-4 text-center text-xs text-zinc-500 flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1 border-t border-[var(--glass-border)] pt-4 text-center text-xs text-ink-muted">
           <span>© 2026 CinéConnect. Fait avec</span>
-          <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+          <Heart className="h-3 w-3 fill-accent-red text-accent-red" aria-hidden />
           <span>par des passionnés de cinéma.</span>
         </div>
       </footer>

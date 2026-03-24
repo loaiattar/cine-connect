@@ -4,6 +4,9 @@ import { useFollow } from "@/hooks/useFollow";
 import { requireAuth } from "@/lib/route-guard";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { PrimaryButton } from "@/components/glass";
+import { glassInputClass, navLinkOutlineClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import type { UserProfileRow } from "@/service/user.service";
 
@@ -39,13 +42,13 @@ function ProfileEditForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-      <h2 className="text-lg font-semibold text-white">Modifier le profil</h2>
+    <form onSubmit={handleSubmit} className="max-w-md space-y-4">
+      <h2 className="text-lg font-semibold text-ink">Modifier le profil</h2>
       {updateError && (
-        <p className="text-sm text-red-400">{updateError.message}</p>
+        <p className="text-sm text-red-300">{updateError.message}</p>
       )}
       <div>
-        <label htmlFor="profile-bio" className="mb-1 block text-sm text-zinc-400">
+        <label htmlFor="profile-bio" className="mb-1 block text-sm text-ink-secondary">
           Bio
         </label>
         <textarea
@@ -53,12 +56,12 @@ function ProfileEditForm({
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          className={glassInputClass}
           placeholder="Quelques mots sur vous…"
         />
       </div>
       <div>
-        <label htmlFor="profile-avatar" className="mb-1 block text-sm text-zinc-400">
+        <label htmlFor="profile-avatar" className="mb-1 block text-sm text-ink-secondary">
           URL de l&apos;avatar
         </label>
         <input
@@ -66,12 +69,12 @@ function ProfileEditForm({
           type="url"
           value={avatarUrl}
           onChange={(e) => setAvatarUrl(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          className={glassInputClass}
           placeholder="https://…"
         />
       </div>
       <div>
-        <label htmlFor="profile-location" className="mb-1 block text-sm text-zinc-400">
+        <label htmlFor="profile-location" className="mb-1 block text-sm text-ink-secondary">
           Ville / région
         </label>
         <input
@@ -79,12 +82,12 @@ function ProfileEditForm({
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          className={glassInputClass}
           placeholder="Paris"
         />
       </div>
       <div>
-        <label htmlFor="profile-genre" className="mb-1 block text-sm text-zinc-400">
+        <label htmlFor="profile-genre" className="mb-1 block text-sm text-ink-secondary">
           Genre préféré
         </label>
         <input
@@ -92,17 +95,13 @@ function ProfileEditForm({
           type="text"
           value={favoriteGenre}
           onChange={(e) => setFavoriteGenre(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+          className={glassInputClass}
           placeholder="Comédie, Thriller…"
         />
       </div>
-      <button
-        type="submit"
-        disabled={isUpdating}
-        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
-      >
+      <PrimaryButton type="submit" disabled={isUpdating}>
         {isUpdating ? "Enregistrement…" : "Enregistrer"}
-      </button>
+      </PrimaryButton>
     </form>
   );
 }
@@ -148,8 +147,8 @@ function ProfilePage() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
-            <p className="text-zinc-400">Chargement du profil…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-ink-secondary">Chargement du profil…</p>
           </div>
         )}
 
@@ -176,48 +175,47 @@ function ProfilePage() {
                   className="h-20 w-20 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800">
-                  <User className="h-10 w-10 text-zinc-500" />
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
+                  <User className="h-10 w-10 text-ink-muted" />
                 </div>
               )}
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-white">{displayName}</h1>
-                <p className="text-sm text-zinc-400">{user.email}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-zinc-400">
+                <h1 className="text-2xl font-bold text-ink">{displayName}</h1>
+                <p className="text-sm text-ink-secondary">{user.email}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-ink-secondary">
                   {followersLoading || followingLoading ? (
                     <span>Chargement…</span>
                   ) : (
                     <>
-                      <span><span className="font-semibold text-white">{followersTotal}</span> abonnés</span>
-                      <span><span className="font-semibold text-white">{followingTotal}</span> abonnements</span>
+                      <span><span className="font-semibold text-ink">{followersTotal}</span> abonnés</span>
+                      <span><span className="font-semibold text-ink">{followingTotal}</span> abonnements</span>
                     </>
                   )}
                 </div>
                 {!isCurrentUser && profileUserId != null && (
                   <div className="mt-3">
                     {followError && (
-                      <p className="text-sm text-red-400 mb-1">{followError.message}</p>
+                      <p className="mb-1 text-sm text-red-300">{followError.message}</p>
                     )}
                     {isFollowing ? (
                       <button
                         type="button"
                         onClick={() => unfollow(profileUserId)}
                         disabled={isFollowLoading}
-                        className="inline-flex items-center gap-2 rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                        className={cn(navLinkOutlineClass, "inline-flex items-center gap-2")}
                       >
                         <UserMinus className="h-4 w-4" />
                         Ne plus suivre
                       </button>
                     ) : (
-                      <button
+                      <PrimaryButton
                         type="button"
                         onClick={() => follow(profileUserId)}
                         disabled={isFollowLoading}
-                        className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
+                        icon={<UserPlus className="h-4 w-4" aria-hidden />}
                       >
-                        <UserPlus className="h-4 w-4" />
                         Suivre
-                      </button>
+                      </PrimaryButton>
                     )}
                   </div>
                 )}
@@ -236,12 +234,12 @@ function ProfilePage() {
 
             {profile?.bio && (
               <div>
-                <h2 className="text-lg font-semibold text-white mb-2">Bio</h2>
-                <p className="text-zinc-300">{profile.bio}</p>
+                <h2 className="mb-2 text-lg font-semibold text-ink">Bio</h2>
+                <p className="text-ink-secondary">{profile.bio}</p>
               </div>
             )}
             {(profile?.location || profile?.favoriteGenre) && (
-              <div className="flex gap-6 text-sm text-zinc-400">
+              <div className="flex gap-6 text-sm text-ink-secondary">
                 {profile?.location && <span>Ville: <br /> {profile.location}</span>}
                 {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
               </div>
@@ -258,14 +256,14 @@ function ProfilePage() {
                           <Link
                             to="/profile/$userId"
                             params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
+                            className="text-sm text-ink-secondary transition-colors hover:text-ink"
                           >
                             {u.name?.trim() || "Utilisateur"}
                           </Link>
                         </li>
                       ))}
                       {followersTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followersTotal - 10} autres</li>
+                        <li className="text-sm text-ink-muted">… et {followersTotal - 10} autres</li>
                       )}
                     </ul>
                   </div>
@@ -279,14 +277,14 @@ function ProfilePage() {
                           <Link
                             to="/profile/$userId"
                             params={{ userId: String(u.id) }}
-                            className="text-sm text-zinc-300 hover:text-white transition-colors"
+                            className="text-sm text-ink-secondary transition-colors hover:text-ink"
                           >
                             {u.name?.trim() || "Utilisateur"}
                           </Link>
                         </li>
                       ))}
                       {followingTotal > 10 && (
-                        <li className="text-zinc-500 text-sm">… et {followingTotal - 10} autres</li>
+                        <li className="text-sm text-ink-muted">… et {followingTotal - 10} autres</li>
                       )}
                     </ul>
                   </div>
