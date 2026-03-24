@@ -1,4 +1,4 @@
-node_modules/
+fix: corriger l 'espacement dans .gitignore
 .pnpm-debug.log
 Pkg. 
 .env.test
@@ -17,4 +17,6 @@ Thumbs.db
 coverage/
 
 # Local env (do not commit secrets)
-.env.test
+.env*
+node_modules
+.claude/
