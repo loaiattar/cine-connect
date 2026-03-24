@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQueries } from "@tanstack/react-query";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { requireAuth } from "@/lib/route-guard";
+import { moviesService } from "@/service/movies.service";
 import { Heart, Loader2, Trash2 } from "lucide-react";
-import { GlassPanel, PrimaryButton } from "@/components/glass";
+import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
 
 export const Route = createFileRoute("/favorites")({
   beforeLoad: () => requireAuth(),
@@ -24,72 +26,126 @@ function FavoritesPage() {
     isToggling,
   } = useFavorites();
 
+  const movieQueries = useQueries({
+    queries: favorites.map((fav) => ({
+      queryKey: ["movie", fav.externalMovieId],
+      queryFn: () => moviesService.getMovieById(fav.externalMovieId),
+      enabled: favorites.length > 0,
+    })),
+  });
+
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="mb-8 flex items-center gap-3">
-          <Heart className="h-8 w-8 fill-accent-red text-accent-red" aria-hidden />
-          <div>
-            <h1 className="text-2xl font-bold text-ink">Mes favoris</h1>
-            <p className="text-sm text-ink-secondary">{displayName}</p>
-          </div>
+    <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
+      <div className="mb-8 flex items-center gap-3">
+        <Heart className="h-8 w-8 fill-accent-red text-accent-red" aria-hidden />
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Mes favoris</h1>
+          <p className="text-sm text-ink-secondary">{displayName}</p>
         </div>
+      </div>
 
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
-            <p className="text-ink-secondary">Chargement de vos favoris…</p>
-          </div>
-        )}
+      {isLoading && (
+        <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
+          <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+          <p className="text-sm text-ink-secondary">Chargement de vos favoris…</p>
+        </GlassPanel>
+      )}
 
-        {isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
-            <p>{error instanceof Error ? error.message : "Impossible de charger les favoris."}</p>
-          </div>
-        )}
+      {isError && (
+        <GlassPanel className="border-red-500/40">
+          <p className="text-sm text-red-300">
+            {error instanceof Error ? error.message : "Impossible de charger les favoris."}
+          </p>
+        </GlassPanel>
+      )}
 
-        {!isLoading && !isError && favorites.length === 0 && (
-          <GlassPanel className="py-12 text-center">
-            <Heart className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
-            <p className="text-ink-secondary">Aucun film en favori pour le moment.</p>
-            <PrimaryButton asChild className="mt-6">
-              <Link to="/">Découvrir des films</Link>
-            </PrimaryButton>
-          </GlassPanel>
-        )}
+      {!isLoading && !isError && favorites.length === 0 && (
+        <GlassPanel className="py-12 text-center">
+          <Heart className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+          <p className="text-ink-secondary">Aucun film en favori pour le moment.</p>
+          <p className="mt-2 text-sm text-ink-muted">
+            Ajoutez des films depuis leur fiche pour les retrouver ici.
+          </p>
+          <PrimaryButton asChild className="mt-6">
+            <Link to="/">Découvrir des films</Link>
+          </PrimaryButton>
+        </GlassPanel>
+      )}
 
-        {!isLoading && !isError && favorites.length > 0 && (
-          <ul className="space-y-3">
-            {favorites.map((fav) => (
-              <li key={fav.id}>
-                <GlassPanel className="flex items-center justify-between !py-3">
-                <span className="text-ink-secondary">
-                  Film #<span className="font-mono text-ink">{fav.externalMovieId}</span>
-                </span>
-                <div className="flex items-center gap-3">
+      {!isLoading && !isError && favorites.length > 0 && (
+        <GlassPanel>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {favorites.map((fav, index) => {
+              const query = movieQueries[index];
+              const movie = query?.data;
+              const isLoadingMovie = query?.isLoading ?? true;
+
+              if (isLoadingMovie || !movie) {
+                return (
+                  <GlassPanel
+                    key={fav.id}
+                    className="relative flex aspect-[2/3] items-center justify-center !p-0"
+                  >
+                    <Loader2 className="h-10 w-10 animate-spin text-ink-muted" aria-hidden />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeFavorite(fav.externalMovieId);
+                      }}
+                      disabled={isToggling}
+                      className="absolute right-2 top-2 z-10 rounded-lg bg-black/60 p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-subtle/40 hover:text-accent-red-hover disabled:opacity-50"
+                      title="Retirer des favoris"
+                      aria-label="Retirer des favoris"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </GlassPanel>
+                );
+              }
+
+              const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 0;
+
+              return (
+                <div key={fav.id} className="group relative">
                   <Link
                     to="/movie/$movieId"
                     params={{ movieId: String(fav.externalMovieId) }}
-                    className="text-sm font-medium text-accent-red transition-colors hover:text-accent-red-hover"
+                    className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base"
                   >
-                    Voir la fiche →
+                    <PosterCard
+                      title={movie.title ?? "Sans titre"}
+                      posterPath={movie.poster_path ?? ""}
+                      year={Number.isNaN(year) ? undefined : year}
+                      rating={
+                        typeof movie.vote_average === "number"
+                          ? Math.round(movie.vote_average * 10) / 10
+                          : undefined
+                      }
+                    />
                   </Link>
                   <button
                     type="button"
-                    onClick={() => removeFavorite(fav.externalMovieId)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeFavorite(fav.externalMovieId);
+                    }}
                     disabled={isToggling}
-                    className="rounded-lg p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-ghost hover:text-accent-red-hover disabled:opacity-50"
+                    className="absolute right-2 top-2 z-10 rounded-lg bg-black/60 p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-subtle/40 hover:text-accent-red-hover disabled:opacity-50"
                     title="Retirer des favoris"
                     aria-label="Retirer des favoris"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                </GlassPanel>
-              </li>
-            ))}
-          </ul>
-        )}
-      </main>
+              );
+            })}
+          </div>
+        </GlassPanel>
+      )}
+    </main>
   );
 }
 

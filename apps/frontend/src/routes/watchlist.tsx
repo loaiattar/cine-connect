@@ -32,45 +32,46 @@ function WatchlistPage() {
   });
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="mb-8 flex items-center gap-3">
-          <Bookmark className="h-8 w-8 fill-ink-secondary text-ink-secondary" aria-hidden />
-          <div>
-            <h1 className="text-2xl font-bold text-ink">Ma liste à voir</h1>
-            <p className="text-sm text-ink-secondary">{user?.email}</p>
-          </div>
+    <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
+      <div className="mb-8 flex items-center gap-3">
+        <Bookmark className="h-8 w-8 fill-accent-red text-accent-red" aria-hidden />
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Ma liste à voir</h1>
+          <p className="text-sm text-ink-secondary">{user?.email}</p>
         </div>
+      </div>
 
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
-            <p className="text-ink-secondary">Chargement de votre liste…</p>
-          </div>
-        )}
+      {isLoading && (
+        <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
+          <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+          <p className="text-sm text-ink-secondary">Chargement de votre liste…</p>
+        </GlassPanel>
+      )}
 
-        {isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
-            <p>
-              {error instanceof Error ? error.message : "Impossible de charger la liste à voir."}
-            </p>
-          </div>
-        )}
+      {isError && (
+        <GlassPanel className="border-red-500/40">
+          <p className="text-sm text-red-300">
+            {error instanceof Error ? error.message : "Impossible de charger la liste à voir."}
+          </p>
+        </GlassPanel>
+      )}
 
-        {!isLoading && !isError && watchlist.length === 0 && (
-          <GlassPanel className="py-12 text-center">
-            <Bookmark className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
-            <p className="text-ink-secondary">Aucun film dans votre liste à voir.</p>
-            <p className="mt-2 text-sm text-ink-muted">
-              Parcourez le catalogue et ajoutez des films à voir plus tard.
-            </p>
-            <PrimaryButton asChild className="mt-6">
-              <Link to="/">Découvrir des films</Link>
-            </PrimaryButton>
-          </GlassPanel>
-        )}
+      {!isLoading && !isError && watchlist.length === 0 && (
+        <GlassPanel className="py-12 text-center">
+          <Bookmark className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+          <p className="text-ink-secondary">Aucun film dans votre liste à voir.</p>
+          <p className="mt-2 text-sm text-ink-muted">
+            Parcourez le catalogue et ajoutez des films à voir plus tard.
+          </p>
+          <PrimaryButton asChild className="mt-6">
+            <Link to="/">Découvrir des films</Link>
+          </PrimaryButton>
+        </GlassPanel>
+      )}
 
-        {!isLoading && !isError && watchlist.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      {!isLoading && !isError && watchlist.length > 0 && (
+        <GlassPanel>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {watchlist.map((entry, index) => {
               const query = movieQueries[index];
               const movie = query?.data;
@@ -78,9 +79,9 @@ function WatchlistPage() {
 
               if (isLoadingMovie || !movie) {
                 return (
-                  <div
+                  <GlassPanel
                     key={entry.id}
-                    className="relative flex aspect-[2/3] w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)]"
+                    className="relative flex aspect-[2/3] items-center justify-center !p-0"
                   >
                     <Loader2 className="h-10 w-10 animate-spin text-ink-muted" aria-hidden />
                     <button
@@ -97,7 +98,7 @@ function WatchlistPage() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
-                  </div>
+                  </GlassPanel>
                 );
               }
 
@@ -139,7 +140,8 @@ function WatchlistPage() {
               );
             })}
           </div>
-        )}
-      </main>
+        </GlassPanel>
+      )}
+    </main>
   );
 }
