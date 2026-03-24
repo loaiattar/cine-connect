@@ -342,5 +342,4 @@ When **Issues 1–11** are done, check [CinéConnectPlan.md §8 Definition of do
 **Issues 12–13** are optional polish (continue-watching stub + reduced transparency/motion).
 
 ---
-
-*Generated to map `CinéConnectPlan.md` → GitHub-sized work items. Adjust titles/prefixes to match your issue tracker conventions.*
+*This document is a breakdown of the Glass streaming UI redesign into GitHub issues. It is meant to guide development and track progress on the frontend implementation of the new design system.*
