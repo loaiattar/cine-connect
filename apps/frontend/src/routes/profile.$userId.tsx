@@ -3,7 +3,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
 import type { FollowUserRow } from "@/service/follow.service";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
-import { PrimaryButton } from "@/components/glass";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { navLinkOutlineClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -85,7 +85,7 @@ function UserProfilePage() {
 
   if (!isValidId) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-app-base px-4 text-ink">
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-4 text-ink">
         <p className="text-red-300">Profil invalide.</p>
         <Link to="/" className="text-sm text-ink-secondary transition-colors hover:text-ink">
           ← Accueil
@@ -95,16 +95,16 @@ function UserProfilePage() {
   }
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
             <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
             <p className="text-ink-secondary">Chargement du profil…</p>
-          </div>
+          </GlassPanel>
         )}
 
         {isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
+          <GlassPanel className="border-red-500/40">
             <p>{error instanceof Error ? error.message : "Impossible de charger le profil."}</p>
             <button
               type="button"
@@ -113,12 +113,12 @@ function UserProfilePage() {
             >
               Réessayer
             </button>
-          </div>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && user && (
           <div className="space-y-8">
-            <div className="flex items-center gap-4">
+            <GlassPanel className="flex items-center gap-4">
               {avatarDisplay ? (
                 <img
                   src={avatarDisplay}
@@ -173,19 +173,19 @@ function UserProfilePage() {
                   </div>
                 )}
               </div>
-            </div>
+            </GlassPanel>
 
             {profile?.bio && (
-              <div>
+              <GlassPanel>
                 <h2 className="mb-2 text-lg font-semibold text-ink">Bio</h2>
                 <p className="text-ink-secondary">{profile.bio}</p>
-              </div>
+              </GlassPanel>
             )}
             {(profile?.location || profile?.favoriteGenre) && (
-              <div className="flex gap-6 text-sm text-ink-secondary">
+              <GlassPanel className="flex gap-6 text-sm text-ink-secondary">
                 {profile?.location && <span>Ville: <br /> {profile.location}</span>}
                 {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
-              </div>
+              </GlassPanel>
             )}
 
             <div className="overflow-hidden rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)]">
@@ -308,12 +308,12 @@ function UserProfilePage() {
         )}
 
         {!isLoading && !isError && !user && (
-          <div className="rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[var(--glass-bg)] px-6 py-12 text-center backdrop-blur-[var(--glass-blur)]">
+          <GlassPanel className="px-6 py-12 text-center">
             <p className="text-ink-secondary">Ce profil n’existe pas ou a été supprimé.</p>
             <Link to="/" className="mt-4 inline-block text-sm text-accent-red transition-colors hover:text-accent-red-hover">
               ← Retour à l’accueil
             </Link>
-          </div>
+          </GlassPanel>
         )}
       </main>
   );

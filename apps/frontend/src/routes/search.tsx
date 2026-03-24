@@ -50,7 +50,7 @@ function SearchPage() {
   };
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-8">
           <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">
             <Search className="h-7 w-7 text-accent-red" aria-hidden />
@@ -91,16 +91,16 @@ function SearchPage() {
         )}
 
         {debouncedQuery && isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
             <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
             <p className="text-ink-secondary">Recherche en cours…</p>
-          </div>
+          </GlassPanel>
         )}
 
         {debouncedQuery && isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
+          <GlassPanel className="border-red-500/40 text-red-300">
             <p>{error instanceof Error ? error.message : "Erreur lors de la recherche."}</p>
-          </div>
+          </GlassPanel>
         )}
 
         {debouncedQuery && !isLoading && !isError && results.length === 0 && (

@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { apiClient } from "../lib/api-client";
 import { useAuth } from "../hooks/useAuth";
-import { PrimaryButton } from "@/components/glass";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/users")({
@@ -39,7 +39,7 @@ function UsersPage() {
   );
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-8 flex items-center gap-3">
           <Users className="h-8 w-8 text-accent-red" aria-hidden />
           <h1 className="text-2xl font-bold text-ink">Communauté</h1>
@@ -54,7 +54,9 @@ function UsersPage() {
         />
 
         {resultats.length === 0 && (
-          <p className="text-center text-ink-secondary">Aucun membre trouvé pour &quot;{recherche}&quot;</p>
+          <GlassPanel className="py-10 text-center">
+            <p className="text-ink-secondary">Aucun membre trouvé pour &quot;{recherche}&quot;</p>
+          </GlassPanel>
         )}
 
         <ul className="space-y-3">

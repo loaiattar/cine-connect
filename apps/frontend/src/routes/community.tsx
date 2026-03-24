@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Loader2, User, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/community")({
@@ -42,7 +43,7 @@ function CommunityPage() {
     debouncedQuery.length > 0 && !isLoading && !isError && users.length === 0 && !isFetching;
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-8 flex items-center gap-3">
           <Users className="h-8 w-8 text-accent-red" aria-hidden />
           <h1 className="text-2xl font-bold text-ink">Communauté</h1>
@@ -58,28 +59,30 @@ function CommunityPage() {
         />
 
         {!debouncedQuery && (
-          <p className="text-center text-sm text-ink-muted">
+          <GlassPanel className="py-12 text-center">
+            <p className="text-sm text-ink-muted">
             Saisissez un nom ou un e-mail pour rechercher des membres.
-          </p>
+            </p>
+          </GlassPanel>
         )}
 
         {debouncedQuery && isLoading && (
-          <div className="flex flex-col items-center justify-center gap-3 py-12">
+          <GlassPanel className="flex flex-col items-center justify-center gap-3 py-12">
             <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
             <p className="text-sm text-ink-muted">Recherche…</p>
-          </div>
+          </GlassPanel>
         )}
 
         {debouncedQuery && isError && (
-          <p className="text-center text-sm text-red-300">
+          <GlassPanel className="border-red-500/40 text-center text-sm text-red-300">
             {searchApiError?.message ?? "La recherche a échoué."}
-          </p>
+          </GlassPanel>
         )}
 
         {showEmpty && (
-          <p className="text-center text-ink-secondary">
-            Aucun membre trouvé pour « {debouncedQuery} »
-          </p>
+          <GlassPanel className="py-10 text-center">
+            <p className="text-ink-secondary">Aucun membre trouvé pour « {debouncedQuery} »</p>
+          </GlassPanel>
         )}
 
         {debouncedQuery && users.length > 0 && (
@@ -114,14 +117,14 @@ function CommunityPage() {
             </ul>
             {hasMore && (
               <div className="mt-6 flex justify-center">
-                <button
+                <PrimaryButton
                   type="button"
                   onClick={() => setPage((p) => p + 1)}
                   disabled={isFetching}
-                  className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-[var(--glass-bg-elevated)] disabled:opacity-50"
+                  className="!px-4 !py-2 text-sm"
                 >
                   {isFetching ? "Chargement…" : "Charger plus"}
-                </button>
+                </PrimaryButton>
               </div>
             )}
             <p className="mt-4 text-center text-xs text-ink-muted">

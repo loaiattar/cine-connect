@@ -3,7 +3,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
 import { requireAuth } from "@/lib/route-guard";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
-import { PrimaryButton } from "@/components/glass";
+import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass, navLinkOutlineClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -142,16 +142,16 @@ function ProfilePage() {
     : "none";
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
             <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
             <p className="text-ink-secondary">Chargement du profil…</p>
-          </div>
+          </GlassPanel>
         )}
 
         {isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
+          <GlassPanel className="border-red-500/40">
             <p>{error instanceof Error ? error.message : "Impossible de charger le profil."}</p>
             <button
               type="button"
@@ -160,12 +160,12 @@ function ProfilePage() {
             >
               Réessayer
             </button>
-          </div>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && user && (
           <div className="space-y-8">
-            <div className="flex items-center gap-4">
+            <GlassPanel className="flex items-center gap-4">
               {avatarDisplay ? (
                 <img
                   src={avatarDisplay}
@@ -218,7 +218,7 @@ function ProfilePage() {
                   </div>
                 )}
               </div>
-            </div>
+            </GlassPanel>
 
             {isCurrentUser && (
               <ProfileEditForm
@@ -231,23 +231,23 @@ function ProfilePage() {
             )}
 
             {profile?.bio && (
-              <div>
+              <GlassPanel>
                 <h2 className="mb-2 text-lg font-semibold text-ink">Bio</h2>
                 <p className="text-ink-secondary">{profile.bio}</p>
-              </div>
+              </GlassPanel>
             )}
             {(profile?.location || profile?.favoriteGenre) && (
-              <div className="flex gap-6 text-sm text-ink-secondary">
+              <GlassPanel className="flex gap-6 text-sm text-ink-secondary">
                 {profile?.location && <span>Ville: <br /> {profile.location}</span>}
                 {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
-              </div>
+              </GlassPanel>
             )}
 
             {(followers.length > 0 || following.length > 0) && (
               <div className="grid gap-6 sm:grid-cols-2">
                 {followers.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnés ({followersTotal})</h2>
+                  <GlassPanel>
+                    <h2 className="mb-2 text-lg font-semibold text-ink">Abonnés ({followersTotal})</h2>
                     <ul className="space-y-2">
                       {followers.slice(0, 10).map((u) => (
                         <li key={u.id}>
@@ -264,11 +264,11 @@ function ProfilePage() {
                         <li className="text-sm text-ink-muted">… et {followersTotal - 10} autres</li>
                       )}
                     </ul>
-                  </div>
+                  </GlassPanel>
                 )}
                 {following.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-white mb-2">Abonnements ({followingTotal})</h2>
+                  <GlassPanel>
+                    <h2 className="mb-2 text-lg font-semibold text-ink">Abonnements ({followingTotal})</h2>
                     <ul className="space-y-2">
                       {following.slice(0, 10).map((u) => (
                         <li key={u.id}>
@@ -285,7 +285,7 @@ function ProfilePage() {
                         <li className="text-sm text-ink-muted">… et {followingTotal - 10} autres</li>
                       )}
                     </ul>
-                  </div>
+                  </GlassPanel>
                 )}
               </div>
             )}

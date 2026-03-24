@@ -10,16 +10,17 @@ import { useAuth } from "@/hooks/useAuth";
  * - `/login` and `/register`: no AppShell — full-page auth forms.
  * - Authenticated: AppShell + SidebarNav for all other routes (search, favorites,
  *   watchlist, profile, chat, notifications, community, home, movie detail, etc.).
- * - Logged-out browsing: no shell for marketing home, community search, and public
- *   profiles — except **movie detail** (`/movie/:id`), which uses AppShell for the
- *   glass hero + panels layout (issue #308).
+ * - Logged-out browsing: no shell for marketing home.
+ * - Glass v2 secondary/public pages (`/movie/:id`, `/profile/:id`, `/community`,
+ *   `/users`, `/search`, `/notifications`) explicitly use AppShell (issues #308/#310).
  */
 const BARE_AUTH_PATHS = new Set(["/login", "/register"]);
+const SHELL_PATH_PREFIXES = ["/movie/", "/profile", "/community", "/users", "/search", "/notifications"];
 
 function shouldUseAppShell(pathname: string, isAuthenticated: boolean): boolean {
   if (BARE_AUTH_PATHS.has(pathname)) return false;
   if (isAuthenticated) return true;
-  return pathname.startsWith("/movie/");
+  return SHELL_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
 export function RootLayout() {
