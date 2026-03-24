@@ -4,7 +4,11 @@ import { useFollow } from "@/hooks/useFollow";
 import type { FollowUserRow } from "@/service/follow.service";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
-import { navLinkOutlineClass } from "@/lib/glass-ui";
+import {
+  focusVisibleRingClass,
+  focusVisibleRingInsetClass,
+  navLinkOutlineClass,
+} from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -18,7 +22,10 @@ function FollowListRow({ user: u }: { user: FollowUserRow }) {
       <Link
         to="/profile/$userId"
         params={{ userId: String(u.id) }}
-        className="flex items-center gap-3 rounded-xl px-2 py-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
+        className={cn(
+          "flex items-center gap-3 rounded-xl px-2 py-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink",
+          focusVisibleRingClass
+        )}
       >
         {avatar ? (
           <img src={avatar} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
@@ -195,11 +202,13 @@ function UserProfilePage() {
                   role="tab"
                   aria-selected={connectionsTab === "followers"}
                   onClick={() => setConnectionsTab("followers")}
-                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                  className={cn(
+                    "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+                    focusVisibleRingInsetClass,
                     connectionsTab === "followers"
                       ? "-mb-px border-b-2 border-b-accent-red bg-[var(--glass-bg-elevated)] text-ink"
                       : "text-ink-secondary hover:text-ink"
-                  }`}
+                  )}
                 >
                   Followers
                   <span className="ml-1.5 tabular-nums text-ink-muted">({followersCountDisplay})</span>
@@ -209,11 +218,13 @@ function UserProfilePage() {
                   role="tab"
                   aria-selected={connectionsTab === "following"}
                   onClick={() => setConnectionsTab("following")}
-                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                  className={cn(
+                    "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+                    focusVisibleRingInsetClass,
                     connectionsTab === "following"
                       ? "-mb-px border-b-2 border-b-accent-red bg-[var(--glass-bg-elevated)] text-ink"
                       : "text-ink-secondary hover:text-ink"
-                  }`}
+                  )}
                 >
                   Following
                   <span className="ml-1.5 tabular-nums text-ink-muted">({followingCountDisplay})</span>

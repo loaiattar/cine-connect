@@ -3,6 +3,8 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
 import { Bell, Loader2, Check, CheckCheck } from "lucide-react";
 import { GlassPanel } from "@/components/glass";
+import { focusVisibleRingClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/notifications")({
   beforeLoad: () => requireAuth(),
@@ -54,7 +56,10 @@ function NotificationsPage() {
               type="button"
               onClick={() => markAllAsRead()}
               disabled={isMarking}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:opacity-50"
+              className={cn(
+                "inline-flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:opacity-50",
+                focusVisibleRingClass
+              )}
             >
               <CheckCheck className="h-4 w-4" />
               Tout marquer lu
@@ -81,7 +86,7 @@ function NotificationsPage() {
             <button
               type="button"
               onClick={() => refetch()}
-              className="mt-2 text-sm underline hover:no-underline"
+              className={cn("mt-2 rounded-md text-sm underline hover:no-underline", focusVisibleRingClass)}
             >
               Réessayer
             </button>
@@ -127,7 +132,10 @@ function NotificationsPage() {
                     <Link
                       to="/profile/$userId"
                       params={{ userId: String(n.targetId!) }}
-                      className="-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]"
+                      className={cn(
+                        "-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]",
+                        focusVisibleRingClass
+                      )}
                     >
                       {content}
                     </Link>
@@ -135,7 +143,10 @@ function NotificationsPage() {
                     <Link
                       to="/movie/$movieId"
                       params={{ movieId: String(n.targetId!) }}
-                      className="-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]"
+                      className={cn(
+                        "-m-2 block min-w-0 flex-1 rounded-lg p-2 transition-colors hover:bg-[var(--glass-bg-elevated)]",
+                        focusVisibleRingClass
+                      )}
                     >
                       {content}
                     </Link>
@@ -147,7 +158,10 @@ function NotificationsPage() {
                       type="button"
                       onClick={() => markAsRead(n.id)}
                       disabled={isMarking}
-                      className="shrink-0 rounded-lg p-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink disabled:opacity-50"
+                      className={cn(
+                        "shrink-0 rounded-lg p-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink disabled:opacity-50",
+                        focusVisibleRingClass
+                      )}
                       title="Marquer comme lu"
                       aria-label="Marquer comme lu"
                     >

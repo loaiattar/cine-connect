@@ -16,6 +16,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useNotifications } from "@/hooks/useNotifications";
+import { focusVisibleRingInsetClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 
 export type NavItemConfig = {
@@ -68,9 +69,10 @@ export function NavItem({
       to={item.to}
       title={item.label}
       aria-label={item.label}
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 outline-none transition-colors md:pl-3",
-        "focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base",
+        "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 transition-colors md:pl-3",
+        focusVisibleRingInsetClass,
         active
           ? "bg-accent-red/20 text-accent-red"
           : "text-ink-secondary hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
@@ -125,7 +127,10 @@ export function SidebarNav() {
           to="/"
           title="CinéConnect"
           aria-label="CinéConnect — accueil"
-          className="flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base md:pl-3"
+          className={cn(
+            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 transition-colors md:pl-3",
+            focusVisibleRingInsetClass
+          )}
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center">
             <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
@@ -160,9 +165,10 @@ export function SidebarNav() {
           to="/profile"
           title="Paramètres"
           aria-label="Paramètres du compte"
+          aria-current={pathname === "/profile" ? "page" : undefined}
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-ink-secondary outline-none transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink",
-            "focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base md:pl-3",
+            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink md:pl-3",
+            focusVisibleRingInsetClass,
             pathname === "/profile" && "bg-accent-red/20 text-accent-red"
           )}
         >
@@ -185,7 +191,10 @@ export function SidebarNav() {
           to="/profile"
           title={displayName}
           aria-label={`Mon profil — ${displayName}`}
-          className="flex min-w-0 items-center gap-3 rounded-xl py-2 pl-2 pr-2 outline-none transition-colors hover:bg-[var(--glass-bg-elevated)] focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base md:pl-3"
+          className={cn(
+            "flex min-w-0 items-center gap-3 rounded-xl py-2 pl-2 pr-2 transition-colors hover:bg-[var(--glass-bg-elevated)] md:pl-3",
+            focusVisibleRingInsetClass
+          )}
         >
           {avatarUrl ? (
             <img
@@ -216,8 +225,8 @@ export function SidebarNav() {
           title="Se déconnecter"
           aria-label="Se déconnecter"
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-left text-ink-secondary outline-none transition-colors hover:bg-accent-red/15 hover:text-accent-red-hover",
-            "focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base md:pl-3"
+            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-left text-ink-secondary transition-colors hover:bg-accent-red/15 hover:text-accent-red-hover md:pl-3",
+            focusVisibleRingInsetClass
           )}
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center">

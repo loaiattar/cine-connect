@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { requireAuth } from "@/lib/route-guard";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
-import { glassInputClass, navLinkOutlineClass } from "@/lib/glass-ui";
+import { focusVisibleRingClass, focusVisibleRingInsetClass, glassInputClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
@@ -60,37 +60,35 @@ function ChatPage() {
   const roomLabel = DEFAULT_ROOMS.find((r) => r.id === selectedRoomId)?.label ?? selectedRoomId;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col px-4 py-4 md:px-6 md:py-6">
-      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-4 md:flex-row md:items-stretch">
-        {/* Sidebar — glass panel (rooms) */}
-        <aside className="w-full shrink-0 md:w-52">
-          <GlassPanel className="flex h-full min-h-0 flex-col !p-0">
-            <div className="border-b border-[var(--glass-border)] p-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-secondary">
-                Conversations
-              </h2>
-            </div>
-            <nav className="flex flex-col gap-0.5 p-2">
-              {DEFAULT_ROOMS.map((room) => (
-                <button
-                  key={room.id}
-                  type="button"
-                  onClick={() => setSelectedRoomId(room.id)}
-                  className={cn(
-                    "rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
-                    selectedRoomId === room.id
-                      ? "bg-accent-red text-white"
-                      : "text-ink-secondary hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
-                  )}
-                >
-                  <span className="flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4 shrink-0" aria-hidden />
-                    {room.label}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </GlassPanel>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col md:flex-row">
+        {/* Sidebar: room list */}
+        <aside className="flex w-full shrink-0 flex-col border-b border-[var(--glass-border)] md:w-56 md:border-b-0 md:border-r">
+          <div className="border-b border-[var(--glass-border)] p-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-secondary">
+              Conversations
+            </h2>
+          </div>
+          <nav className="flex flex-col gap-0.5 p-2">
+            {DEFAULT_ROOMS.map((room) => (
+              <button
+                key={room.id}
+                type="button"
+                onClick={() => setSelectedRoomId(room.id)}
+                className={cn(
+                  "rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                  focusVisibleRingInsetClass,
+                  selectedRoomId === room.id
+                    ? "bg-accent-red text-white"
+                    : "text-ink-secondary hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  {room.label}
+                </span>
+              </button>
+            ))}
+          </nav>
         </aside>
 
         {/* Main — optional narrower column (plan §4) */}
@@ -101,7 +99,7 @@ function ChatPage() {
               <p className="text-ink-secondary">Sélectionnez une conversation</p>
             </GlassPanel>
           ) : (
-            <GlassPanel className="flex min-h-[min(32rem,calc(100dvh-7rem))] flex-1 flex-col !p-0 md:min-h-[min(36rem,calc(100dvh-8rem))]">
+            <GlassPanel className="flex min-h-[min(32rem,calc(100dvh-7rem))] min-h-0 min-w-0 flex-1 flex-col !p-0 md:min-h-[min(36rem,calc(100dvh-8rem))]">
               <div className="shrink-0 border-b border-[var(--glass-border)] px-4 py-3">
                 <h1 className="font-semibold text-ink">{roomLabel}</h1>
               </div>
@@ -121,7 +119,10 @@ function ChatPage() {
                   <button
                     type="button"
                     onClick={() => refetch()}
-                    className={cn(navLinkOutlineClass, "text-sm")}
+                    className={cn(
+                      "rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg-elevated)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg)]",
+                      focusVisibleRingClass
+                    )}
                   >
                     Réessayer
                   </button>
@@ -129,7 +130,7 @@ function ChatPage() {
               )}
 
               {!isLoading && !isError && (
-                <>
+                <div className="flex min-h-0 flex-1 flex-col">
                   <div className="min-h-0 flex-1 overflow-y-auto p-4">
                     <div className="space-y-3">
                       {orderedMessages.length === 0 && (
@@ -179,12 +180,11 @@ function ChatPage() {
                       Envoyer
                     </PrimaryButton>
                   </form>
-                </>
+                </div>
               )}
             </GlassPanel>
           )}
         </div>
-      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Clapperboard, Search, Users, User } from "lucide-react";
-import { glassHeaderClass } from "@/lib/glass-ui";
+import { focusVisibleRingClass, glassHeaderClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 
 type CineConnectNavbarProps = {
@@ -9,8 +9,10 @@ type CineConnectNavbarProps = {
   onProfileClick?: () => void;
 };
 
-const iconBtnClass =
-  "flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-ink-secondary transition-colors hover:border-accent-red/40 hover:text-ink";
+const iconBtnClass = cn(
+  "flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] text-ink-secondary transition-colors hover:border-accent-red/40 hover:text-ink",
+  focusVisibleRingClass
+);
 
 const CineConnectNavbar = ({
   onSearch,
@@ -38,7 +40,10 @@ const CineConnectNavbar = ({
         glassHeaderClass
       )}
     >
-      <a href="/" className="flex shrink-0 items-center gap-2 no-underline">
+      <a
+        href="/"
+        className={cn("flex shrink-0 items-center gap-2 no-underline rounded-lg", focusVisibleRingClass)}
+      >
         <Clapperboard size={28} className="text-accent-red" aria-hidden />
         <span className="text-xl font-bold">
           <span className="text-ink">Ciné</span>
@@ -54,7 +59,7 @@ const CineConnectNavbar = ({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-muted"
+          className="w-full rounded-md bg-transparent text-sm text-ink outline-none placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-red"
         />
       </div>
 
