@@ -1,34 +1,93 @@
-/* src/index.css */
+/* src/index.css
+ *
+ * Glass v2 — design tokens (CinéConnectPlan.md §1)
+ * - Near-black base, glass CSS vars (blur + thin border), single red accent scale.
+ * - Use accent red for primary CTA and active nav only; typography via ink-* or zinc.
+ */
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Tailwind v4 — utilities: bg-app-base, text-accent-red, hover:bg-accent-red-hover, … */
+@theme {
+  /* Canvas */
+  --color-app-base: #09090b; /* zinc-950 */
+
+  /* Red accent — primary CTA, active nav, logo emphasis (one hue until system is stable) */
+  --color-accent-red: #dc2626; /* red-600 */
+  --color-accent-red-hover: #ef4444; /* red-500 */
+  --color-accent-red-active: #b91c1c; /* red-700 */
+  --color-accent-red-subtle: #7f1d1d; /* red-900 */
+  --color-accent-red-ghost: rgb(220 38 38 / 0.15);
+
+  /* Typography hierarchy */
+  --color-ink: #ffffff;
+  --color-ink-secondary: #a1a1aa; /* zinc-400 */
+  --color-ink-muted: #71717a; /* zinc-500 */
+}
+
 @layer base {
   :root {
-    --background: 0 0% 0%; /* Noir Pur #000000 */
-    --foreground: 0 0% 100%; /* Blanc */
+    /* shadcn: HSL channels (space-separated) for hsl(var(--token)) */
+    --background: 240 10% 3.9%; /* zinc-950 #09090b */
+    --foreground: 0 0% 100%;
 
-    --card: 240 5.9% 10%; /* Zinc 900 */
+    --card: 240 5.9% 10%; /* zinc-900 */
     --card-foreground: 0 0% 100%;
 
-    --popover: 240 10% 3.9%; /* Zinc 950 */
+    --popover: 240 10% 3.9%; /* zinc-950 */
     --popover-foreground: 0 0% 100%;
 
-    --primary: 0 72.2% 50.6%; /* Rouge Cinéma #DC2626 */
+    --primary: 0 72.2% 50.6%; /* red-600 — Cinéma CTA */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 3.7% 15.9%; /* Zinc 800 */
+    --secondary: 240 3.7% 15.9%; /* zinc-800 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%; /* Gray 400 */
+    --muted-foreground: 240 5% 64.9%; /* zinc-400 */
 
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 100%;
 
-    --border: 240 3.7% 15.9%; /* Zinc 800 */
+    --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 0 72.2% 50.6%; /* Ring */
+    --ring: 0 72.2% 50.6%;
 
     --radius: 0.5rem;
+
+    /* Glass surfaces — panels/cards; prefer blur + border over heavy shadows */
+    --glass-bg: rgb(255 255 255 / 0.06);
+    --glass-bg-elevated: rgb(255 255 255 / 0.1);
+    --glass-border: rgb(255 255 255 / 0.12);
+    --glass-border-strong: rgb(255 255 255 / 0.2);
+    --glass-blur: 24px;
+    --radius-glass: 1rem; /* rounded-2xl */
+    --radius-glass-lg: 1.5rem; /* rounded-3xl */
+
+    /* Hero / full-bleed imagery — gradient scrim stop */
+    --scrim-from: rgb(0 0 0 / 0.8);
+    --scrim-via: rgb(0 0 0 / 0.4);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --glass-bg: rgb(24 24 27 / 0.95);
+      --glass-bg-elevated: rgb(24 24 27 / 0.98);
+      --glass-border: rgb(63 63 70 / 0.5);
+      --glass-border-strong: rgb(82 82 91 / 0.55);
+      --glass-blur: 0px;
+    }
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply min-h-dvh bg-app-base text-ink antialiased;
+  }
+
+  #root {
+    @apply min-h-dvh;
   }
 }
