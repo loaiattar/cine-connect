@@ -1,5 +1,7 @@
 import { ArrowLeft, Calendar, Clapperboard, Star } from "lucide-react";
 import { PillTag } from "@/components/glass";
+import { focusVisibleRingClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 
 type Props = {
   title: string;
@@ -31,7 +33,11 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
         <button
           type="button"
           onClick={onBack}
-          className="mb-8 inline-flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm text-ink backdrop-blur-[var(--glass-blur)] transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]"
+          aria-label="Retour à l'accueil"
+          className={cn(
+            "mb-8 inline-flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm text-ink backdrop-blur-[var(--glass-blur)] transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]",
+            focusVisibleRingClass
+          )}
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Retour

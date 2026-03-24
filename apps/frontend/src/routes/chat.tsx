@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { requireAuth } from "@/lib/route-guard";
 import { PrimaryButton } from "@/components/glass";
-import { glassInputClass } from "@/lib/glass-ui";
+import { focusVisibleRingClass, focusVisibleRingInsetClass, glassInputClass } from "@/lib/glass-ui";
+import { cn } from "@/lib/utils";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
 const DEFAULT_ROOMS = [
@@ -69,11 +70,13 @@ function ChatPage() {
                 key={room.id}
                 type="button"
                 onClick={() => setSelectedRoomId(room.id)}
-                className={`rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                className={cn(
+                  "rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                  focusVisibleRingInsetClass,
                   selectedRoomId === room.id
                     ? "bg-accent-red text-white"
                     : "text-ink-secondary hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
-                }`}
+                )}
               >
                 <span className="flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 shrink-0" />
@@ -116,7 +119,10 @@ function ChatPage() {
                   <button
                     type="button"
                     onClick={() => refetch()}
-                    className="rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                    className={cn(
+                      "rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700",
+                      focusVisibleRingClass
+                    )}
                   >
                     Réessayer
                   </button>
