@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useNotifications } from "@/hooks/useNotifications";
 import { requireAuth } from "@/lib/route-guard";
 import { Bell, Loader2, Check, CheckCheck } from "lucide-react";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { GlassPanel } from "@/components/glass";
 
 export const Route = createFileRoute("/notifications")({
@@ -38,7 +37,6 @@ function NotificationsPage() {
   } = useNotifications({ refetchInterval: 60_000 });
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -162,6 +160,5 @@ function NotificationsPage() {
           </ul>
         )}
       </main>
-    </AppNavLayout>
   );
 }

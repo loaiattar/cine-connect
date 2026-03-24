@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { requireAuth } from "@/lib/route-guard";
 import { moviesService } from "@/service/movies.service";
 import { Loader2, Bookmark, Trash2 } from "lucide-react";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
 
 export const Route = createFileRoute("/watchlist")({
@@ -33,7 +32,6 @@ function WatchlistPage() {
   });
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Bookmark className="h-8 w-8 fill-ink-secondary text-ink-secondary" aria-hidden />
@@ -143,6 +141,5 @@ function WatchlistPage() {
           </div>
         )}
       </main>
-    </AppNavLayout>
   );
 }

@@ -3,7 +3,6 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { requireAuth } from "@/lib/route-guard";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { Heart, Loader2, Trash2 } from "lucide-react";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
 
@@ -26,7 +25,6 @@ function FavoritesPage() {
   } = useFavorites();
 
   return (
-    <AppNavLayout variant="account">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Heart className="h-8 w-8 fill-accent-red text-accent-red" aria-hidden />
@@ -92,7 +90,6 @@ function FavoritesPage() {
           </ul>
         )}
       </main>
-    </AppNavLayout>
   );
 }
 

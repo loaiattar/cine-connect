@@ -1,7 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import bgImage from "../../image/BackGround.png";
 import {
-  Bookmark,
   Clapperboard,
   MessageCircle,
   Play,
@@ -10,7 +9,6 @@ import {
   Mail,
   Heart,
   Loader2,
-  Search,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
@@ -23,7 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { data: trendingMovies, isLoading: trendingLoading } = useMovieList();
 
   const features = [
@@ -54,61 +52,34 @@ function Index() {
   ];
 
   return (
-    <div className="min-h-dvh bg-app-base text-ink">
-      <header
-        className={cn(
-          "flex items-center justify-between px-6 py-5 sm:px-8",
-          glassHeaderClass
-        )}
-      >
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-            <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
-            <span>
-              <span className="text-accent-red">Ciné</span>
-              <span className="text-ink">Connect</span>
-            </span>
-          </Link>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          {isAuthenticated ? (
-            <>
-              <Link to="/search" className={navLinkOutlineClass}>
-                <Search className="h-4 w-4" />
-                Recherche
-              </Link>
-              <Link to={"/favorites" as "/" | "/favorites"} className={navLinkOutlineClass}>
-                <Heart className="h-4 w-4" />
-                Favoris
-              </Link>
-              <Link to="/watchlist" className={navLinkOutlineClass}>
-                <Bookmark className="h-4 w-4" />
-                À voir
-              </Link>
-              <Link to="/chat" className={navLinkOutlineClass}>
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </Link>
-              <button
-                type="button"
-                onClick={() => void logout()}
-                className="rounded-xl border border-[var(--glass-border)] px-4 py-2 text-sm font-medium text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
-              >
-                Déconnexion
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/register" className={navLinkOutlineClass}>
-                S&apos;inscrire
-              </Link>
-              <PrimaryButton asChild>
-                <Link to="/login">Se connecter</Link>
-              </PrimaryButton>
-            </>
+    <div className="min-h-full bg-app-base text-ink">
+      {/* Logged-in users use AppShell + SidebarNav; keep marketing header for guests only */}
+      {!isAuthenticated && (
+        <header
+          className={cn(
+            "flex items-center justify-between px-6 py-5 sm:px-8",
+            glassHeaderClass
           )}
-        </div>
-      </header>
+        >
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
+              <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
+              <span>
+                <span className="text-accent-red">Ciné</span>
+                <span className="text-ink">Connect</span>
+              </span>
+            </Link>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+            <Link to="/register" className={navLinkOutlineClass}>
+              S&apos;inscrire
+            </Link>
+            <PrimaryButton asChild>
+              <Link to="/login">Se connecter</Link>
+            </PrimaryButton>
+          </div>
+        </header>
+      )}
       <section className="relative overflow-hidden border-b border-[var(--glass-border)] px-6 py-20 text-center">
         <img
           src={bgImage}

@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Loader2, User, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/community")({
@@ -43,7 +42,6 @@ function CommunityPage() {
     debouncedQuery.length > 0 && !isLoading && !isError && users.length === 0 && !isFetching;
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Users className="h-8 w-8 text-accent-red" aria-hidden />
@@ -132,7 +130,6 @@ function CommunityPage() {
           </>
         )}
       </main>
-    </AppNavLayout>
   );
 }
 
