@@ -37,7 +37,7 @@ function NotificationsPage() {
   } = useNotifications({ refetchInterval: 60_000 });
 
   return (
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Bell className="h-8 w-8 text-accent-red" aria-hidden />
@@ -63,20 +63,20 @@ function NotificationsPage() {
         </div>
 
         {markError && (
-          <div className="mb-4 rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200 text-sm">
+          <GlassPanel className="mb-4 border-red-500/40 text-sm text-red-300">
             {markError.message}
-          </div>
+          </GlassPanel>
         )}
 
         {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
+          <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
             <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
             <p className="text-ink-secondary">Chargement des notifications…</p>
-          </div>
+          </GlassPanel>
         )}
 
         {isError && (
-          <div className="rounded-lg border border-red-800 bg-red-950/30 px-4 py-3 text-red-200">
+          <GlassPanel className="border-red-500/40">
             <p>{error instanceof Error ? error.message : "Impossible de charger les notifications."}</p>
             <button
               type="button"
@@ -85,7 +85,7 @@ function NotificationsPage() {
             >
               Réessayer
             </button>
-          </div>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && notifications.length === 0 && (
