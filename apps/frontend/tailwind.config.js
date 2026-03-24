@@ -1,4 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+/**
+ * Glass v2 tokens live in `src/index.css` (`@theme` + `:root` CSS variables).
+ * This file extends the legacy JS theme for shadcn/tailwind-merge; keep accent
+ * aligned with that file (red-600 default, red-500 hover for CTA / active nav).
+ *
+ * @see docs/issues/CinéConnectPlan.md §1
+ */
 const { fontFamily } = require("tailwindcss/defaultTheme")
 
 module.exports = {

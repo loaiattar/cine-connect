@@ -5,7 +5,7 @@ import { Error404 } from "./-Error404";
 export const Route = createRootRoute({
   notFoundComponent: Error404,
   component: () => (
-    <div className="dark min-h-screen bg-black text-white">
+    <div className="min-h-dvh bg-background text-foreground">
       <main>
         <Outlet />
       </main>
