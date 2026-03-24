@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { useChatRoom } from "@/hooks/useChatRoom";
 import { requireAuth } from "@/lib/route-guard";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 import { Loader2, MessageCircle, Send } from "lucide-react";
@@ -56,9 +55,9 @@ function ChatPage() {
   const orderedMessages = messages;
 
   return (
-    <AppNavLayout variant="simple" shell="chat">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col md:flex-row">
         {/* Sidebar: room list */}
-        <aside className="flex w-56 shrink-0 flex-col border-r border-[var(--glass-border)]">
+        <aside className="flex w-full shrink-0 flex-col border-b border-[var(--glass-border)] md:w-56 md:border-b-0 md:border-r">
           <div className="border-b border-[var(--glass-border)] p-3">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-ink-secondary">
               Conversations
@@ -180,6 +179,6 @@ function ChatPage() {
             </>
           )}
         </main>
-    </AppNavLayout>
+    </div>
   );
 }

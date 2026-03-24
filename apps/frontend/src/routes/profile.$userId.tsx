@@ -3,7 +3,6 @@ import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
 import type { FollowUserRow } from "@/service/follow.service";
 import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { PrimaryButton } from "@/components/glass";
 import { navLinkOutlineClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
@@ -96,7 +95,6 @@ function UserProfilePage() {
   }
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
@@ -318,6 +316,5 @@ function UserProfilePage() {
           </div>
         )}
       </main>
-    </AppNavLayout>
   );
 }

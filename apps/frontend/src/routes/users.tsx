@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { apiClient } from "../lib/api-client";
 import { useAuth } from "../hooks/useAuth";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 
@@ -40,7 +39,6 @@ function UsersPage() {
   );
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
           <Users className="h-8 w-8 text-accent-red" aria-hidden />
@@ -99,7 +97,6 @@ function UsersPage() {
           ))}
         </ul>
       </main>
-    </AppNavLayout>
   );
 }
 

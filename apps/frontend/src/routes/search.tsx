@@ -4,7 +4,6 @@ import { useMovieSearch } from "@/hooks/useMovies";
 import { requireAuth } from "@/lib/route-guard";
 import { MOVIE_GENRES } from "@cine-connect/shared";
 import { Loader2, Search } from "lucide-react";
-import { AppNavLayout } from "@/components/layout/AppNavLayout";
 import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
@@ -51,7 +50,6 @@ function SearchPage() {
   };
 
   return (
-    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8">
           <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">
@@ -168,6 +166,5 @@ function SearchPage() {
           </>
         )}
       </main>
-    </AppNavLayout>
   );
 }
