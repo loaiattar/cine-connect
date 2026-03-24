@@ -3,18 +3,10 @@ import { useQueries } from "@tanstack/react-query";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useAuth } from "@/hooks/useAuth";
 import { requireAuth } from "@/lib/route-guard";
-import MovieCard from "@/components/ui/CardFilm";
-import { getMovieImageUrl } from "@/lib/utils";
 import { moviesService } from "@/service/movies.service";
-import { MOVIE_GENRES } from "@cine-connect/shared";
 import { Loader2, Bookmark, Trash2 } from "lucide-react";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
-
-function getGenreNames(genreIds: number[] | undefined): string[] {
-  if (!genreIds?.length) return [];
-  const map = new Map(MOVIE_GENRES.map((g) => [g.id, g.name]));
-  return genreIds.map((id) => map.get(id) ?? "").filter(Boolean);
-}
+import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
 
 export const Route = createFileRoute("/watchlist")({
   beforeLoad: () => requireAuth(),
@@ -44,19 +36,17 @@ function WatchlistPage() {
     <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
-          <Bookmark className="h-8 w-8 text-orange-400 fill-orange-400" />
+          <Bookmark className="h-8 w-8 fill-ink-secondary text-ink-secondary" aria-hidden />
           <div>
-            <h1 className="text-2xl font-bold text-white">Ma liste à voir</h1>
-            <p className="text-sm text-zinc-400">
-              {user?.email}
-            </p>
+            <h1 className="text-2xl font-bold text-ink">Ma liste à voir</h1>
+            <p className="text-sm text-ink-secondary">{user?.email}</p>
           </div>
         </div>
 
         {isLoading && (
           <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-orange-400" />
-            <p className="text-zinc-400">Chargement de votre liste…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-ink-secondary">Chargement de votre liste…</p>
           </div>
         )}
 
@@ -69,19 +59,16 @@ function WatchlistPage() {
         )}
 
         {!isLoading && !isError && watchlist.length === 0 && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-6 py-12 text-center">
-            <Bookmark className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
-            <p className="text-zinc-400">Aucun film dans votre liste à voir.</p>
-            <p className="mt-2 text-sm text-zinc-500">
+          <GlassPanel className="py-12 text-center">
+            <Bookmark className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+            <p className="text-ink-secondary">Aucun film dans votre liste à voir.</p>
+            <p className="mt-2 text-sm text-ink-muted">
               Parcourez le catalogue et ajoutez des films à voir plus tard.
             </p>
-            <Link
-              to="/"
-              className="mt-6 inline-block rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-400 transition-colors"
-            >
-              Découvrir des films
-            </Link>
-          </div>
+            <PrimaryButton asChild className="mt-6">
+              <Link to="/">Découvrir des films</Link>
+            </PrimaryButton>
+          </GlassPanel>
         )}
 
         {!isLoading && !isError && watchlist.length > 0 && (
@@ -95,9 +82,9 @@ function WatchlistPage() {
                 return (
                   <div
                     key={entry.id}
-                    className="relative rounded-xl overflow-hidden w-full h-[360px] bg-zinc-900 flex items-center justify-center"
+                    className="relative flex aspect-[2/3] w-full items-center justify-center overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)]"
                   >
-                    <Loader2 className="h-10 w-10 animate-spin text-zinc-600" aria-hidden />
+                    <Loader2 className="h-10 w-10 animate-spin text-ink-muted" aria-hidden />
                     <button
                       type="button"
                       onClick={(e) => {
@@ -106,7 +93,7 @@ function WatchlistPage() {
                         removeFromWatchlist(entry.externalMovieId);
                       }}
                       disabled={isToggling}
-                      className="absolute top-2 right-2 z-10 rounded p-1.5 bg-black/60 text-zinc-400 hover:bg-orange-950/80 hover:text-orange-400 transition-colors disabled:opacity-50"
+                      className="absolute right-2 top-2 z-10 rounded-lg bg-black/60 p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-subtle/40 hover:text-accent-red-hover disabled:opacity-50"
                       title="Retirer de la liste"
                       aria-label="Retirer de la liste"
                     >
@@ -117,27 +104,23 @@ function WatchlistPage() {
               }
 
               const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 0;
-              const genreNames =
-                movie.genres?.map((g) => g.name) ?? getGenreNames((movie as unknown as { genre_ids?: number[] }).genre_ids);
 
               return (
-                <div key={entry.id} className="relative group">
+                <div key={entry.id} className="group relative">
                   <Link
                     to="/movie/$movieId"
                     params={{ movieId: String(entry.externalMovieId) }}
-                    className="block focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-xl overflow-hidden"
+                    className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base"
                   >
-                    <MovieCard
-                      id={movie.id}
+                    <PosterCard
                       title={movie.title ?? "Sans titre"}
-                      year={Number.isNaN(year) ? 0 : year}
+                      posterPath={movie.poster_path ?? ""}
+                      year={Number.isNaN(year) ? undefined : year}
                       rating={
                         typeof movie.vote_average === "number"
                           ? Math.round(movie.vote_average * 10) / 10
-                          : 0
+                          : undefined
                       }
-                      imageUrl={getMovieImageUrl(movie.poster_path ?? "")}
-                      genres={genreNames}
                     />
                   </Link>
                   <button
@@ -148,7 +131,7 @@ function WatchlistPage() {
                       removeFromWatchlist(entry.externalMovieId);
                     }}
                     disabled={isToggling}
-                    className="absolute top-2 right-2 z-10 rounded p-1.5 bg-black/60 text-zinc-400 hover:bg-orange-950/80 hover:text-orange-400 transition-colors disabled:opacity-50"
+                    className="absolute right-2 top-2 z-10 rounded-lg bg-black/60 p-1.5 text-ink-secondary transition-colors hover:bg-accent-red-subtle/40 hover:text-accent-red-hover disabled:opacity-50"
                     title="Retirer de la liste"
                     aria-label="Retirer de la liste"
                   >

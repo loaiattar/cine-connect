@@ -22,6 +22,7 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
+import { Route as DevGlassRouteImport } from './routes/dev.glass'
 
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
@@ -88,6 +89,11 @@ const MovieMovieIdRoute = MovieMovieIdRouteImport.update({
   path: '/movie/$movieId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevGlassRoute = DevGlassRouteImport.update({
+  id: '/dev/glass',
+  path: '/dev/glass',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
+  '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
+  '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
+  '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
 }
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/users'
     | '/watchlist'
+    | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
   fileRoutesByTo: FileRoutesByTo
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/users'
     | '/watchlist'
+    | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
   id:
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/users'
     | '/watchlist'
+    | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
   fileRoutesById: FileRoutesById
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   UsersRoute: typeof UsersRoute
   WatchlistRoute: typeof WatchlistRoute
+  DevGlassRoute: typeof DevGlassRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
 }
 
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MovieMovieIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dev/glass': {
+      id: '/dev/glass'
+      path: '/dev/glass'
+      fullPath: '/dev/glass'
+      preLoaderRoute: typeof DevGlassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -317,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   UsersRoute: UsersRoute,
   WatchlistRoute: WatchlistRoute,
+  DevGlassRoute: DevGlassRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
 }
 export const routeTree = rootRouteImport

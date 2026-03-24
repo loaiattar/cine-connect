@@ -5,6 +5,8 @@ import { Users } from "lucide-react";
 import { apiClient } from "../lib/api-client";
 import { useAuth } from "../hooks/useAuth";
 import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { PrimaryButton } from "@/components/glass";
+import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/users")({
   component: UsersPage,
@@ -41,8 +43,8 @@ function UsersPage() {
     <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
-          <Users className="h-8 w-8 text-red-500" />
-          <h1 className="text-2xl font-bold">Communauté</h1>
+          <Users className="h-8 w-8 text-accent-red" aria-hidden />
+          <h1 className="text-2xl font-bold text-ink">Communauté</h1>
         </div>
 
         <input
@@ -50,43 +52,48 @@ function UsersPage() {
           placeholder="Rechercher un membre..."
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
-          className="mb-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
+          className={`${glassInputClass} mb-6`}
         />
 
         {resultats.length === 0 && (
-          <p className="text-center text-zinc-400">Aucun membre trouvé pour "{recherche}"</p>
+          <p className="text-center text-ink-secondary">Aucun membre trouvé pour &quot;{recherche}&quot;</p>
         )}
 
         <ul className="space-y-3">
           {resultats.map((user) => (
-            <li key={user.id} className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600 font-bold">
+            <li
+              key={user.id}
+              className="flex items-center gap-4 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 backdrop-blur-[var(--glass-blur)]"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-red font-bold text-white">
                 {user.name[0].toUpperCase()}
               </div>
               <div className="flex-1">
-                <p className="font-semibold">{user.name}</p>
-                <p className="text-sm text-zinc-400">{user.email}</p>
+                <p className="font-semibold text-ink">{user.name}</p>
+                <p className="text-sm text-ink-secondary">{user.email}</p>
               </div>
               <Link
                 to="/profile/$userId"
                 params={{ userId: String(user.id) }}
-                className="text-sm text-zinc-400 hover:text-white transition-colors"
+                className="text-sm text-ink-secondary transition-colors hover:text-ink"
               >
                 Voir profil
               </Link>
               {isLoggedIn && (
-                <button
-                  type="button"
-                  disabled={suivis.includes(user.id) || followMutation.isPending}
-                  onClick={() => followMutation.mutate(user.id)}
-                  className={`rounded-lg px-3 py-1 text-sm font-semibold transition-colors ${
-                    suivis.includes(user.id)
-                      ? "bg-zinc-700 text-zinc-400 cursor-default"
-                      : "bg-red-600 text-white hover:bg-red-500"
-                  }`}
-                >
-                  {suivis.includes(user.id) ? "Suivi" : "Suivre"}
-                </button>
+                suivis.includes(user.id) ? (
+                  <span className="cursor-default rounded-xl border border-[var(--glass-border)] px-3 py-1.5 text-sm font-medium text-ink-muted">
+                    Suivi
+                  </span>
+                ) : (
+                  <PrimaryButton
+                    type="button"
+                    disabled={followMutation.isPending}
+                    onClick={() => followMutation.mutate(user.id)}
+                    className="!px-3 !py-1.5 text-xs"
+                  >
+                    Suivre
+                  </PrimaryButton>
+                )
               )}
             </li>
           ))}
