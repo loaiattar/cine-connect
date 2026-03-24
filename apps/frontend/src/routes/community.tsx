@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clapperboard, Loader2, User, Users } from "lucide-react";
+import { Loader2, User, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
+import { AppNavLayout } from "@/components/layout/AppNavLayout";
+import { glassInputClass } from "@/lib/glass-ui";
 
 export const Route = createFileRoute("/community")({
   component: CommunityPage,
@@ -41,29 +43,11 @@ function CommunityPage() {
     debouncedQuery.length > 0 && !isLoading && !isError && users.length === 0 && !isFetching;
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white hover:text-zinc-300 transition-colors"
-          >
-            <Clapperboard className="w-6 h-6 text-red-500" />
-            <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
-            </span>
-          </Link>
-          <Link to="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
-            ← Accueil
-          </Link>
-        </div>
-      </header>
-
+    <AppNavLayout variant="simple">
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="mb-8 flex items-center gap-3">
-          <Users className="h-8 w-8 text-red-500" />
-          <h1 className="text-2xl font-bold">Communauté</h1>
+          <Users className="h-8 w-8 text-accent-red" aria-hidden />
+          <h1 className="text-2xl font-bold text-ink">Communauté</h1>
         </div>
 
         <input
@@ -72,30 +56,30 @@ function CommunityPage() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           autoComplete="off"
-          className="mb-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
+          className={`${glassInputClass} mb-6`}
         />
 
         {!debouncedQuery && (
-          <p className="text-center text-zinc-500 text-sm">
+          <p className="text-center text-sm text-ink-muted">
             Saisissez un nom ou un e-mail pour rechercher des membres.
           </p>
         )}
 
         {debouncedQuery && isLoading && (
           <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
-            <p className="text-sm text-zinc-500">Recherche…</p>
+            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+            <p className="text-sm text-ink-muted">Recherche…</p>
           </div>
         )}
 
         {debouncedQuery && isError && (
-          <p className="text-center text-red-400 text-sm">
+          <p className="text-center text-sm text-red-300">
             {searchApiError?.message ?? "La recherche a échoué."}
           </p>
         )}
 
         {showEmpty && (
-          <p className="text-center text-zinc-400">
+          <p className="text-center text-ink-secondary">
             Aucun membre trouvé pour « {debouncedQuery} »
           </p>
         )}
@@ -111,46 +95,44 @@ function CommunityPage() {
                     <Link
                       to="/profile/$userId"
                       params={{ userId: String(membre.id) }}
-                      className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 transition-colors hover:border-zinc-600 hover:bg-zinc-900"
+                      className="flex items-center gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 backdrop-blur-[var(--glass-blur)] transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]"
                     >
                       {avatar ? (
                         <img
                           src={avatar}
                           alt=""
-                          className="h-12 w-12 shrink-0 rounded-full object-cover"
+                          className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
                         />
                       ) : (
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-800">
-                          <User className="h-6 w-6 text-zinc-500" />
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
+                          <User className="h-6 w-6 text-ink-muted" />
                         </div>
                       )}
-                      <span className="font-semibold text-white">{label}</span>
+                      <span className="font-semibold text-ink">{label}</span>
                     </Link>
                   </li>
                 );
               })}
             </ul>
-
-            <div className="mt-6 flex flex-col items-center gap-2 text-sm text-zinc-500">
-              <span>
-                {users.length} sur {total} résultat
-                {total > 1 ? "s" : ""}
-              </span>
-              {hasMore && (
+            {hasMore && (
+              <div className="mt-6 flex justify-center">
                 <button
                   type="button"
-                  disabled={isFetching}
                   onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border border-zinc-600 px-4 py-2 text-zinc-300 hover:bg-zinc-800 disabled:opacity-50"
+                  disabled={isFetching}
+                  className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-[var(--glass-bg-elevated)] disabled:opacity-50"
                 >
                   {isFetching ? "Chargement…" : "Charger plus"}
                 </button>
-              )}
-            </div>
+              </div>
+            )}
+            <p className="mt-4 text-center text-xs text-ink-muted">
+              {users.length} / {total} membres
+            </p>
           </>
         )}
       </main>
-    </div>
+    </AppNavLayout>
   );
 }
 

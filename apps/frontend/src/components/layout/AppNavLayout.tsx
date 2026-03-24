@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useNotifications } from "@/hooks/useNotifications";
 import { cn } from "@/lib/utils";
+import { glassHeaderClass, navLinkOutlineClass } from "@/lib/glass-ui";
 
 export type AppNavVariant = "simple" | "standard" | "account";
 
@@ -37,38 +38,35 @@ export function AppNavLayout({
   return (
     <div
       className={cn(
-        "min-h-screen bg-black text-white",
+        "min-h-dvh bg-app-base text-ink",
         shell === "chat" && "flex flex-col"
       )}
     >
       <header
-        className={cn(
-          "sticky top-0 z-50 border-b border-zinc-800/50 bg-black/90 backdrop-blur-sm px-6 py-4",
-          shell === "chat" && "shrink-0"
-        )}
+        className={cn("px-6 py-4", glassHeaderClass, shell === "chat" && "shrink-0")}
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <Link
             to="/"
-            className="flex items-center gap-2 font-extrabold text-xl tracking-tight text-white transition-colors hover:text-zinc-300"
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-ink transition-colors hover:text-ink-secondary"
           >
-            <Clapperboard className="h-6 w-6 text-red-500" />
+            <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
             <span>
-              <span className="text-red-500">Ciné</span>
-              <span className="text-orange-400">Connect</span>
+              <span className="text-accent-red">Ciné</span>
+              <span className="text-ink">Connect</span>
             </span>
           </Link>
           <div className="flex items-center gap-3">
             {showBell && (
               <Link
                 to="/notifications"
-                className="relative rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
+                className="relative rounded-full p-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
                 title="Notifications"
                 aria-label="Notifications"
               >
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-red px-1 text-[10px] font-bold text-white">
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
@@ -77,24 +75,21 @@ export function AppNavLayout({
             {showProfile && (
               <Link
                 to="/profile"
-                className="flex items-center gap-2 rounded-full text-zinc-400 transition-colors hover:text-white"
+                className="flex items-center gap-2 rounded-full text-ink-secondary transition-colors hover:text-ink"
                 title="Mon profil"
                 aria-label={displayName ? `Mon profil, ${displayName}` : "Mon profil"}
               >
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover ring-1 ring-[var(--glass-border)]" />
                 ) : (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-sm font-medium text-white">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] text-sm font-medium text-ink ring-1 ring-[var(--glass-border)]">
                     {displayName.slice(0, 1).toUpperCase() || "?"}
                   </span>
                 )}
-                <span className="text-sm">{displayName}</span>
+                <span className="hidden text-sm sm:inline">{displayName}</span>
               </Link>
             )}
-            <Link
-              to="/"
-              className="text-sm text-zinc-400 transition-colors hover:text-white"
-            >
+            <Link to="/" className={navLinkOutlineClass}>
               ← Accueil
             </Link>
           </div>

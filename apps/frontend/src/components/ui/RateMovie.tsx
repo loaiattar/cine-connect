@@ -28,28 +28,25 @@ export default function RateMovie({ average, count, userRating, canRate = true, 
 
   function getColor(i: number) {
     if (hovered > 0) {
-      return i <= hovered ? "text-yellow-400" : "text-gray-400";
+      return i <= hovered ? "text-accent-red" : "text-ink-muted";
     }
-    return i <= rating ? "text-yellow-400" : "text-gray-400";
+    return i <= rating ? "text-accent-red" : "text-ink-muted";
   }
 
   return (
-    <div
-      className="w-full rounded-xl p-4"
-      style={{ backgroundColor: "#1e2a3a" }}
-    >
-      <p className="font-bold text-white mb-3">Noter ce film</p>
+    <div className="w-full">
+      <p className="mb-3 font-bold text-ink">Noter ce film</p>
 
       {(average != null && count != null) && (
-        <p className="text-gray-400 text-sm mb-2">
-          Moyenne : <span className="text-white font-medium">{average.toFixed(1)}</span>/10
+        <p className="mb-2 text-sm text-ink-secondary">
+          Moyenne : <span className="font-medium text-ink">{average.toFixed(1)}</span>/10
           {" · "}
-          <span className="text-white font-medium">{count}</span> avis
+          <span className="font-medium text-ink">{count}</span> avis
         </p>
       )}
 
       {userRating != null && (
-        <p className="text-yellow-400/90 text-sm mb-2">Votre note : {userRating}/10</p>
+        <p className="mb-2 text-sm text-accent-red-hover">Votre note : {userRating}/10</p>
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -66,7 +63,7 @@ export default function RateMovie({ average, count, userRating, canRate = true, 
             ★
           </span>
         ))}
-        <span className="text-gray-400 text-sm">
+        <span className="text-sm text-ink-muted">
           {canRate ? "Cliquez pour noter (1–5 → enregistré sur 10)" : "Connectez-vous pour noter"}
         </span>
       </div>
