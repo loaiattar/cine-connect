@@ -25,6 +25,9 @@ function formatMessageTime(s: string) {
   }
 }
 
+/**
+ * Chat lives inside {@link AppShell} via root layout for authenticated users (issue #312).
+ */
 function ChatPage() {
   const [selectedRoomId, setSelectedRoomId] = useState<string>(DEFAULT_ROOMS[0].id);
   const [inputValue, setInputValue] = useState("");
@@ -54,6 +57,7 @@ function ChatPage() {
   };
 
   const orderedMessages = messages;
+  const roomLabel = DEFAULT_ROOMS.find((r) => r.id === selectedRoomId)?.label ?? selectedRoomId;
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col md:flex-row">
@@ -87,33 +91,29 @@ function ChatPage() {
           </nav>
         </aside>
 
-        {/* Main: message list + input */}
-        <main className="flex min-w-0 flex-1 flex-col bg-[var(--glass-bg)]/30">
+        {/* Main — optional narrower column (plan §4) */}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col md:max-w-2xl lg:max-w-3xl">
           {!selectedRoomId ? (
-            <div className="flex-1 flex items-center justify-center p-8">
-              <div className="text-center text-zinc-500">
-                <MessageCircle className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                <p>Sélectionnez une conversation</p>
-              </div>
-            </div>
+            <GlassPanel className="flex flex-1 flex-col items-center justify-center !py-16 text-center">
+              <MessageCircle className="mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+              <p className="text-ink-secondary">Sélectionnez une conversation</p>
+            </GlassPanel>
           ) : (
-            <>
-              <div className="px-4 py-3 border-b border-zinc-800 shrink-0">
-                <h1 className="font-semibold text-white">
-                  {DEFAULT_ROOMS.find((r) => r.id === selectedRoomId)?.label ?? selectedRoomId}
-                </h1>
+            <GlassPanel className="flex min-h-[min(32rem,calc(100dvh-7rem))] flex-1 flex-col !p-0 md:min-h-[min(36rem,calc(100dvh-8rem))]">
+              <div className="shrink-0 border-b border-[var(--glass-border)] px-4 py-3">
+                <h1 className="font-semibold text-ink">{roomLabel}</h1>
               </div>
 
               {isLoading && (
-                <div className="flex-1 flex items-center justify-center p-8">
+                <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8">
                   <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
                   <span className="sr-only">Chargement des messages…</span>
                 </div>
               )}
 
               {isError && (
-                <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
-                  <p className="text-red-400 text-center">
+                <div className="m-4 flex flex-1 flex-col items-center justify-center gap-4 rounded-[var(--radius-glass)] border border-red-500/40 bg-red-950/30 px-6 py-8 text-center backdrop-blur-sm">
+                  <p className="text-sm text-red-200">
                     {error instanceof Error ? error.message : "Impossible de charger les messages."}
                   </p>
                   <button
@@ -131,42 +131,42 @@ function ChatPage() {
 
               {!isLoading && !isError && (
                 <>
-                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {orderedMessages.length === 0 && (
-                      <div className="flex flex-col items-center justify-center py-12 text-zinc-500 text-center">
-                        <MessageCircle className="h-12 w-12 mb-4 opacity-50" />
-                        <p>Aucun message. Envoyez le premier !</p>
-                      </div>
-                    )}
-                    {orderedMessages.map((m, index) => (
-                      <div
-                        key={m.id ?? `msg-${index}-${m.createdAt}`}
-                        className="flex flex-col gap-0.5 max-w-[85%]"
-                      >
-                        <div className="flex items-baseline gap-2">
-                          <span className="shrink-0 text-xs font-medium text-accent-red-hover">
-                            {m.senderEmail ?? "Anonyme"}
-                          </span>
-                          <span className="text-xs text-zinc-500">
-                            {formatMessageTime(m.createdAt)}
-                          </span>
+                  <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                    <div className="space-y-3">
+                      {orderedMessages.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                          <MessageCircle className="mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+                          <p className="text-sm text-ink-secondary">Aucun message. Envoyez le premier !</p>
                         </div>
-                        <p className="text-zinc-200 text-sm break-words">{m.content}</p>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
+                      )}
+                      {orderedMessages.map((m, index) => (
+                        <div
+                          key={m.id ?? `msg-${index}-${m.createdAt}`}
+                          className="flex max-w-[90%] flex-col gap-0.5"
+                        >
+                          <div className="flex items-baseline gap-2">
+                            <span className="shrink-0 text-xs font-medium text-accent-red">
+                              {m.senderEmail ?? "Anonyme"}
+                            </span>
+                            <span className="text-xs text-ink-muted">{formatMessageTime(m.createdAt)}</span>
+                          </div>
+                          <p className="break-words text-sm text-ink">{m.content}</p>
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
                   </div>
 
                   <form
                     onSubmit={handleSubmit}
-                    className="flex shrink-0 gap-2 border-t border-[var(--glass-border)] p-4"
+                    className="flex shrink-0 gap-2 border-t border-[var(--glass-border)] bg-[var(--glass-bg)]/80 px-4 py-3 backdrop-blur-sm"
                   >
                     <input
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Écrivez un message…"
-                      className={`${glassInputClass} flex-1 text-sm`}
+                      className={cn(glassInputClass, "flex-1 text-sm")}
                       disabled={isSending}
                       maxLength={2000}
                     />
@@ -182,9 +182,10 @@ function ChatPage() {
                   </form>
                 </>
               )}
-            </>
+            </GlassPanel>
           )}
-        </main>
+        </div>
+      </div>
     </div>
   );
 }
