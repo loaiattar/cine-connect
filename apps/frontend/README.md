@@ -46,6 +46,19 @@ On startup, `main.tsx` waits for Zustand persist hydration, then may call **`POS
 
 ---
 
+## App shell and mobile navigation (Glass v2)
+
+Authenticated routes render inside **`AppShell`** with **`SidebarNav`** (`src/components/layout/AppShell.tsx`, `SidebarNav.tsx`).
+
+| Viewport | Navigation |
+|----------|------------|
+| **`md` and up** | Fixed left **rail** (icons only; expands on hover or keyboard focus-within). |
+| **Below `md`** | **Sticky top bar** (menu control + CinéConnect title) and a **left drawer** (Radix `Dialog`) with full text labels for every destination and account actions. The rail is hidden so main content can use the full width. |
+
+`AppShell` main uses `min-w-0`, `max-w-full`, and `overflow-x-hidden` so wide pages or glass panels are less likely to cause horizontal scrolling on small screens (plan milestone C.8, issue #314).
+
+---
+
 ## React + TypeScript + Vite (template)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

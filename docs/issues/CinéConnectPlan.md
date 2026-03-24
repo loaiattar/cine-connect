@@ -89,7 +89,7 @@ Single visual direction: **dark glassmorphism**, **red accent**, **sidebar + das
 ### Milestone C — Polish & a11y
 
 7. Focus states, keyboard nav for sidebar, contrast audit on glass over images.
-8. Mobile: collapsible sidebar or bottom nav (simplified — don’t clone desktop 1:1).
+8. Mobile: collapsible sidebar or bottom nav (simplified — don’t clone desktop 1:1). **Done (issue #314):** below Tailwind `md`, a sticky top bar + **left drawer** (labelled list + account actions); `md+` keeps the hover-expand rail. See `apps/frontend/README.md` → App shell and mobile navigation.
 
 ### Milestone D — Optional enhancements
 
