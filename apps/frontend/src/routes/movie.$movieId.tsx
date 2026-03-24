@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
@@ -42,33 +41,6 @@ function MovieDetailPage() {
   const movie = rawMovie ? apiMovieToDisplay(rawMovie as MovieDetailPayload) : null;
   const isFavorite = Boolean((rawMovie as MovieDetailPayload | undefined)?.isFavorite);
   const isOnWatchlist = Boolean((rawMovie as MovieDetailPayload | undefined)?.isOnWatchlist);
-
-  const [favoriteOpt, setFavoriteOpt] = useState<boolean | null>(null);
-  const [watchlistOpt, setWatchlistOpt] = useState<boolean | null>(null);
-  const prevFavoriteToggling = useRef(false);
-  const prevWatchlistToggling = useRef(false);
-
-  useEffect(() => {
-    setFavoriteOpt(null);
-    setWatchlistOpt(null);
-  }, [movieIdNum]);
-
-  useEffect(() => {
-    if (prevFavoriteToggling.current && !favoriteToggling) {
-      setFavoriteOpt(null);
-    }
-    prevFavoriteToggling.current = favoriteToggling;
-  }, [favoriteToggling]);
-
-  useEffect(() => {
-    if (prevWatchlistToggling.current && !watchlistToggling) {
-      setWatchlistOpt(null);
-    }
-    prevWatchlistToggling.current = watchlistToggling;
-  }, [watchlistToggling]);
-
-  const favoriteChecked = favoriteOpt ?? isFavorite;
-  const watchlistChecked = watchlistOpt ?? isOnWatchlist;
 
   if (isLoading) {
     return (
@@ -115,21 +87,15 @@ function MovieDetailPage() {
             <ToggleRow
               label="Liste de suivi"
               description="Retrouver ce film plus tard dans votre liste de lecture."
-              checked={watchlistChecked}
-              onCheckedChange={(on) => {
-                setWatchlistOpt(on);
-                toggleWatchlist(movieIdNum);
-              }}
+              checked={isOnWatchlist}
+              onCheckedChange={() => toggleWatchlist(movieIdNum)}
               disabled={watchlistToggling}
             />
             <ToggleRow
               label="Favoris"
               description="Ajouter ce film à vos favoris."
-              checked={favoriteChecked}
-              onCheckedChange={(on) => {
-                setFavoriteOpt(on);
-                toggleFavorite(movieIdNum);
-              }}
+              checked={isFavorite}
+              onCheckedChange={() => toggleFavorite(movieIdNum)}
               disabled={favoriteToggling}
             />
           </GlassPanel>
