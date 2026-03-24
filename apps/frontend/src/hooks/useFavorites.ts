@@ -50,6 +50,7 @@ export function useFavorites(): UseFavoritesReturn {
       if (userId != null) {
         queryClient.invalidateQueries({ queryKey: ["favorites", userId] });
       }
+      queryClient.invalidateQueries({ queryKey: ["movie"] });
     },
   });
 

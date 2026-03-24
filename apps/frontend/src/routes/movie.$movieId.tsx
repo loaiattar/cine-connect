@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import MovieHero from "@/components/ui/MovieHero";
 import RateMovie, { type RateMovieProps } from "@/components/ui/RateMovie";
@@ -5,10 +6,12 @@ import CommentSection from "@/components/ui/CommentSectionComponent";
 import { apiMovieToDisplay } from "@/lib/movie-adapter";
 import type { Movie } from "@cine-connect/shared";
 import { useAuth } from "@/hooks/useAuth";
+import { useFavorites } from "@/hooks/useFavorites";
 import { useMovieDetail } from "@/hooks/useMovies";
 import { useRating } from "@/hooks/useRating";
-import { Loader2, MessageCircle } from "lucide-react";
-import { GlassPanel, PrimaryButton } from "@/components/glass";
+import { useWatchlist } from "@/hooks/useWatchlist";
+import { Heart, ListVideo, Loader2, MessageCircle } from "lucide-react";
+import { GlassPanel, PrimaryButton, ToggleRow } from "@/components/glass";
 
 export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetailPage,
@@ -21,6 +24,8 @@ function MovieDetailPage() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
 
   const { data: rawMovie, isLoading, isError, error } = useMovieDetail(movieIdNum);
+  const { toggleFavorite, isToggling: favoriteToggling } = useFavorites();
+  const { toggleWatchlist, isToggling: watchlistToggling } = useWatchlist();
   const {
     rating: ratingPayload,
     setRating,
@@ -28,7 +33,42 @@ function MovieDetailPage() {
     submitError: ratingError,
   } = useRating(movieIdNum);
 
-  const movie = rawMovie ? apiMovieToDisplay(rawMovie as Movie & { isFavorite?: boolean; isOnWatchlist?: boolean; comments?: unknown[] }) : null;
+  type MovieDetailPayload = Movie & {
+    isFavorite?: boolean;
+    isOnWatchlist?: boolean;
+    comments?: unknown[];
+  };
+
+  const movie = rawMovie ? apiMovieToDisplay(rawMovie as MovieDetailPayload) : null;
+  const isFavorite = Boolean((rawMovie as MovieDetailPayload | undefined)?.isFavorite);
+  const isOnWatchlist = Boolean((rawMovie as MovieDetailPayload | undefined)?.isOnWatchlist);
+
+  const [favoriteOpt, setFavoriteOpt] = useState<boolean | null>(null);
+  const [watchlistOpt, setWatchlistOpt] = useState<boolean | null>(null);
+  const prevFavoriteToggling = useRef(false);
+  const prevWatchlistToggling = useRef(false);
+
+  useEffect(() => {
+    setFavoriteOpt(null);
+    setWatchlistOpt(null);
+  }, [movieIdNum]);
+
+  useEffect(() => {
+    if (prevFavoriteToggling.current && !favoriteToggling) {
+      setFavoriteOpt(null);
+    }
+    prevFavoriteToggling.current = favoriteToggling;
+  }, [favoriteToggling]);
+
+  useEffect(() => {
+    if (prevWatchlistToggling.current && !watchlistToggling) {
+      setWatchlistOpt(null);
+    }
+    prevWatchlistToggling.current = watchlistToggling;
+  }, [watchlistToggling]);
+
+  const favoriteChecked = favoriteOpt ?? isFavorite;
+  const watchlistChecked = watchlistOpt ?? isOnWatchlist;
 
   if (isLoading) {
     return (
@@ -66,6 +106,47 @@ function MovieDetailPage() {
       />
 
       <div className="w-full space-y-6 px-4 py-6">
+        {isLoggedIn ? (
+          <GlassPanel>
+            <div className="mb-4 flex items-center gap-2">
+              <ListVideo className="h-5 w-5 text-accent-red" aria-hidden />
+              <h2 className="text-lg font-bold text-ink">Ma liste</h2>
+            </div>
+            <ToggleRow
+              label="Liste de suivi"
+              description="Retrouver ce film plus tard dans votre liste de lecture."
+              checked={watchlistChecked}
+              onCheckedChange={(on) => {
+                setWatchlistOpt(on);
+                toggleWatchlist(movieIdNum);
+              }}
+              disabled={watchlistToggling}
+            />
+            <ToggleRow
+              label="Favoris"
+              description="Ajouter ce film à vos favoris."
+              checked={favoriteChecked}
+              onCheckedChange={(on) => {
+                setFavoriteOpt(on);
+                toggleFavorite(movieIdNum);
+              }}
+              disabled={favoriteToggling}
+            />
+          </GlassPanel>
+        ) : (
+          <GlassPanel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <Heart className="mt-0.5 h-5 w-5 shrink-0 text-accent-red" aria-hidden />
+              <p className="text-sm text-ink-secondary">
+                Connectez-vous pour ajouter ce film à votre liste de suivi et à vos favoris.
+              </p>
+            </div>
+            <PrimaryButton asChild className="shrink-0 self-start sm:self-center">
+              <Link to="/login">Se connecter</Link>
+            </PrimaryButton>
+          </GlassPanel>
+        )}
+
         <GlassPanel>
           <section>
             <h2 className="mb-3 text-lg font-bold text-ink">Synopsis</h2>

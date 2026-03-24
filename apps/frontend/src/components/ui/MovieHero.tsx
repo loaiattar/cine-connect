@@ -20,7 +20,11 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
         className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-xl"
       />
       <div
-        className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-black/70 to-[var(--scrim-from)]"
+        className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-black/80 to-[var(--scrim-from)]"
+        aria-hidden
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-transparent to-zinc-950/40"
         aria-hidden
       />
       <div className="relative z-10 w-full px-6 py-10 sm:px-10">
@@ -38,7 +42,9 @@ const MovieHero = ({ title, year, director, genres, rating, posterUrl, onBack }:
             alt=""
             className="h-[280px] w-[187px] shrink-0 rounded-2xl object-cover ring-1 ring-[var(--glass-border)] sm:h-[350px] sm:w-[260px]"
           />
-          <div className="flex max-w-2xl flex-col gap-4 text-center lg:text-left">
+          <div
+            className="flex max-w-2xl flex-col gap-4 rounded-[var(--radius-glass)] border border-[var(--glass-border)] bg-[var(--glass-bg)] p-5 text-center backdrop-blur-[var(--glass-blur)] sm:p-6 lg:text-left"
+          >
             <h1 className="text-4xl font-bold text-ink sm:text-5xl">{title}</h1>
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-ink-secondary lg:justify-start">
               <span className="flex items-center gap-1">

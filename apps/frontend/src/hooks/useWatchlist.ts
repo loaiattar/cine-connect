@@ -50,6 +50,7 @@ export function useWatchlist(): UseWatchlistReturn {
       if (userId != null) {
         queryClient.invalidateQueries({ queryKey: ["watchlist", userId] });
       }
+      queryClient.invalidateQueries({ queryKey: ["movie"] });
     },
   });
 
@@ -59,6 +60,7 @@ export function useWatchlist(): UseWatchlistReturn {
       if (userId != null) {
         queryClient.invalidateQueries({ queryKey: ["watchlist", userId] });
       }
+      queryClient.invalidateQueries({ queryKey: ["movie"] });
     },
   });
 
