@@ -7,7 +7,8 @@ export interface AppShellProps {
 }
 
 /**
- * Glass v2 app frame: fixed sidebar rail + scrollable main (CinéConnectPlan §2).
+ * Glass v2 app frame: sidebar rail + scrollable main (CinéConnectPlan §2).
+ * Below `md`, {@link SidebarNav} renders a top bar and drawer instead of the rail (issue #314).
  * Main is prepared for a future full-bleed backdrop layer (poster) behind content.
  */
 export function AppShell({ children }: AppShellProps) {
@@ -26,7 +27,7 @@ export function AppShell({ children }: AppShellProps) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative z-10 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden scroll-mt-4 outline-none"
+          className="relative z-10 flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-y-auto overflow-x-hidden pt-14 scroll-mt-4 outline-none md:pt-0"
         >
           {children}
         </main>
