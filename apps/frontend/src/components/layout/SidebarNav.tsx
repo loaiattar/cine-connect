@@ -156,8 +156,8 @@ function MobileNavDrawer() {
               focusVisibleRingInsetClass
             )}
           >
-            <span className="text-accent-red">Ciné</span>
-            <span className="text-ink">Connect</span>
+            <span className="text-accent-red">Lume</span>
+            <span className="text-ink">ra</span>
           </Link>
         </header>
 
@@ -183,8 +183,8 @@ function MobileNavDrawer() {
             <Dialog.Title className="sr-only">Navigation principale</Dialog.Title>
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[var(--glass-border)] p-3">
               <span className="truncate text-sm font-extrabold tracking-tight">
-                <span className="text-accent-red">Ciné</span>
-                <span className="text-ink">Connect</span>
+                <span className="text-accent-red">Lume</span>
+                <span className="text-ink">ra</span>
               </span>
               <Dialog.Close asChild>
                 <button
@@ -310,8 +310,8 @@ export function SidebarNav() {
       <div className="flex shrink-0 flex-col gap-1 border-b border-[var(--glass-border)] p-2">
         <Link
           to="/"
-          title="CinéConnect"
-          aria-label="CinéConnect — accueil"
+          title="Lumera"
+          aria-label="Lumera — accueil"
           className={cn(
             "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 transition-colors md:pl-3",
             focusVisibleRingInsetClass
@@ -328,8 +328,8 @@ export function SidebarNav() {
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
             )}
           >
-            <span className="text-accent-red">Ciné</span>
-            <span className="text-ink">Connect</span>
+            <span className="text-accent-red">Lume</span>
+            <span className="text-ink">ra</span>
           </span>
         </Link>
       </div>

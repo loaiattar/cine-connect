@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Clapperboard } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeApiError } from "@/lib/normalize-api-error";
@@ -87,10 +88,10 @@ function RegisterPage() {
         </Link>
 
         <div className="flex items-center gap-2 text-2xl font-bold">
-          <span aria-hidden>🎬</span>
-          <span>
-            <span className="text-accent-red">Ciné</span>
-            <span className="text-ink">Connect</span>
+          <Clapperboard className="h-8 w-8 shrink-0 text-accent-red" aria-hidden />
+          <span className="text-ink">
+            <span className="text-accent-red">Lume</span>
+            <span>ra</span>
           </span>
         </div>
 
