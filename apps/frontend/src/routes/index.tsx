@@ -3,7 +3,6 @@ import { MOVIE_GENRES } from "@cine-connect/shared";
 import {
   Clapperboard,
   Compass,
-  Heart,
   Loader2,
   Play,
   Search,
@@ -11,7 +10,7 @@ import {
 } from "lucide-react";
 
 import bgImage from "../../image/BackGround.png";
-import { GlassPanel, PillTag, PosterCard, PrimaryButton, ProgressBar } from "@/components/glass";
+import { ContinueWatchingRow, GlassPanel, MiniPlayerTile, PillTag, PosterCard, PrimaryButton } from "@/components/glass";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
 import { navLinkOutlineClass } from "@/lib/glass-ui";
@@ -162,26 +161,11 @@ function AuthenticatedHome() {
         <section className="min-w-0 space-y-6">
           <MovieRow title="Trending maintenant" items={trendingRow} />
           <MovieRow title="Mieux notés en tendance" items={topRatedRow} />
-
-          <GlassPanel className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-accent-red" aria-hidden />
-              <h2 className="text-lg font-semibold text-ink">Continue watching</h2>
-            </div>
-            <p className="text-sm text-ink-secondary">
-              Placeholder en attendant les données de reprise de lecture.
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-ink-muted">
-                <span>The Last Frontier</span>
-                <span>42%</span>
-              </div>
-              <ProgressBar value={42} />
-            </div>
-          </GlassPanel>
+          <ContinueWatchingRow />
         </section>
 
         <aside className="space-y-6">
+          <MiniPlayerTile />
           <GlassPanel className="space-y-4">
             <div className="flex items-center gap-2">
               <Compass className="h-5 w-5 text-accent-red" aria-hidden />
