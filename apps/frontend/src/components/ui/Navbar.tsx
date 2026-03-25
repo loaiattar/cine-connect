@@ -46,8 +46,8 @@ const CineConnectNavbar = ({
       >
         <Clapperboard size={28} className="text-accent-red" aria-hidden />
         <span className="text-xl font-bold">
-          <span className="text-ink">Ciné</span>
-          <span className="text-accent-red">Connect</span>
+          <span className="text-accent-red">Lume</span>
+          <span className="text-ink">ra</span>
         </span>
       </a>
 

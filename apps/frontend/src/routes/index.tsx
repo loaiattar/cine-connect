@@ -1,15 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { MOVIE_GENRES } from "@cine-connect/shared";
-import {
-  Clapperboard,
-  Compass,
-  Loader2,
-  Play,
-  Search,
-  Sparkles,
-} from "lucide-react";
+import { Compass, Loader2, Play, Search, Sparkles } from "lucide-react";
 
 import bgImage from "../../image/BackGround.png";
+import { PublicLandingPage } from "@/components/landing/PublicLandingPage";
 import { ContinueWatchingRow, GlassPanel, MiniPlayerTile, PillTag, PosterCard, PrimaryButton } from "@/components/glass";
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
@@ -208,46 +202,8 @@ function AuthenticatedHome() {
   );
 }
 
-function PublicHome() {
-  return (
-    <div className="min-h-full bg-app-base text-ink">
-      <section className="relative overflow-hidden border-b border-[var(--glass-border)] px-6 py-24 text-center">
-        <img
-          src={bgImage}
-          alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-20"
-        />
-        <div className="relative z-10 mx-auto max-w-3xl">
-          <h1 className="flex items-center justify-center gap-3 text-5xl font-bold tracking-tight sm:text-6xl">
-            <Clapperboard className="h-12 w-12 text-accent-red" aria-hidden />
-            <span>
-              <span className="text-accent-red">Ciné</span>
-              <span className="text-ink">Connect</span>
-            </span>
-          </h1>
-          <p className="mt-6 text-xl text-ink">
-            La plateforme collaborative pour les passionnés de cinéma
-          </p>
-          <p className="mt-3 text-ink-secondary">
-            Rejoignez la communauté pour découvrir les tendances, noter les films et discuter en direct.
-          </p>
-
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <PrimaryButton asChild icon={<Play className="h-4 w-4" aria-hidden />}>
-              <Link to="/register">Commencer</Link>
-            </PrimaryButton>
-            <Link to="/login" className={cn(navLinkOutlineClass, "justify-center px-6 py-3 text-base font-semibold")}>
-              Se connecter
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
 function Index() {
   const { isAuthenticated } = useAuth();
 
-  return isAuthenticated ? <AuthenticatedHome /> : <PublicHome />;
+  return isAuthenticated ? <AuthenticatedHome /> : <PublicLandingPage />;
 }
