@@ -4,10 +4,12 @@ export { PrimaryButton, type PrimaryButtonProps } from "./PrimaryButton"
 export { PosterCard, type PosterCardProps } from "./PosterCard"
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar"
 export {
+  CONTINUE_WATCHING_STUB,
+  type ContinueWatchingItem,
+} from "./continueWatchingStub"
+export {
   ContinueWatchingRow,
   MiniPlayerTile,
   ContinueWatchingSection,
-  CONTINUE_WATCHING_STUB,
-  type ContinueWatchingItem,
 } from "./ContinueWatchingSection"
 export { ToggleRow, type ToggleRowProps } from "./ToggleRow"
