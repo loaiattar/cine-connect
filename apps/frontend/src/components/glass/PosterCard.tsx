@@ -17,10 +17,10 @@ export type PosterCardProps = {
  */
 const shellClass = (interactive: boolean) =>
   cn(
-    "group relative block w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-zinc-900/40 text-left outline-none transition-[transform,box-shadow]",
+    "group relative block w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-zinc-900/40 text-left outline-none transition-[transform,box-shadow] motion-reduce:transition-none",
     "focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base",
     interactive &&
-      "cursor-pointer hover:z-10 hover:scale-[1.02] hover:border-[var(--glass-border-strong)]"
+      "cursor-pointer hover:z-10 hover:scale-[1.02] hover:border-[var(--glass-border-strong)] motion-reduce:hover:scale-100"
   )
 
 export function PosterCard({
@@ -41,7 +41,7 @@ export function PosterCard({
           src={src}
           alt=""
           className={cn(
-            "h-full w-full object-cover transition-transform group-hover:scale-105",
+            "h-full w-full object-cover transition-transform motion-reduce:transition-none group-hover:scale-105 motion-reduce:group-hover:scale-100",
             imageClassName
           )}
         />

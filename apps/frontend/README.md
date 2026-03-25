@@ -59,6 +59,15 @@ Authenticated routes render inside **`AppShell`** with **`SidebarNav`** (`src/co
 
 ---
 
+## Accessibility preferences (Glass v2)
+
+Issue #316 (plan §1 + §5 D.10) is implemented:
+
+- **Reduced transparency:** `src/index.css` defines `@media (prefers-reduced-transparency: reduce)` and switches glass tokens to mostly solid zinc surfaces (`--glass-bg`, `--glass-bg-elevated`) while setting `--glass-blur: 0px`.
+- **Reduced motion:** animated UI pieces use `motion-reduce:*` variants (sidebar label/rail transitions, drawer animations, poster hover zoom, progress-bar width transitions) so motion-heavy effects are removed when the OS/browser requests reduced motion.
+
+---
+
 ## React + TypeScript + Vite (template)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

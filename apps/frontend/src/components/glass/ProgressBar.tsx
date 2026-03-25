@@ -32,7 +32,7 @@ export function ProgressBar({
     >
       <div
         className={cn(
-          "h-full rounded-full bg-accent-red transition-[width] duration-300 ease-out",
+          "h-full rounded-full bg-accent-red transition-[width] duration-300 ease-out motion-reduce:transition-none",
           trackClassName
         )}
         style={{ width: `${clamped}%` }}
