@@ -91,3 +91,49 @@
     @apply min-h-dvh;
   }
 }
+
+/* Landing poster rows — full-width flex track; drift only when motion is OK (#332). */
+.landing-poster-row-track {
+  display: flex;
+  width: 100%;
+  min-width: 100%;
+  gap: 0.375rem;
+}
+
+@media (min-width: 640px) {
+  .landing-poster-row-track {
+    gap: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes landing-row-drift-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-4%);
+    }
+  }
+
+  @keyframes landing-row-drift-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(4%);
+    }
+  }
+
+  .landing-poster-row:nth-child(odd) .landing-poster-row-track {
+    animation: landing-row-drift-left 34s ease-in-out infinite alternate;
+  }
+
+  .landing-poster-row:nth-child(even) .landing-poster-row-track {
+    animation: landing-row-drift-right 40s ease-in-out infinite alternate;
+  }
+}
+
+.motion-reduce .landing-poster-row-track {
+  animation: none !important;
+}
