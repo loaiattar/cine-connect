@@ -322,7 +322,7 @@ export function SidebarNav() {
           </span>
           <span
             className={cn(
-              "truncate text-sm font-extrabold tracking-tight transition-[max-width,opacity] duration-300 ease-out",
+              "truncate text-sm font-extrabold tracking-tight transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -362,7 +362,7 @@ export function SidebarNav() {
           </span>
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out",
+              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -394,7 +394,7 @@ export function SidebarNav() {
           )}
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium text-ink-secondary transition-[max-width,opacity] duration-300 ease-out",
+              "min-w-0 truncate text-sm font-medium text-ink-secondary transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -419,7 +419,7 @@ export function SidebarNav() {
           </span>
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out",
+              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
