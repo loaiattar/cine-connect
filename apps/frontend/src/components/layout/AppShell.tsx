@@ -27,7 +27,7 @@ export function AppShell({ children }: AppShellProps) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative z-10 flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-y-auto overflow-x-hidden scroll-mt-4 outline-none"
+          className="relative z-10 flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-y-auto overflow-x-hidden pt-14 scroll-mt-4 outline-none md:pt-0"
         >
           {children}
         </main>

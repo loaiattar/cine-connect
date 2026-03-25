@@ -135,7 +135,7 @@ function MobileNavDrawer() {
   return (
     <div className="md:hidden">
       <Dialog.Root open={open} onOpenChange={setOpen}>
-        <header className="sticky top-0 z-40 flex h-14 min-h-14 shrink-0 items-center gap-2 border-b border-[var(--glass-border)] bg-[var(--glass-bg)]/95 px-3 backdrop-blur-[var(--glass-blur)] supports-[backdrop-filter]:bg-[var(--glass-bg)]/80">
+        <header className="flex h-14 min-h-14 shrink-0 items-center gap-2 border-b border-[var(--glass-border)] bg-[var(--glass-bg)]/95 px-3 backdrop-blur-[var(--glass-blur)] supports-[backdrop-filter]:bg-[var(--glass-bg)]/80">
           <Dialog.Trigger asChild>
             <button
               type="button"
@@ -296,7 +296,9 @@ export function SidebarNav() {
 
   return (
     <>
-      <MobileNavDrawer />
+      <div className="fixed inset-x-0 top-0 z-40 md:hidden">
+        <MobileNavDrawer />
+      </div>
       <aside
         className={cn(
           "group/sidebar hidden h-dvh w-14 shrink-0 flex-col overflow-x-hidden border-r border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-[var(--glass-blur)] md:flex",
