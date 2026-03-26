@@ -16,7 +16,7 @@ import messageRoutes from './routes/message.route';
 import notificationRoutes from './routes/notification.route';
 import { openApiSpec } from './openapi';
 import { getCorsAllowlist } from './config';
-import { authRateLimiter } from './middlewares/rateLimit.middleware';
+import { authRateLimiter, generalApiRateLimiter } from './middlewares/rateLimit.middleware';
 
 function applyCors(app: Express): void {
   const allowlist = getCorsAllowlist();
@@ -154,6 +154,7 @@ app.get("/swagger/", sendSwaggerHtml);
 app.use(express.json());
 
 const API_V1 = '/api/v1';
+app.use(API_V1, generalApiRateLimiter);
 app.use(`${API_V1}/auth`, authRateLimiter, authRoutes);
 app.use(`${API_V1}/users`, userRoutes);
 app.use(`${API_V1}/follows`, followRoutes);

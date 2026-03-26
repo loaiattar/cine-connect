@@ -1,6 +1,19 @@
 import rateLimit from "express-rate-limit";
 
 const isTest = process.env.NODE_ENV === "test";
+const FIFTEEN_MIN_MS = 15 * 60 * 1000;
+
+/**
+ * Baseline limiter for all API routes (/api/v1/*).
+ * Keeps broad abuse in check while allowing normal client usage.
+ */
+export const generalApiRateLimiter = rateLimit({
+  windowMs: FIFTEEN_MIN_MS,
+  max: isTest ? 10000 : 300,
+  message: { success: false, error: "Too many requests. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * Strict rate limit for auth endpoints (login/register) to reduce brute-force and abuse.
@@ -13,8 +26,6 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-const FIFTEEN_MIN_MS = 15 * 60 * 1000;
 
 /**
  * Public / read-heavy movie routes (TMDB + DB reads): 100 requests per 15 minutes per IP.
