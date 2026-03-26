@@ -8,6 +8,7 @@ import { ContinueWatchingRow, GlassPanel, MiniPlayerTile, PillTag, PosterCard, P
 import { useAuth } from "@/hooks/useAuth";
 import { useMovieList } from "@/hooks/useMovies";
 import { navLinkOutlineClass } from "@/lib/glass-ui";
+import { usePageSeo } from "@/lib/seo";
 import { cn, getMovieImageUrl } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -204,6 +205,12 @@ function AuthenticatedHome() {
 
 function Index() {
   const { isAuthenticated } = useAuth();
+  usePageSeo({
+    title: "Discover movies and community",
+    description:
+      "Discover trending movies, build your watchlist, and join real-time movie discussions on CineConnect.",
+    pathname: "/",
+  });
 
   return isAuthenticated ? <AuthenticatedHome /> : <PublicLandingPage />;
 }
