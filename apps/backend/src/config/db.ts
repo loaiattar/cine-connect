@@ -13,7 +13,7 @@ const TEST_JWT_SECRET = 'fixed_test_secret_123';
  * Call early at bootstrap (e.g. in index.ts after dotenv.config()).
  * - DATABASE_URL: always required.
  * - JWT_SECRET: required when NODE_ENV is not "test"; in production must not be the test value.
- * - TMDB_API_KEY: required when NODE_ENV is not "test" (movie/TMDB routes depend on it).
+ * - TMDB_API_KEY: required in production; in local dev a missing key logs a warning (server still starts; movie routes fail until set).
  */
 export function validateEnv(): void {
   if (!process.env.DATABASE_URL) {
@@ -39,9 +39,21 @@ export function validateEnv(): void {
     );
   }
 
-  if (!process.env.TMDB_API_KEY || process.env.TMDB_API_KEY.trim() === '') {
-    throw new Error(
-      'TMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
+  const tmdbMissing =
+    !process.env.TMDB_API_KEY || process.env.TMDB_API_KEY.trim() === '';
+
+  if (process.env.NODE_ENV === 'production') {
+    if (tmdbMissing) {
+      throw new Error(
+        'TMDB_API_KEY environment variable is required in production (movie routes depend on it)'
+      );
+    }
+    return;
+  }
+
+  if (tmdbMissing) {
+    console.warn(
+      '[cine-connect] TMDB_API_KEY is unset. Movie and search routes will fail until you add a key to apps/backend/.env (https://www.themoviedb.org/settings/api).'
     );
   }
 }
