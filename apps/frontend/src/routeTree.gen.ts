@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
 import { Route as UsersRouteImport } from './routes/users'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -32,6 +33,11 @@ const WatchlistRoute = WatchlistRouteImport.update({
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/dev/glass': typeof DevGlassRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/dev/glass': typeof DevGlassRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
   '/dev/glass': typeof DevGlassRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/search'
+    | '/settings'
     | '/users'
     | '/watchlist'
     | '/dev/glass'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/search'
+    | '/settings'
     | '/users'
     | '/watchlist'
     | '/dev/glass'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/search'
+    | '/settings'
     | '/users'
     | '/watchlist'
     | '/dev/glass'
@@ -205,6 +217,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRouteWithChildren
   RegisterRoute: typeof RegisterRoute
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
   UsersRoute: typeof UsersRoute
   WatchlistRoute: typeof WatchlistRoute
   DevGlassRoute: typeof DevGlassRoute
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof UsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -335,6 +355,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRouteWithChildren,
   RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
   UsersRoute: UsersRoute,
   WatchlistRoute: WatchlistRoute,
   DevGlassRoute: DevGlassRoute,
