@@ -1,8 +1,5 @@
-fix: corriger l 'espacement dans .gitignore
+node_modules/
 .pnpm-debug.log
-Pkg. 
-.env.test
-.env.local
 dist/
 build/
 coverage/
@@ -12,11 +9,12 @@ coverage/
 Thumbs.db
 *.log
 .vscode/
-
-# Generated coverage (run pnpm test:coverage)
-coverage/
-
-# Local env (do not commit secrets)
-.env*
-node_modules
 .claude/
+
+# Local env files (never commit secrets)
+.env
+.env.*
+
+# Keep templates versioned
+!.env.example
+!**/.env.example
