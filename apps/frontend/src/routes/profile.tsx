@@ -1,130 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQueries } from "@tanstack/react-query";
 import { useProfile } from "@/hooks/useProfile";
 import { useFollow } from "@/hooks/useFollow";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useWatchlist } from "@/hooks/useWatchlist";
 import { requireAuth } from "@/lib/route-guard";
-import { Loader2, User, UserPlus, UserMinus } from "lucide-react";
-import { GlassPanel, PrimaryButton } from "@/components/glass";
-import { glassInputClass, navLinkOutlineClass } from "@/lib/glass-ui";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import type { UserProfileRow } from "@/service/user.service";
+import { Bookmark, Heart, Loader2, User, Users } from "lucide-react";
+import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
+import { moviesService } from "@/service/movies.service";
 
 export const Route = createFileRoute("/profile")({
   beforeLoad: () => requireAuth(),
   component: ProfilePage,
 });
 
-function ProfileEditForm({
-  profile,
-  onSubmit,
-  isUpdating,
-  updateError,
-}: {
-  profile: UserProfileRow | null;
-  onSubmit: (data: { bio?: string; avatarUrl?: string; location?: string; favoriteGenre?: string }) => void;
-  isUpdating: boolean;
-  updateError: Error | null;
-}) {
-  const [bio, setBio] = useState(profile?.bio ?? "");
-  const [avatarUrl, setAvatarUrl] = useState(profile?.avatarUrl ?? "");
-  const [location, setLocation] = useState(profile?.location ?? "");
-  const [favoriteGenre, setFavoriteGenre] = useState(profile?.favoriteGenre ?? "");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      bio: bio || undefined,
-      avatarUrl: avatarUrl || undefined,
-      location: location || undefined,
-      favoriteGenre: favoriteGenre || undefined,
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="max-w-md space-y-4">
-      <h2 className="text-lg font-semibold text-ink">Modifier le profil</h2>
-      {updateError && (
-        <p className="text-sm text-red-300">{updateError.message}</p>
-      )}
-      <div>
-        <label htmlFor="profile-bio" className="mb-1 block text-sm text-ink-secondary">
-          Bio
-        </label>
-        <textarea
-          id="profile-bio"
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          rows={3}
-          className={glassInputClass}
-          placeholder="Quelques mots sur vous…"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-avatar" className="mb-1 block text-sm text-ink-secondary">
-          URL de l&apos;avatar
-        </label>
-        <input
-          id="profile-avatar"
-          type="url"
-          value={avatarUrl}
-          onChange={(e) => setAvatarUrl(e.target.value)}
-          className={glassInputClass}
-          placeholder="https://…"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-location" className="mb-1 block text-sm text-ink-secondary">
-          Ville / région
-        </label>
-        <input
-          id="profile-location"
-          type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className={glassInputClass}
-          placeholder="Paris"
-        />
-      </div>
-      <div>
-        <label htmlFor="profile-genre" className="mb-1 block text-sm text-ink-secondary">
-          Genre préféré
-        </label>
-        <input
-          id="profile-genre"
-          type="text"
-          value={favoriteGenre}
-          onChange={(e) => setFavoriteGenre(e.target.value)}
-          className={glassInputClass}
-          placeholder="Comédie, Thriller…"
-        />
-      </div>
-      <PrimaryButton type="submit" disabled={isUpdating}>
-        {isUpdating ? "Enregistrement…" : "Enregistrer"}
-      </PrimaryButton>
-    </form>
-  );
-}
-
 function ProfilePage() {
-  const {
-    user,
-    profile,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    updateProfile,
-    isUpdating,
-    updateError,
-    isCurrentUser,
-  } = useProfile();
+  const { user, profile, isLoading, isError, error, refetch } = useProfile();
+  const { favorites, isLoading: isFavoritesLoading } = useFavorites();
+  const { watchlist, isLoading: isWatchlistLoading } = useWatchlist();
 
   const profileUserId = user?.id ?? null;
   const {
-    isFollowing,
-    follow,
-    unfollow,
-    isFollowLoading,
     followError,
     followers,
     followersTotal,
@@ -136,10 +32,24 @@ function ProfilePage() {
 
   const displayName = user?.name ?? user?.email ?? "";
   const avatarDisplay = profile?.avatarUrl ?? null;
-  /** Key so the form remounts when profile loads or updates (e.g. after save), avoiding setState-in-effect */
-  const profileFormKey = profile
-    ? [profile.id, profile.bio, profile.avatarUrl, profile.location, profile.favoriteGenre].join("\0")
-    : "none";
+  const favoritePreview = favorites.slice(0, 6);
+  const watchlistPreview = watchlist.slice(0, 6);
+
+  const favoriteMovieQueries = useQueries({
+    queries: favoritePreview.map((entry) => ({
+      queryKey: ["movie", entry.externalMovieId],
+      queryFn: () => moviesService.getMovieById(entry.externalMovieId),
+      enabled: favoritePreview.length > 0,
+    })),
+  });
+
+  const watchlistMovieQueries = useQueries({
+    queries: watchlistPreview.map((entry) => ({
+      queryKey: ["movie", entry.externalMovieId],
+      queryFn: () => moviesService.getMovieById(entry.externalMovieId),
+      enabled: watchlistPreview.length > 0,
+    })),
+  });
 
   return (
       <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
@@ -190,58 +100,136 @@ function ProfilePage() {
                     </>
                   )}
                 </div>
-                {!isCurrentUser && profileUserId != null && (
-                  <div className="mt-3">
-                    {followError && (
-                      <p className="mb-1 text-sm text-red-300">{followError.message}</p>
-                    )}
-                    {isFollowing ? (
-                      <button
-                        type="button"
-                        onClick={() => unfollow(profileUserId)}
-                        disabled={isFollowLoading}
-                        className={cn(navLinkOutlineClass, "inline-flex items-center gap-2")}
-                      >
-                        <UserMinus className="h-4 w-4" />
-                        Ne plus suivre
-                      </button>
-                    ) : (
-                      <PrimaryButton
-                        type="button"
-                        onClick={() => follow(profileUserId)}
-                        disabled={isFollowLoading}
-                        icon={<UserPlus className="h-4 w-4" aria-hidden />}
-                      >
-                        Suivre
-                      </PrimaryButton>
-                    )}
-                  </div>
-                )}
+                <div className="mt-3">
+                  {followError && (
+                    <p className="mb-1 text-sm text-red-300">{followError.message}</p>
+                  )}
+                  <PrimaryButton asChild>
+                    <Link to="/settings">Modifier mon profil</Link>
+                  </PrimaryButton>
+                </div>
               </div>
             </GlassPanel>
 
-            {isCurrentUser && (
-              <ProfileEditForm
-                key={profileFormKey}
-                profile={profile}
-                onSubmit={updateProfile}
-                isUpdating={isUpdating}
-                updateError={updateError}
-              />
-            )}
-
-            {profile?.bio && (
+            <div className="grid gap-4 sm:grid-cols-3">
               <GlassPanel>
-                <h2 className="mb-2 text-lg font-semibold text-ink">Bio</h2>
-                <p className="text-ink-secondary">{profile.bio}</p>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <Heart className="h-4 w-4 text-accent-red" aria-hidden />
+                  <span className="text-sm">Likes / Favoris</span>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-ink">
+                  {isFavoritesLoading ? "…" : favorites.length}
+                </p>
               </GlassPanel>
-            )}
-            {(profile?.location || profile?.favoriteGenre) && (
-              <GlassPanel className="flex gap-6 text-sm text-ink-secondary">
-                {profile?.location && <span>Ville: <br /> {profile.location}</span>}
-                {profile?.favoriteGenre && <span>Genre préféré: {profile.favoriteGenre}</span>}
+              <GlassPanel>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <Bookmark className="h-4 w-4 text-accent-red" aria-hidden />
+                  <span className="text-sm">A voir</span>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-ink">
+                  {isWatchlistLoading ? "…" : watchlist.length}
+                </p>
               </GlassPanel>
-            )}
+              <GlassPanel>
+                <div className="flex items-center gap-2 text-ink-secondary">
+                  <Users className="h-4 w-4 text-accent-red" aria-hidden />
+                  <span className="text-sm">Reseau</span>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-ink">
+                  {followersLoading || followingLoading ? "…" : followersTotal + followingTotal}
+                </p>
+              </GlassPanel>
+            </div>
+
+            <GlassPanel className="space-y-3">
+              <h2 className="text-lg font-semibold text-ink">Informations</h2>
+              <div className="grid gap-3 text-sm text-ink-secondary sm:grid-cols-2">
+                <p>
+                  <span className="font-medium text-ink">Ville:</span>{" "}
+                  {profile?.location?.trim() || "Non renseignee"}
+                </p>
+                <p>
+                  <span className="font-medium text-ink">Genre prefere:</span>{" "}
+                  {profile?.favoriteGenre?.trim() || "Non renseigne"}
+                </p>
+                <p className="sm:col-span-2">
+                  <span className="font-medium text-ink">Bio:</span>{" "}
+                  {profile?.bio?.trim() || "Aucune bio pour le moment."}
+                </p>
+              </div>
+            </GlassPanel>
+
+            <GlassPanel>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-ink">Favoris ({favorites.length})</h2>
+                <Link to="/favorites" className="text-sm text-ink-secondary underline hover:no-underline">
+                  Voir tout
+                </Link>
+              </div>
+              {favoritePreview.length === 0 ? (
+                <p className="text-sm text-ink-muted">Aucun favori pour le moment.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+                  {favoritePreview.map((entry, index) => {
+                    const movie = favoriteMovieQueries[index]?.data;
+                    if (!movie) {
+                      return (
+                        <div key={entry.id} className="flex aspect-[2/3] items-center justify-center rounded-xl bg-[var(--glass-bg-elevated)]">
+                          <Loader2 className="h-5 w-5 animate-spin text-ink-muted" aria-hidden />
+                        </div>
+                      );
+                    }
+                    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : undefined;
+                    return (
+                      <Link key={entry.id} to="/movie/$movieId" params={{ movieId: String(entry.externalMovieId) }}>
+                        <PosterCard
+                          title={movie.title ?? "Sans titre"}
+                          posterPath={movie.poster_path ?? ""}
+                          year={Number.isNaN(year) ? undefined : year}
+                          rating={typeof movie.vote_average === "number" ? Math.round(movie.vote_average * 10) / 10 : undefined}
+                        />
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </GlassPanel>
+
+            <GlassPanel>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-ink">Watchlist ({watchlist.length})</h2>
+                <Link to="/watchlist" className="text-sm text-ink-secondary underline hover:no-underline">
+                  Voir tout
+                </Link>
+              </div>
+              {watchlistPreview.length === 0 ? (
+                <p className="text-sm text-ink-muted">Aucun film dans votre liste a voir.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+                  {watchlistPreview.map((entry, index) => {
+                    const movie = watchlistMovieQueries[index]?.data;
+                    if (!movie) {
+                      return (
+                        <div key={entry.id} className="flex aspect-[2/3] items-center justify-center rounded-xl bg-[var(--glass-bg-elevated)]">
+                          <Loader2 className="h-5 w-5 animate-spin text-ink-muted" aria-hidden />
+                        </div>
+                      );
+                    }
+                    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : undefined;
+                    return (
+                      <Link key={entry.id} to="/movie/$movieId" params={{ movieId: String(entry.externalMovieId) }}>
+                        <PosterCard
+                          title={movie.title ?? "Sans titre"}
+                          posterPath={movie.poster_path ?? ""}
+                          year={Number.isNaN(year) ? undefined : year}
+                          rating={typeof movie.vote_average === "number" ? Math.round(movie.vote_average * 10) / 10 : undefined}
+                        />
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </GlassPanel>
 
             {(followers.length > 0 || following.length > 0) && (
               <div className="grid gap-6 sm:grid-cols-2">

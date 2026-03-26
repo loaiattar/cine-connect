@@ -112,14 +112,23 @@ export class ApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${resolveVersionedApiPath(endpoint)}`;
 
+    const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+    const requestHeaders: Record<string, string> = isFormData
+      ? { ...headers }
+      : {
+          "Content-Type": "application/json",
+          ...headers,
+        };
+
     const config: RequestInit = {
       method,
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-      body: body ? JSON.stringify(body) : undefined,
+      headers: requestHeaders,
+      body: body
+        ? isFormData
+          ? (body as FormData)
+          : JSON.stringify(body)
+        : undefined,
     };
 
     const response = await fetch(url, config);

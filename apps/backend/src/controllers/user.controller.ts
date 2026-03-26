@@ -1,6 +1,29 @@
 import { Request, Response } from "express";
-import { success } from "../utils";
+import { badRequest, success } from "../utils";
 import { UserService } from "../services/user.service";
+import { clearAuthCookies } from "../utils/authCookies";
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const AVATAR_UPLOAD_DIR = path.resolve(process.cwd(), "uploads", "avatars");
+
+function fileExtensionFromMimeType(mimeType: string): string {
+  if (mimeType === "image/jpeg") return ".jpg";
+  if (mimeType === "image/png") return ".png";
+  if (mimeType === "image/webp") return ".webp";
+  if (mimeType === "image/gif") return ".gif";
+  return ".bin";
+}
+
+function avatarPathFromUrl(avatarUrl: string | null | undefined): string | null {
+  if (!avatarUrl) return null;
+  const marker = "/uploads/avatars/";
+  const idx = avatarUrl.indexOf(marker);
+  if (idx < 0) return null;
+  const filename = avatarUrl.slice(idx + marker.length);
+  if (!filename || filename.includes("/") || filename.includes("\\")) return null;
+  return path.join(AVATAR_UPLOAD_DIR, filename);
+}
 
 export const UserController = {
   async getMe(req: Request, res: Response) {
@@ -19,6 +42,45 @@ export const UserController = {
       favoriteGenre,
     });
     return success(res, result);
+  },
+
+  async uploadAvatar(req: Request, res: Response) {
+    const userId = req.user!.userId;
+    if (!req.file) {
+      throw badRequest("Avatar file is required");
+    }
+
+    const previous = await UserService.getMe(userId);
+    await fs.mkdir(AVATAR_UPLOAD_DIR, { recursive: true });
+
+    const ext = fileExtensionFromMimeType(req.file.mimetype);
+    const filename = `u${userId}-${Date.now()}${ext}`;
+    const absoluteFilePath = path.join(AVATAR_UPLOAD_DIR, filename);
+    await fs.writeFile(absoluteFilePath, req.file.buffer);
+
+    const avatarUrl = `${req.protocol}://${req.get("host")}/uploads/avatars/${filename}`;
+    const updated = await UserService.updateProfile(userId, { avatarUrl });
+
+    const oldAvatarPath = avatarPathFromUrl(previous.profile?.avatarUrl);
+    if (oldAvatarPath && oldAvatarPath !== absoluteFilePath) {
+      await fs.unlink(oldAvatarPath).catch(() => undefined);
+    }
+
+    return success(res, updated);
+  },
+
+  async deleteMe(req: Request, res: Response) {
+    const userId = req.user!.userId;
+    const me = await UserService.getMe(userId);
+    await UserService.deleteAccount(userId);
+    clearAuthCookies(res);
+
+    const avatarPath = avatarPathFromUrl(me.profile?.avatarUrl);
+    if (avatarPath) {
+      await fs.unlink(avatarPath).catch(() => undefined);
+    }
+
+    return success(res, { deleted: true });
   },
 
   /** GET /api/users/:userId and GET /api/users/:userId/profile (same payload). */

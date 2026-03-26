@@ -132,16 +132,30 @@ export const UserService = {
     userId: number,
     data: { bio?: string; avatarUrl?: string; location?: string; favoriteGenre?: string }
   ) {
-    const profile = await db.query.profiles.findFirst({
-      where: eq(profiles.userId, userId),
-    });
-    if (!profile) throw notFound("Profile not found");
-
     const update: Record<string, string | null | undefined> = {};
     if (data.bio !== undefined) update.bio = sanitizeUserText(data.bio);
     if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl === "" ? null : data.avatarUrl;
     if (data.location !== undefined) update.location = sanitizeUserText(data.location);
     if (data.favoriteGenre !== undefined) update.favoriteGenre = sanitizeUserText(data.favoriteGenre);
+
+    const profile = await db.query.profiles.findFirst({
+      where: eq(profiles.userId, userId),
+    });
+
+    if (!profile) {
+      const [created] = await db
+        .insert(profiles)
+        .values({
+          userId,
+          bio: update.bio ?? null,
+          avatarUrl: update.avatarUrl ?? null,
+          location: update.location ?? null,
+          favoriteGenre: update.favoriteGenre ?? null,
+        })
+        .returning();
+      if (!created) throw notFound("Profile not found");
+      return created;
+    }
 
     const [updated] = await db
       .update(profiles)
@@ -150,6 +164,14 @@ export const UserService = {
       .returning();
 
     return updated;
+  },
+
+  async deleteAccount(userId: number): Promise<void> {
+    const [deleted] = await db
+      .delete(users)
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    if (!deleted) throw notFound("User not found");
   },
 
   /**
