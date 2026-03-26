@@ -70,6 +70,12 @@ export const userService = {
     apiClient.get<GetPublicProfileResponse>(`/api/v1/users/${userId}`),
   updateProfile: (data: UpdateProfilePayload) =>
     apiClient.put<UserProfileRow>("/api/v1/users/me", data),
+  uploadAvatar: (file: File) => {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    return apiClient.post<UserProfileRow>("/api/v1/users/me/avatar", formData);
+  },
+  deleteMyAccount: () => apiClient.delete<{ deleted: true }>("/api/v1/users/me"),
 
   searchUsers: (q: string, options?: UserSearchOptions) => {
     const params = new URLSearchParams();
