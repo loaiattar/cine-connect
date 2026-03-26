@@ -59,6 +59,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Validate required GitHub secret
+        run: |
+          if [ -z "${{ secrets.TMDB_API_KEY }}" ]; then
+            echo "Missing required secret: TMDB_API_KEY"
+            echo "Set it in Settings -> Secrets and variables -> Actions -> Repository secrets."
+            exit 1
+          fi
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
