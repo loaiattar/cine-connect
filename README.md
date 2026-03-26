@@ -74,6 +74,19 @@ pnpm typecheck
 
 CI runs `pnpm typecheck` on every push and pull request (see `.github/workflows/tests.yml`).
 
+### GitHub Actions secrets and variables
+
+Configure these in GitHub before relying on CI/CD:
+
+- **Repository secret**
+  - `TMDB_API_KEY` (used by backend tests in `.github/workflows/tests.yml`)
+- **Repository variables**
+  - `VITE_API_BASE_URL`
+  - `VITE_APP_NAME`
+  - `VITE_TMDB_IMAGE_BASE_URL`
+
+Path in GitHub UI: **Settings -> Secrets and variables -> Actions**.
+
 ## Docker (frontend build)
 
 The frontend container is a static nginx bundle. **`VITE_*` variables are applied at image build time** (not when the container starts). For `docker compose`, set `VITE_API_BASE_URL` in the repo root `.env` — see `.env.example`. Rebuild after changing them: `docker compose build frontend`.

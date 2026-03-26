@@ -16,6 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Validate required production vars
+        run: |
+          if [ -z "${{ vars.VITE_API_BASE_URL }}" ]; then
+            echo "Missing required repository variable: VITE_API_BASE_URL"
+            echo "Set it in Settings -> Secrets and variables -> Actions -> Repository variables."
+            exit 1
+          fi
+          if [ -z "${{ vars.VITE_APP_NAME }}" ]; then
+            echo "Missing required repository variable: VITE_APP_NAME"
+            echo "Set it in Settings -> Secrets and variables -> Actions -> Repository variables."
+            exit 1
+          fi
+          if [ -z "${{ vars.VITE_TMDB_IMAGE_BASE_URL }}" ]; then
+            echo "Missing required repository variable: VITE_TMDB_IMAGE_BASE_URL"
+            echo "Set it in Settings -> Secrets and variables -> Actions -> Repository variables."
+            exit 1
+          fi
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -31,9 +49,9 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:latest
           build-args: |
-            VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL || 'http://localhost:3000' }}
-            VITE_APP_NAME=${{ vars.VITE_APP_NAME || 'CinéConnect' }}
-            VITE_TMDB_IMAGE_BASE_URL=${{ vars.VITE_TMDB_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p' }}
+            VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+            VITE_APP_NAME=${{ vars.VITE_APP_NAME }}
+            VITE_TMDB_IMAGE_BASE_URL=${{ vars.VITE_TMDB_IMAGE_BASE_URL }}
 
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
