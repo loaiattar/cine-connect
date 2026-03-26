@@ -23,6 +23,22 @@ export const refreshTokens = pgTable(
     (t) => [index("refresh_tokens_user_id_idx").on(t.userId)]
 );
 
+/** Password reset tokens are one-time, hashed, and short-lived. */
+export const passwordResetTokens = pgTable(
+    "password_reset_tokens",
+    {
+        id: serial("id").primaryKey(),
+        userId: integer("user_id")
+            .notNull()
+            .references(() => users.id, { onDelete: "cascade" }),
+        tokenHash: text("token_hash").notNull().unique(),
+        expiresAt: timestamp("expires_at").notNull(),
+        usedAt: timestamp("used_at"),
+        createdAt: timestamp("created_at").defaultNow(),
+    },
+    (t) => [index("password_reset_tokens_user_id_idx").on(t.userId)]
+);
+
 export const favorites = pgTable("favorites", {
     id: serial("id").primaryKey(),
     userId: integer("user_id").references(() => users.id, { onDelete: 'cascade' }),

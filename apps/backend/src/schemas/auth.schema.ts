@@ -21,3 +21,16 @@ export const loginSchema = z.object({
 export const refreshSchema = z.object({
     body: z.any(),
 });
+
+export const forgotPasswordSchema = z.object({
+    body: z.object({
+        email: z.string().email("Invalid email format"),
+    }),
+});
+
+export const resetPasswordSchema = z.object({
+    body: z.object({
+        token: z.string().min(16, "Invalid reset token"),
+        newPassword: z.string().min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
+    }),
+});

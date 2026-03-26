@@ -38,3 +38,12 @@ export const publicMovieReadRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+/** Forgot-password endpoint limiter to reduce account enumeration/abuse. */
+export const forgotPasswordRateLimiter = rateLimit({
+  windowMs: FIFTEEN_MIN_MS,
+  max: isTest ? 10000 : 5,
+  message: { success: false, error: "Too many password reset requests. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

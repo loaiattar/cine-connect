@@ -40,4 +40,19 @@ export const AuthController = {
         clearAuthCookies(res);
         return success(res, { loggedOut: true });
     },
+
+    async forgotPassword(req: Request, res: Response) {
+        const { email } = req.body;
+        await AuthService.requestPasswordReset(email);
+        return success(res, {
+            message: "If an account exists for this email, a reset link has been sent.",
+        });
+    },
+
+    async resetPassword(req: Request, res: Response) {
+        const { token, newPassword } = req.body;
+        await AuthService.resetPassword(token, newPassword);
+        clearAuthCookies(res);
+        return success(res, { reset: true });
+    },
 };
