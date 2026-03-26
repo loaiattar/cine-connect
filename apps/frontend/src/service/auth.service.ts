@@ -23,6 +23,15 @@ export interface AuthError {
   message: string;
 }
 
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
 const baseUrl = ApiClientConfig.BASE_URL;
 
 export const authService = {
@@ -105,5 +114,31 @@ export const authService = {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
     }).catch(() => undefined);
+  },
+
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
+    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/forgot-password`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw { status: res.status, message: userMessageFromApiJson(body, res.status) } as AuthError;
+    }
+  },
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<void> {
+    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/reset-password`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw { status: res.status, message: userMessageFromApiJson(body, res.status) } as AuthError;
+    }
   },
 };

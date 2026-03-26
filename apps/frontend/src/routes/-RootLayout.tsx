@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
  * - Glass v2 secondary/public pages (`/movie/:id`, `/profile/:id`, `/community`,
  *   `/users`, `/search`, `/notifications`) explicitly use AppShell (issues #308/#310).
  */
-const BARE_AUTH_PATHS = new Set(["/login", "/register"]);
+const BARE_AUTH_PATHS = new Set(["/login", "/register", "/forgot-password", "/reset-password"]);
 const SHELL_PATH_PREFIXES = ["/movie/", "/profile", "/community", "/users", "/search", "/notifications"];
 
 function shouldUseAppShell(pathname: string, isAuthenticated: boolean): boolean {
