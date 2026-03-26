@@ -90,7 +90,7 @@ The API uses [Helmet](https://helmetjs.github.io/) early in the Express stack (`
 ## Environment
 
 - `DATABASE_URL` — PostgreSQL connection string.
-- `JWT_SECRET` — Secret for signing JWTs (required when `NODE_ENV` !== `"test"`).
+- `JWT_SECRET` — Secret for signing JWTs (always required; at least 32 characters when `NODE_ENV` is `production`).
 - `TMDB_API_KEY` — For movie data (required when not in test).
 - `PORT` — Server port (default `3000`).
 - `FRONTEND_ORIGIN` or `CORS_ORIGINS` — Allowed origins for REST and Socket.io.
