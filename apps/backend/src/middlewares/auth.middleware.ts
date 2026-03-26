@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { getJwtSecret } from "../config";
 import type { RequestUser } from "../types/auth.types";
 import { getAccessTokenFromRequest } from "../utils/authCookies";
+import { logger } from "../logger";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = getAccessTokenFromRequest(req);
@@ -15,7 +16,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
 
         if (!decoded.userId) {
-            console.error("Token decoded but userId is missing!");
+            logger.warn("Token decoded but userId is missing");
             return res.status(401).json({ error: "Invalid token payload" });
         }
 
@@ -23,7 +24,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         next();
     } catch (error) {
         const message = error instanceof Error ? error.message : "Unknown error";
-        console.error("JWT Verification Failed:", message);
+        logger.warn({ message }, "JWT verification failed");
         return res.status(401).json({ success: false, error: `Unauthorized: ${message}` });
     }
 };

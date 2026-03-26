@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils";
+import { logger } from "../logger";
 
 type AsyncRequestHandler<P = Record<string, string>> = (
   req: Request<P>,
@@ -61,7 +62,10 @@ export function errorHandler(
     }
   }
   if (code === "ECONNREFUSED") {
-    console.error("Database connection refused. Is PostgreSQL running? Check DATABASE_URL in .env:", err);
+    logger.error(
+      { err },
+      "Database connection refused. Is PostgreSQL running? Check DATABASE_URL in .env."
+    );
     res.status(503).json({
       success: false,
       error:
@@ -70,6 +74,6 @@ export function errorHandler(
     return;
   }
 
-  console.error("Unhandled error:", err);
+  logger.error({ err }, "Unhandled error");
   res.status(500).json({ success: false, error: "Internal Server Error" });
 }
