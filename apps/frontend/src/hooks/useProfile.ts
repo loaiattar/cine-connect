@@ -35,6 +35,12 @@ export interface UseProfileReturn {
   error: Error | null;
   refetch: () => void;
   updateProfile: (data: UpdateProfilePayload) => void;
+  uploadAvatar: (file: File) => void;
+  isUploadingAvatar: boolean;
+  uploadAvatarError: Error | null;
+  deleteMyAccount: () => Promise<void>;
+  isDeletingAccount: boolean;
+  deleteAccountError: Error | null;
   isUpdating: boolean;
   updateError: Error | null;
   isCurrentUser: boolean;
@@ -71,12 +77,35 @@ export function useProfile(userId?: number | null): UseProfileReturn {
     },
   });
 
+  const uploadAvatarMutation = useMutation({
+    mutationFn: (file: File) => userService.uploadAvatar(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "me", authUser?.userId] });
+    },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: () => userService.deleteMyAccount(),
+  });
+
   const updateProfile = useCallback(
     (data: UpdateProfilePayload) => {
       if (isSelf) updateMutation.mutate(data);
     },
     [updateMutation, isSelf]
   );
+
+  const uploadAvatar = useCallback(
+    (file: File) => {
+      if (isSelf) uploadAvatarMutation.mutate(file);
+    },
+    [uploadAvatarMutation, isSelf]
+  );
+
+  const deleteMyAccount = useCallback(async () => {
+    if (!isSelf) return;
+    await deleteAccountMutation.mutateAsync();
+  }, [deleteAccountMutation, isSelf]);
 
   const me = meQuery.data ?? null;
   const publicProfile =
@@ -92,6 +121,8 @@ export function useProfile(userId?: number | null): UseProfileReturn {
   const refetch = isSelf ? meQuery.refetch : publicQuery.refetch;
 
   const updateError = useDisplayApiError(updateMutation.error);
+  const uploadAvatarError = useDisplayApiError(uploadAvatarMutation.error);
+  const deleteAccountError = useDisplayApiError(deleteAccountMutation.error);
   const displayQueryError = useQueryDisplayError(isError, error);
 
   return {
@@ -104,6 +135,12 @@ export function useProfile(userId?: number | null): UseProfileReturn {
     error: displayQueryError,
     refetch,
     updateProfile,
+    uploadAvatar,
+    isUploadingAvatar: uploadAvatarMutation.isPending,
+    uploadAvatarError,
+    deleteMyAccount,
+    isDeletingAccount: deleteAccountMutation.isPending,
+    deleteAccountError,
     isUpdating: updateMutation.isPending,
     updateError,
     isCurrentUser: isSelf,

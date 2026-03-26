@@ -215,14 +215,14 @@ function MobileNavDrawer() {
 
             <div className="shrink-0 space-y-1 border-t border-[var(--glass-border)] p-2">
               <Link
-                to="/profile"
+                to="/settings"
                 onClick={() => setOpen(false)}
                 aria-label="Paramètres du compte"
-                aria-current={pathname === "/profile" ? "page" : undefined}
+                aria-current={pathname === "/settings" ? "page" : undefined}
                 className={cn(
                   "flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink",
                   focusVisibleRingInsetClass,
-                  pathname === "/profile" && "bg-accent-red/20 text-accent-red"
+                  pathname === "/settings" && "bg-accent-red/20 text-accent-red"
                 )}
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center">
@@ -347,14 +347,14 @@ export function SidebarNav() {
 
       <div className="mt-auto flex flex-col gap-1 border-t border-[var(--glass-border)] p-2">
         <Link
-          to="/profile"
+          to="/settings"
           title="Paramètres"
           aria-label="Paramètres du compte"
-          aria-current={pathname === "/profile" ? "page" : undefined}
+          aria-current={pathname === "/settings" ? "page" : undefined}
           className={cn(
             "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink md:pl-3",
             focusVisibleRingInsetClass,
-            pathname === "/profile" && "bg-accent-red/20 text-accent-red"
+            pathname === "/settings" && "bg-accent-red/20 text-accent-red"
           )}
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center">
