@@ -6,68 +6,50 @@ import * as schema from '../db/schema';
 
 dotenv.config();
 
-const TEST_JWT_SECRET = 'fixed_test_secret_123';
+const PRODUCTION_JWT_SECRET_MIN_LENGTH = 32;
 
 /**
  * Validates that required environment variables are set.
  * Call early at bootstrap (e.g. in index.ts after dotenv.config()).
  * - DATABASE_URL: always required.
- * - JWT_SECRET: required when NODE_ENV is not "test"; in production must not be the test value.
- * - TMDB_API_KEY: required in production; in local dev a missing key logs a warning (server still starts; movie routes fail until set).
+ * - JWT_SECRET: always required (set in apps/backend/.env.test for Vitest). No hardcoded fallback.
+ * - TMDB_API_KEY: required when NODE_ENV is not "test" (movie/TMDB routes depend on it).
  */
 export function validateEnv(): void {
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.DATABASE_URL?.trim()) {
     throw new Error('DATABASE_URL environment variable is required');
   }
 
-  if (process.env.NODE_ENV === 'test') {
-    return; // JWT_SECRET and TMDB_API_KEY fallbacks / optional in test
-  }
-
-  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.trim() === '') {
-    throw new Error(
-      'JWT_SECRET environment variable is required when NODE_ENV is not "test"'
-    );
+  if (!process.env.JWT_SECRET?.trim()) {
+    throw new Error('JWT_SECRET environment variable is required');
   }
 
   if (
     process.env.NODE_ENV === 'production' &&
-    process.env.JWT_SECRET === TEST_JWT_SECRET
+    process.env.JWT_SECRET.length < PRODUCTION_JWT_SECRET_MIN_LENGTH
   ) {
     throw new Error(
-      'JWT_SECRET must not be the test value in production. Set a strong secret in production.'
+      `JWT_SECRET must be at least ${PRODUCTION_JWT_SECRET_MIN_LENGTH} characters in production`
     );
   }
 
-  const tmdbMissing =
-    !process.env.TMDB_API_KEY || process.env.TMDB_API_KEY.trim() === '';
-
-  if (process.env.NODE_ENV === 'production') {
-    if (tmdbMissing) {
-      throw new Error(
-        'TMDB_API_KEY environment variable is required in production (movie routes depend on it)'
-      );
-    }
+  if (process.env.NODE_ENV === 'test') {
     return;
   }
 
-  if (tmdbMissing) {
-    console.warn(
-      '[cine-connect] TMDB_API_KEY is unset. Movie and search routes will fail until you add a key to apps/backend/.env (https://www.themoviedb.org/settings/api).'
+  if (!process.env.TMDB_API_KEY?.trim()) {
+    throw new Error(
+      'TMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
     );
   }
 }
 
 /**
- * Returns the JWT secret. Use this instead of process.env.JWT_SECRET.
- * In test, falls back to a fixed value so tests can run without setting JWT_SECRET.
- * Otherwise returns the validated JWT_SECRET (validateEnv must have been called at startup).
+ * Returns the JWT secret. Use this instead of reading process.env.JWT_SECRET directly.
+ * validateEnv() must run at startup before any JWT is signed or verified.
  */
 export function getJwtSecret(): string {
-  if (process.env.NODE_ENV === 'test') {
-    return process.env.JWT_SECRET || TEST_JWT_SECRET;
-  }
-  return process.env.JWT_SECRET!;
+  return process.env.JWT_SECRET!.trim();
 }
 
 function getConnectionString(): string {

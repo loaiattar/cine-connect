@@ -96,7 +96,7 @@ The same checks are mirrored as `HEALTHCHECK` in `apps/backend/Dockerfile` and `
 
 ## Backend environment
 
-See `apps/backend/.env.example`. In **production**, `JWT_SECRET` is required and must not be the test default; the app will fail to start if it is missing or insecure. In test, a fallback is allowed so tests can run without setting it.
+See `apps/backend/.env.example`. `JWT_SECRET` is **always** required; there is no hardcoded fallback. In **production** it must be at least 32 characters or the app will not start. Tests use `apps/backend/.env.test` (or CI env) to supply it.
 
 ### Database seed
 
