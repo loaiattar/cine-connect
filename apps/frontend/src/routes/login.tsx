@@ -127,6 +127,14 @@ function LoginPage() {
                 className={glassInputClass}
                 disabled={submitting}
               />
+              <div className="mt-2 text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-ink-secondary transition-colors hover:text-ink hover:underline"
+                >
+                  Mot de passe oublie ?
+                </Link>
+              </div>
             </div>
 
             <PrimaryButton type="submit" disabled={submitting} className="w-full py-3">

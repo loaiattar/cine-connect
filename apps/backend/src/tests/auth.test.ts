@@ -6,6 +6,7 @@ import app from "../app";
 import { AuthService } from "../services/auth.service";
 import { COOKIE_ACCESS, COOKIE_REFRESH } from "../utils/authCookies";
 import { cookieHeaderFromResponse } from "./cookieHelpers";
+import { __clearSentEmailsForTests, __getSentEmailsForTests } from "../services/email.service";
 
 describe("Auth - Registration (service)", () => {
   it("should throw 409 when registering with an email that already exists", async () => {
@@ -31,6 +32,50 @@ function expectAuthCookies(res: Response): void {
 }
 
 describe("Auth REST endpoints", () => {
+  describe("POST /api/v1/auth/forgot-password and /reset-password", () => {
+    it("returns generic success and sends reset email when account exists", async () => {
+      __clearSentEmailsForTests();
+      const email = `forgot-${Date.now()}@example.com`;
+      await AuthService.register("Forgot User", email, "password123");
+
+      const forgotRes = await request(app).post("/api/v1/auth/forgot-password").send({ email });
+      expect(forgotRes.status).toBe(200);
+      expect(forgotRes.body.success).toBe(true);
+
+      const sent = __getSentEmailsForTests();
+      expect(sent.length).toBeGreaterThanOrEqual(1);
+      expect(sent[sent.length - 1]?.to).toBe(email);
+    });
+
+    it("resets password with emailed token and allows login with new password", async () => {
+      __clearSentEmailsForTests();
+      const email = `reset-${Date.now()}@example.com`;
+      await AuthService.register("Reset User", email, "password123");
+
+      await request(app).post("/api/v1/auth/forgot-password").send({ email });
+      const sent = __getSentEmailsForTests();
+      const latest = sent[sent.length - 1];
+      expect(latest).toBeDefined();
+
+      const match = latest!.text.match(/token=([A-Za-z0-9\-_]+)/);
+      expect(match).toBeTruthy();
+      const token = match![1]!;
+
+      const resetRes = await request(app)
+        .post("/api/v1/auth/reset-password")
+        .send({ token, newPassword: "newpassword123" });
+      expect(resetRes.status).toBe(200);
+      expect(resetRes.body.success).toBe(true);
+
+      const oldLogin = await request(app).post("/api/v1/auth/login").send({ email, password: "password123" });
+      expect(oldLogin.status).toBe(401);
+
+      const newLogin = await request(app).post("/api/v1/auth/login").send({ email, password: "newpassword123" });
+      expect(newLogin.status).toBe(200);
+      expect(newLogin.body.success).toBe(true);
+    });
+  });
+
   describe("POST /api/v1/auth/register", () => {
     it("should register, set httpOnly cookies, and return userId + email only (201)", async () => {
       const res = await request(app)
