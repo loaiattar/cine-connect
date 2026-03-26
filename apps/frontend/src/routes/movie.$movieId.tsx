@@ -11,6 +11,7 @@ import { useRating } from "@/hooks/useRating";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { Heart, ListVideo, Loader2, MessageCircle } from "lucide-react";
 import { GlassPanel, PrimaryButton, ToggleRow } from "@/components/glass";
+import { usePageSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/movie/$movieId")({
   component: MovieDetailPage,
@@ -41,6 +42,14 @@ function MovieDetailPage() {
   const movie = rawMovie ? apiMovieToDisplay(rawMovie as MovieDetailPayload) : null;
   const isFavorite = Boolean((rawMovie as MovieDetailPayload | undefined)?.isFavorite);
   const isOnWatchlist = Boolean((rawMovie as MovieDetailPayload | undefined)?.isOnWatchlist);
+
+  usePageSeo({
+    title: movie?.title ?? "Movie details",
+    description:
+      movie?.synopsis?.slice(0, 155) ||
+      "View movie details, ratings, watchlist controls, and live comments on CineConnect.",
+    pathname: `/movie/${movieId}`,
+  });
 
   if (isLoading) {
     return (
