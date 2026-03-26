@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -39,6 +41,11 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -57,6 +64,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -100,10 +112,12 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -116,10 +130,12 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -133,10 +149,12 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/favorites': typeof FavoritesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/users': typeof UsersRoute
   '/watchlist': typeof WatchlistRoute
@@ -151,10 +169,12 @@ export interface FileRouteTypes {
     | '/chat'
     | '/community'
     | '/favorites'
+    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -167,10 +187,12 @@ export interface FileRouteTypes {
     | '/chat'
     | '/community'
     | '/favorites'
+    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -183,10 +205,12 @@ export interface FileRouteTypes {
     | '/chat'
     | '/community'
     | '/favorites'
+    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/search'
     | '/users'
     | '/watchlist'
@@ -200,10 +224,12 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   CommunityRoute: typeof CommunityRoute
   FavoritesRoute: typeof FavoritesRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
   UsersRoute: typeof UsersRoute
   WatchlistRoute: typeof WatchlistRoute
@@ -234,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -260,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -330,10 +370,12 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   CommunityRoute: CommunityRoute,
   FavoritesRoute: FavoritesRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
   UsersRoute: UsersRoute,
   WatchlistRoute: WatchlistRoute,
