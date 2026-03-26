@@ -1,6 +1,7 @@
 import { io, type Socket } from "socket.io-client";
 import { useEffect, useRef, useCallback } from "react";
 import { socketHttpOrigin } from "./api-origin";
+import { logger } from "./logger";
 
 const SOCKET_PATH = "/socket.io";
 
@@ -30,28 +31,20 @@ function attachSocketLifecycle(socket: Socket): void {
 
   const mgr = socket.io;
   mgr.on("reconnect_attempt", (attempt: number) => {
-    if (import.meta.env.DEV) {
-      console.info(`[socket] reconnect attempt ${attempt}`);
-    }
+    logger.debug("socket reconnect attempt", { attempt });
   });
   mgr.on("reconnect", (attempt: number) => {
-    if (import.meta.env.DEV) {
-      console.info(`[socket] reconnected after ${attempt} attempt(s)`);
-    }
+    logger.info("socket reconnected", { attempt });
   });
   mgr.on("reconnect_error", (err: Error) => {
-    if (import.meta.env.DEV) {
-      console.warn("[socket] reconnect error", err?.message ?? err);
-    }
+    logger.warn("socket reconnect error", { error: err?.message ?? String(err) });
   });
   mgr.on("reconnect_failed", () => {
-    console.error("[socket] reconnection failed (max attempts reached)");
+    logger.error("socket reconnection failed (max attempts reached)");
   });
 
   socket.on("disconnect", (reason: string) => {
-    if (import.meta.env.DEV) {
-      console.info(`[socket] disconnected: ${reason}`);
-    }
+    logger.info("socket disconnected", { reason });
   });
 }
 

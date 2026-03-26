@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { TmdbService } from "../tmdb.service";
 import type { PaginatedMovies } from "./types";
 import { MovieCommentsService } from "./movie-comments.service";
+import { logger } from "../../logger";
 
 export const MovieCatalogService = {
   async getTrending() {
@@ -72,9 +73,9 @@ export const MovieCatalogService = {
       }
       movieComments = await MovieCommentsService.getMovieComments(movieId);
     } catch (err) {
-      console.warn(
-        "Database unavailable for getDetailedMovie, returning TMDB data only:",
-        (err as Error)?.message ?? err
+      logger.warn(
+        { err, movieId, userId },
+        "Database unavailable for getDetailedMovie, returning TMDB data only"
       );
     }
 

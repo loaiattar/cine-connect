@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { badGateway, notFound } from '../utils';
+import { logger } from '../logger';
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
@@ -17,11 +18,14 @@ function handleTmdbError(error: unknown, context: string): never {
       throw notFound('Movie not found');
     }
     if (error.response?.status === 401) {
-      console.error(`${context}: TMDB returned 401 — check TMDB_API_KEY is set and valid.`);
+      logger.error(
+        { context, status: 401 },
+        'TMDB returned 401 — check TMDB_API_KEY is set and valid.'
+      );
       throw badGateway('Movie database API key invalid or missing. Set a valid TMDB_API_KEY in .env.');
     }
   }
-  console.error(`${context}:`, error);
+  logger.error({ context, err: error }, 'TMDB request failed');
   throw badGateway('Failed to fetch from movie database');
 }
 

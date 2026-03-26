@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { validateEnv, closeDatabase } from './config';
 import app from './app';
 import { createSocketServer, closeSocketServer } from './socket';
+import { logger } from './logger';
 
 dotenv.config();
 validateEnv();
@@ -21,26 +22,26 @@ async function gracefulShutdown(signal: string): Promise<void> {
   }
   shuttingDown = true;
 
-  console.log(`\n${signal} received — graceful shutdown…`);
+  logger.info({ signal }, 'Received shutdown signal');
 
   const forceExit = setTimeout(() => {
-    console.error('Shutdown timeout exceeded; forcing exit.');
+    logger.error('Shutdown timeout exceeded; forcing exit.');
     process.exit(1);
   }, SHUTDOWN_TIMEOUT_MS).unref();
 
   try {
     await closeSocketServer();
-    console.log('Socket.io closed.');
+    logger.info('Socket.io closed.');
   } catch (err) {
-    console.error('Error closing Socket.io:', err);
+    logger.error({ err }, 'Error closing Socket.io');
   }
 
   await new Promise<void>((resolve) => {
     httpServer.close((err) => {
       if (err) {
-        console.error('Error closing HTTP server:', err);
+        logger.error({ err }, 'Error closing HTTP server');
       } else {
-        console.log('HTTP server closed.');
+        logger.info('HTTP server closed.');
       }
       resolve();
     });
@@ -48,13 +49,13 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
   try {
     await closeDatabase();
-    console.log('Database connections closed.');
+    logger.info('Database connections closed.');
   } catch (err) {
-    console.error('Error closing database:', err);
+    logger.error({ err }, 'Error closing database');
   }
 
   clearTimeout(forceExit);
-  console.log('Shutdown complete.');
+  logger.info('Shutdown complete.');
   process.exit(0);
 }
 
@@ -66,10 +67,13 @@ process.once('SIGTERM', () => {
 });
 
 httpServer.listen(port, () => {
-  console.log("");
-  console.log(">>> CinéConnect Backend (with /docs and /version) <<<");
-  console.log(`Server:   http://localhost:${port}`);
-  console.log(`Docs:     http://localhost:${port}/docs`);
-  console.log(`Socket.io: same origin (ws upgrade on http://localhost:${port})`);
-  console.log("");
+  logger.info(
+    {
+      port,
+      serverUrl: `http://localhost:${port}`,
+      docsUrl: `http://localhost:${port}/docs`,
+      socketOrigin: `http://localhost:${port}`,
+    },
+    "CineConnect backend started"
+  );
 });

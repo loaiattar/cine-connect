@@ -8,9 +8,10 @@ dotenv.config({ path: path.join(backendRoot, ".env") });
 
 import { db } from "./index";
 import { users, comments, favorites } from "./schema";
+import { logger } from "../logger";
 
 async function main() {
-    console.log("Seeding database...");
+    logger.info("Seeding database...");
 
     await db.delete(comments);
     await db.delete(favorites);
@@ -29,7 +30,7 @@ async function main() {
         },
     ]).returning();
 
-    console.log("Users created");
+    logger.info("Users created");
 
     await db.insert(comments).values([
         {
@@ -49,19 +50,19 @@ async function main() {
         },
     ]);
 
-    console.log("Comments created");
+    logger.info("Comments created");
 
     await db.insert(favorites).values([
         { userId: user1.id, externalMovieId: 550 },
         { userId: user2.id, externalMovieId: 27205 },
     ]);
 
-    console.log("Favorites created");
-    console.log("Seeding completed successfully!");
+    logger.info("Favorites created");
+    logger.info("Seeding completed successfully!");
     process.exit(0);
 }
 
 main().catch((err) => {
-    console.error("Seeding failed:", err);
+    logger.error({ err }, "Seeding failed");
     process.exit(1);
 });
