@@ -27,6 +27,7 @@ RUN pnpm run build --filter=frontend
 
 FROM nginx:stable-alpine
 
+COPY apps/frontend/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /usr/src/app/apps/frontend/dist /usr/share/nginx/html
 
 EXPOSE 80
