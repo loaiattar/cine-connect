@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMovieBrowse, useMovieSearch } from "@/hooks/useMovies";
 import { requireAuth } from "@/lib/route-guard";
 import { MOVIE_GENRES } from "@cine-connect/shared";
@@ -42,16 +42,17 @@ function genreLabel(id: number | undefined): string | undefined {
 }
 
 function SearchPage() {
-  const navigate = useNavigate({ from: Route.fullPath });
   const url = Route.useSearch();
+  /** Remount form state when URL-driven fields change (back/forward, home links); not when only `page` changes. */
+  const formSyncKey = `${url.q}\0${url.genre ?? ""}\0${url.list ?? ""}`;
+  return <SearchPageContent key={formSyncKey} url={url} />;
+}
+
+function SearchPageContent({ url }: { url: SearchRouteSearch }) {
+  const navigate = useNavigate({ from: Route.fullPath });
 
   const [inputValue, setInputValue] = useState(url.q);
   const [genreSelect, setGenreSelect] = useState<number | undefined>(url.genre);
-
-  useEffect(() => {
-    setInputValue(url.q);
-    setGenreSelect(url.genre);
-  }, [url.q, url.genre, url.list]);
 
   const mode = useMemo(() => {
     if (url.list === "trending") return { kind: "trending" as const };
