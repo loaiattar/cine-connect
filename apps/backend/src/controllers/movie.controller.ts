@@ -4,8 +4,22 @@ import { MovieService } from "../services/movie";
 import { getSocketIo, filmRoomId } from "../socket";
 
 export const MovieController = {
-    async getTrending(_req: Request, res: Response) {
-        const data = await MovieService.getTrending();
+    async getTrending(req: Request, res: Response) {
+        const page = Math.max(1, parseInt(String(req.query.page ?? 1), 10) || 1);
+        const data = await MovieService.getTrending(page);
+        return success(res, data);
+    },
+
+    async getTopRated(req: Request, res: Response) {
+        const page = Math.max(1, parseInt(String(req.query.page ?? 1), 10) || 1);
+        const data = await MovieService.getTopRated(page);
+        return success(res, data);
+    },
+
+    async discoverMovies(req: Request, res: Response) {
+        const genre = parseInt(String(req.query.genre), 10);
+        const page = Math.max(1, parseInt(String(req.query.page ?? 1), 10) || 1);
+        const data = await MovieService.discoverByGenre(genre, page);
         return success(res, data);
     },
 

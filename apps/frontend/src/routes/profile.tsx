@@ -7,7 +7,9 @@ import { useWatchlist } from "@/hooks/useWatchlist";
 import { requireAuth } from "@/lib/route-guard";
 import { Bookmark, Heart, Loader2, User, Users } from "lucide-react";
 import { GlassPanel, PosterCard, PrimaryButton } from "@/components/glass";
+import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
 import { moviesService } from "@/service/movies.service";
+import { resolveMediaUrl } from "@/lib/api-origin";
 
 export const Route = createFileRoute("/profile")({
   beforeLoad: () => requireAuth(),
@@ -31,7 +33,7 @@ function ProfilePage() {
   } = useFollow(profileUserId, { fetchFollowers: true, fetchFollowing: true });
 
   const displayName = user?.name ?? user?.email ?? "";
-  const avatarDisplay = profile?.avatarUrl ?? null;
+  const avatarDisplay = resolveMediaUrl(profile?.avatarUrl ?? null);
   const favoritePreview = favorites.slice(0, 6);
   const watchlistPreview = watchlist.slice(0, 6);
 
@@ -77,10 +79,11 @@ function ProfilePage() {
           <div className="space-y-8">
             <GlassPanel className="flex items-center gap-4">
               {avatarDisplay ? (
-                <img
+                <RoundedAvatarImage
                   src={avatarDisplay}
                   alt=""
-                  className="h-20 w-20 rounded-full object-cover"
+                  sizeClassName="h-20 w-20"
+                  ringClassName="ring-1 ring-[var(--glass-border)]"
                 />
               ) : (
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { useMovieSearch } from "@/hooks/useMovies";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useMovieBrowse, useMovieSearch } from "@/hooks/useMovies";
 import { requireAuth } from "@/lib/route-guard";
 import { MOVIE_GENRES } from "@cine-connect/shared";
 import { Loader2, Search } from "lucide-react";
@@ -9,66 +9,177 @@ import { glassInputClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
 import type { SearchResultItem } from "@/service/movies.service";
 
-const DEBOUNCE_MS = 350;
+function parsePositiveInt(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isInteger(value) && value > 0) return value;
+  if (typeof value === "string" && /^\d+$/.test(value)) return parseInt(value, 10);
+  return undefined;
+}
+
+export type SearchRouteSearch = {
+  q: string;
+  list?: "trending" | "top_rated";
+  genre?: number;
+  page: number;
+};
 
 export const Route = createFileRoute("/search")({
+  validateSearch: (raw: Record<string, unknown>): SearchRouteSearch => {
+    const listRaw = raw.list;
+    const list =
+      listRaw === "trending" || listRaw === "top_rated" ? listRaw : undefined;
+    const genre = parsePositiveInt(raw.genre);
+    const page = parsePositiveInt(raw.page) ?? 1;
+    const q = typeof raw.q === "string" ? raw.q : "";
+    return { list, genre, page, q };
+  },
   beforeLoad: () => requireAuth(),
   component: SearchPage,
 });
 
+function genreLabel(id: number | undefined): string | undefined {
+  if (id == null) return undefined;
+  return MOVIE_GENRES.find((g) => g.id === id)?.name;
+}
+
 function SearchPage() {
-  const [inputValue, setInputValue] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [genreId, setGenreId] = useState<number | undefined>(undefined);
-  const searchKey = `${debouncedQuery}|${genreId ?? ""}`;
-  const [pageByKey, setPageByKey] = useState<Record<string, number>>({});
-  const page = pageByKey[searchKey] ?? 1;
+  const navigate = useNavigate({ from: Route.fullPath });
+  const url = Route.useSearch();
+
+  const [inputValue, setInputValue] = useState(url.q);
+  const [genreSelect, setGenreSelect] = useState<number | undefined>(url.genre);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(inputValue.trim()), DEBOUNCE_MS);
-    return () => clearTimeout(t);
-  }, [inputValue]);
+    setInputValue(url.q);
+    setGenreSelect(url.genre);
+  }, [url.q, url.genre, url.list]);
 
-  const setPage = (updater: (p: number) => number) => {
-    setPageByKey((prev) => ({ ...prev, [searchKey]: updater(prev[searchKey] ?? 1) }));
-  };
+  const mode = useMemo(() => {
+    if (url.list === "trending") return { kind: "trending" as const };
+    if (url.list === "top_rated") return { kind: "top_rated" as const };
+    if (url.genre != null && !url.q.trim()) return { kind: "discover" as const, genreId: url.genre };
+    if (url.q.trim()) return { kind: "search" as const };
+    return { kind: "empty" as const };
+  }, [url.list, url.genre, url.q]);
 
-  const { data, isLoading, isError, error } = useMovieSearch(debouncedQuery, {
+  const page = url.page;
+
+  const searchQuery = useMovieSearch(url.q.trim(), {
     page,
-    genre: genreId,
-    enabled: debouncedQuery.length > 0,
+    genre: url.genre,
+    enabled: mode.kind === "search",
   });
+
+  const browseKind =
+    mode.kind === "trending"
+      ? "trending"
+      : mode.kind === "top_rated"
+        ? "top_rated"
+        : mode.kind === "discover"
+          ? "discover"
+          : null;
+
+  const browseQuery = useMovieBrowse(browseKind, {
+    genreId: mode.kind === "discover" ? mode.genreId : undefined,
+    page,
+  });
+
+  const active =
+    mode.kind === "search"
+      ? searchQuery
+      : mode.kind === "empty"
+        ? null
+        : browseQuery;
+
+  const data = active?.data;
+  const isLoading = active?.isLoading ?? false;
+  const isError = active?.isError ?? false;
+  const error = active?.error ?? null;
 
   const results = data?.results ?? [];
   const totalPages = data?.total_pages ?? 0;
   const totalResults = data?.total_results ?? 0;
-  const currentPage = data?.page ?? 1;
+  const currentPage = data?.page ?? page;
+
+  const setPage = (next: number) => {
+    const p = Math.max(1, next);
+    navigate({
+      to: "/search",
+      search: (prev) => ({ ...prev, page: p }),
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setDebouncedQuery(inputValue.trim());
+    const trimmed = inputValue.trim();
+    if (!trimmed && genreSelect != null) {
+      navigate({
+        to: "/search",
+        search: { q: "", genre: genreSelect, list: undefined, page: 1 },
+      });
+      return;
+    }
+    if (!trimmed) {
+      navigate({
+        to: "/search",
+        search: { q: "", genre: undefined, list: undefined, page: 1 },
+      });
+      return;
+    }
+    navigate({
+      to: "/search",
+      search: {
+        q: trimmed,
+        genre: genreSelect,
+        list: undefined,
+        page: 1,
+      },
+    });
   };
 
+  const heading = (() => {
+    if (mode.kind === "trending") return "Tendance du moment";
+    if (mode.kind === "top_rated") return "Mieux notés";
+    if (mode.kind === "discover") {
+      const name = genreLabel(mode.genreId);
+      return name ? `Films — ${name}` : "Par genre";
+    }
+    return "Rechercher un film";
+  })();
+
+  const showEmptyHint = mode.kind === "empty";
+  const showResults =
+    !showEmptyHint && !isLoading && !isError && results.length > 0;
+  const showNoHits =
+    !showEmptyHint && !isLoading && !isError && results.length === 0;
+  const showError = !showEmptyHint && isError;
+
   return (
-      <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
-        <div className="mb-8">
-          <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">
-            <Search className="h-7 w-7 text-accent-red" aria-hidden />
-            Rechercher un film
-          </h1>
-          <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <input
-              type="search"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Titre du film…"
-              className={cn(glassInputClass, "flex-1")}
-              autoFocus
-            />
+    <main className="mx-auto min-h-full max-w-6xl px-4 py-6 md:px-6">
+      <div className="mb-8">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">
+          <Search className="h-7 w-7 text-accent-red" aria-hidden />
+          {heading}
+        </h1>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+          <input
+            type="search"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Titre du film…"
+            className={cn(
+              glassInputClass,
+              "block w-full min-h-[3.25rem] py-3.5 text-base leading-snug md:min-h-[3.5rem] md:py-4 md:text-lg"
+            )}
+            autoFocus={mode.kind === "search" || mode.kind === "empty"}
+            enterKeyHint="search"
+          />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <select
-              value={genreId ?? ""}
-              onChange={(e) => setGenreId(e.target.value ? Number(e.target.value) : undefined)}
-              className={cn(glassInputClass, "min-w-[180px]")}
+              value={genreSelect ?? ""}
+              onChange={(e) =>
+                setGenreSelect(e.target.value ? Number(e.target.value) : undefined)
+              }
+              className={cn(glassInputClass, "min-h-[3rem] w-full sm:min-w-[14rem] sm:flex-1")}
             >
               <option value="">Tous les genres</option>
               {MOVIE_GENRES.map((g) => (
@@ -77,94 +188,101 @@ function SearchPage() {
                 </option>
               ))}
             </select>
-            <PrimaryButton type="submit" className="shrink-0 sm:self-stretch">
-              Rechercher
+            <PrimaryButton
+              type="submit"
+              className="min-h-[3rem] w-full shrink-0 sm:w-auto sm:min-w-[10rem] sm:self-stretch"
+            >
+              {inputValue.trim() ? "Rechercher" : genreSelect != null ? "Voir ce genre" : "Rechercher"}
             </PrimaryButton>
-          </form>
-        </div>
+          </div>
+        </form>
+      </div>
 
-        {!debouncedQuery && (
-          <GlassPanel className="py-12 text-center">
-            <Search className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
-            <p className="text-ink-secondary">Saisissez un mot-clé pour lancer la recherche.</p>
-          </GlassPanel>
-        )}
+      {showEmptyHint && (
+        <GlassPanel className="py-12 text-center">
+          <Search className="mx-auto mb-4 h-12 w-12 text-ink-muted" aria-hidden />
+          <p className="text-ink-secondary">
+            Saisissez un mot-clé, choisissez un genre, ou ouvrez une liste depuis l&apos;accueil.
+          </p>
+        </GlassPanel>
+      )}
 
-        {debouncedQuery && isLoading && (
-          <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
-            <p className="text-ink-secondary">Recherche en cours…</p>
-          </GlassPanel>
-        )}
+      {!showEmptyHint && isLoading && (
+        <GlassPanel className="flex flex-col items-center justify-center gap-4 py-16">
+          <Loader2 className="h-10 w-10 animate-spin text-accent-red" aria-hidden />
+          <p className="text-ink-secondary">Chargement…</p>
+        </GlassPanel>
+      )}
 
-        {debouncedQuery && isError && (
-          <GlassPanel className="border-red-500/40 text-red-300">
-            <p>{error instanceof Error ? error.message : "Erreur lors de la recherche."}</p>
-          </GlassPanel>
-        )}
+      {showError && (
+        <GlassPanel className="border-red-500/40 text-red-300">
+          <p>{error instanceof Error ? error.message : "Erreur lors du chargement."}</p>
+        </GlassPanel>
+      )}
 
-        {debouncedQuery && !isLoading && !isError && results.length === 0 && (
-          <GlassPanel className="py-12 text-center">
-            <p className="text-ink-secondary">Aucun film trouvé pour &quot;{debouncedQuery}&quot;.</p>
-            <p className="mt-2 text-sm text-ink-muted">Essayez un autre terme ou un autre genre.</p>
-          </GlassPanel>
-        )}
+      {showNoHits && (
+        <GlassPanel className="py-12 text-center">
+          <p className="text-ink-secondary">Aucun résultat pour cette sélection.</p>
+          <p className="mt-2 text-sm text-ink-muted">Essayez un autre terme ou un autre genre.</p>
+        </GlassPanel>
+      )}
 
-        {debouncedQuery && !isLoading && !isError && results.length > 0 && (
-          <>
-            <p className="mb-4 text-sm text-ink-secondary">
-              {totalResults} résultat{totalResults !== 1 ? "s" : ""} (page {currentPage}/{totalPages || 1})
-            </p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {results.map((m: SearchResultItem) => {
-                const year = m.release_date ? new Date(m.release_date).getFullYear() : 0;
-                return (
-                  <Link
-                    key={m.id}
-                    to="/movie/$movieId"
-                    params={{ movieId: String(m.id) }}
-                    className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base"
-                  >
-                    <PosterCard
-                      title={m.title ?? "Sans titre"}
-                      posterPath={m.poster_path ?? ""}
-                      year={Number.isNaN(year) ? undefined : year}
-                      rating={
-                        typeof m.vote_average === "number"
-                          ? Math.round(m.vote_average * 10) / 10
-                          : undefined
-                      }
-                    />
-                  </Link>
-                );
-              })}
+      {showResults && (
+        <>
+          <p className="mb-4 text-sm text-ink-secondary">
+            {totalResults} résultat{totalResults !== 1 ? "s" : ""} (page {currentPage}/
+            {totalPages || 1})
+          </p>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {results.map((m: SearchResultItem) => {
+              const year = m.release_date ? new Date(m.release_date).getFullYear() : 0;
+              return (
+                <Link
+                  key={m.id}
+                  to="/movie/$movieId"
+                  params={{ movieId: String(m.id) }}
+                  className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-red focus-visible:ring-offset-2 focus-visible:ring-offset-app-base"
+                >
+                  <PosterCard
+                    title={m.title ?? "Sans titre"}
+                    posterPath={m.poster_path ?? ""}
+                    year={Number.isNaN(year) ? undefined : year}
+                    rating={
+                      typeof m.vote_average === "number"
+                        ? Math.round(m.vote_average * 10) / 10
+                        : undefined
+                    }
+                  />
+                </Link>
+              );
+            })}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => setPage(currentPage - 1)}
+                disabled={currentPage <= 1}
+                className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Précédent
+              </button>
+              <span className="text-sm text-ink-secondary">
+                Page {currentPage} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Suivant
+              </button>
             </div>
-
-            {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage <= 1}
-                  className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Précédent
-                </button>
-                <span className="text-sm text-ink-secondary">
-                  Page {currentPage} / {totalPages}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage >= totalPages}
-                  className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-2 text-sm font-medium text-ink hover:bg-[var(--glass-bg-elevated)] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Suivant
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
+          )}
+        </>
+      )}
+    </main>
   );
 }

@@ -7,8 +7,16 @@ import { MovieCommentsService } from "./movie-comments.service";
 import { logger } from "../../logger";
 
 export const MovieCatalogService = {
-  async getTrending() {
-    return TmdbService.getTrendingMovies();
+  async getTrending(page = 1) {
+    return TmdbService.getTrendingMovies(page);
+  },
+
+  async getTopRated(page = 1) {
+    return TmdbService.getTopRatedMovies(page);
+  },
+
+  async discoverByGenre(genreId: number, page = 1) {
+    return TmdbService.discoverMoviesByGenre(genreId, page);
   },
 
   async searchMovies(

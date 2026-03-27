@@ -20,7 +20,7 @@ export function LandingPublicFooter() {
           <a href="mailto:contact@cineconnect.example" className={footerLinkClass}>
             Contact
           </a>
-          <Link to="/search" className={footerLinkClass}>
+          <Link to="/search" search={{ q: "", page: 1 }} className={footerLinkClass}>
             Explorer les films
           </Link>
           <span className="text-sm text-ink-muted">Mentions légales (bientôt)</span>

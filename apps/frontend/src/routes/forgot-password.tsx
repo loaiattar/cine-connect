@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clapperboard } from "lucide-react";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
@@ -7,12 +7,21 @@ import { authService } from "@/service/auth.service";
 import { normalizeApiError } from "@/lib/normalize-api-error";
 
 export const Route = createFileRoute("/forgot-password")({
+  validateSearch: (search: Record<string, unknown>): { email?: string } => {
+    if (typeof search.email !== "string" || !search.email.trim()) return {};
+    return { email: search.email.trim() };
+  },
   component: ForgotPasswordPage,
 });
 
 function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
+  const { email: emailFromSearch = "" } = Route.useSearch();
+  const [email, setEmail] = useState(() => emailFromSearch);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (emailFromSearch) setEmail(emailFromSearch);
+  }, [emailFromSearch]);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
@@ -44,7 +53,11 @@ function ForgotPasswordPage() {
         <GlassPanel className="space-y-6 border-[var(--glass-border-strong)] shadow-2xl shadow-black/50">
           <div>
             <h1 className="text-3xl font-bold text-ink">Mot de passe oublie</h1>
-            <p className="mt-1 text-ink-secondary">Recevez un lien de reinitialisation</p>
+            <p className="mt-1 text-ink-secondary">
+              {emailFromSearch
+                ? "Confirmez l'envoi du lien a cette adresse pour definir un nouveau mot de passe."
+                : "Recevez un lien de reinitialisation par e-mail."}
+            </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && <div className="rounded-xl border border-red-400/45 bg-red-950/90 px-4 py-3 text-sm text-red-50">{error}</div>}

@@ -8,10 +8,17 @@ export const getPublicProfileSchema = z.object({
     params: userIdParam,
 });
 
+/** Absolute http(s) URL or app-relative upload path from POST /me/avatar. */
+const profileAvatarUrl = z.union([
+    z.literal(""),
+    z.string().url(),
+    z.string().regex(/^\/uploads\/\S+$/, "Invalid avatar path"),
+]);
+
 export const updateProfileSchema = z.object({
     body: z.object({
         bio: z.string().max(500).optional(),
-        avatarUrl: z.string().url().optional().or(z.literal("")),
+        avatarUrl: profileAvatarUrl.optional(),
         location: z.string().max(255).optional(),
         favoriteGenre: z.string().max(100).optional(),
     }),
