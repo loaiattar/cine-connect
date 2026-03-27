@@ -130,6 +130,7 @@ function LoginPage() {
               <div className="mt-2 text-right">
                 <Link
                   to="/forgot-password"
+                  search={{}}
                   className="text-xs text-ink-secondary transition-colors hover:text-ink hover:underline"
                 >
                   Mot de passe oublie ?

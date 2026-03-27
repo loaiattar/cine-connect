@@ -9,6 +9,8 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/api-origin";
+import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
 
 /** Stats row for `display` variant (read-only profile summary). */
 export type ProfileCardDisplayStats = {
@@ -269,7 +271,7 @@ function ProfileCardCompact({
   onMessage,
 }: Omit<ProfileCardCompactProps, "variant">) {
   const trimmedAvatar = avatarUrl?.trim() ?? "";
-  const showAvatar = trimmedAvatar.length > 0;
+  const resolvedAvatar = resolveMediaUrl(trimmedAvatar || null);
 
   return (
     <div
@@ -278,11 +280,12 @@ function ProfileCardCompact({
         className
       )}
     >
-      {showAvatar ? (
-        <img
-          src={trimmedAvatar}
+      {resolvedAvatar ? (
+        <RoundedAvatarImage
+          src={resolvedAvatar}
           alt={username}
-          className="h-16 w-16 shrink-0 rounded-full object-cover"
+          sizeClassName="h-16 w-16"
+          ringClassName=""
         />
       ) : (
         <div className="h-16 w-16 shrink-0 rounded-full bg-zinc-700" />

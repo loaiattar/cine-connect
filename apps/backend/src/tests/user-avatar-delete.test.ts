@@ -31,6 +31,12 @@ describe('User avatar upload and account deletion', () => {
             const getRes = await request(app).get('/api/v1/users/me').set('Cookie', cookie);
             expect(getRes.status).toBe(200);
             expect(getRes.body.data.profile.avatarUrl).toBe(uploadRes.body.data.avatarUrl);
+
+            const avatarPath = uploadRes.body.data.avatarUrl as string;
+            const imgRes = await request(app).get(avatarPath);
+            expect(imgRes.status).toBe(200);
+            expect(String(imgRes.headers['content-type'] ?? '')).toMatch(/^image\//);
+            expect(Buffer.byteLength(imgRes.body as Buffer)).toBeGreaterThan(0);
         });
     });
 

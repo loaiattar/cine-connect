@@ -50,12 +50,36 @@ export const TmdbService = {
     }
   },
 
-  async getTrendingMovies() {
+  async getTrendingMovies(page = 1) {
     try {
-      const response = await tmdbClient.get('/trending/movie/day');
+      const response = await tmdbClient.get('/trending/movie/day', {
+        params: { page },
+      });
       return response.data;
     } catch (error) {
       handleTmdbError(error, 'Error fetching trending movies');
+    }
+  },
+
+  async getTopRatedMovies(page = 1) {
+    try {
+      const response = await tmdbClient.get('/movie/top_rated', {
+        params: { page },
+      });
+      return response.data;
+    } catch (error) {
+      handleTmdbError(error, 'Error fetching top rated movies');
+    }
+  },
+
+  async discoverMoviesByGenre(genreId: number, page = 1) {
+    try {
+      const response = await tmdbClient.get('/discover/movie', {
+        params: { page, with_genres: genreId },
+      });
+      return response.data;
+    } catch (error) {
+      handleTmdbError(error, 'Error fetching discover movies');
     }
   },
 

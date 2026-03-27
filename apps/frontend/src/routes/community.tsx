@@ -5,6 +5,8 @@ import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
+import { resolveMediaUrl } from "@/lib/api-origin";
+import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
 
 export const Route = createFileRoute("/community")({
   component: CommunityPage,
@@ -91,6 +93,7 @@ function CommunityPage() {
               {users.map((membre) => {
                 const label = membre.name?.trim() || `Utilisateur #${membre.id}`;
                 const avatar = membre.avatarUrl?.trim() || null;
+                const avatarSrc = resolveMediaUrl(avatar);
                 return (
                   <li key={membre.id}>
                     <Link
@@ -98,12 +101,8 @@ function CommunityPage() {
                       params={{ userId: String(membre.id) }}
                       className="flex items-center gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 backdrop-blur-[var(--glass-blur)] transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]"
                     >
-                      {avatar ? (
-                        <img
-                          src={avatar}
-                          alt=""
-                          className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
-                        />
+                      {avatarSrc ? (
+                        <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-12 w-12" />
                       ) : (
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
                           <User className="h-6 w-6 text-ink-muted" />

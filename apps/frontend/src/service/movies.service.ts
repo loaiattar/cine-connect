@@ -55,8 +55,11 @@ export interface MovieCommentRow {
     userName?: string | null;
 }
 
-/** TMDB trending response shape */
+/** TMDB trending / discover list shape */
 export interface TrendingResponse {
+    page?: number;
+    total_pages?: number;
+    total_results?: number;
     results?: Array<{
         id: number;
         title?: string;
@@ -101,7 +104,14 @@ export const moviesService = {
         apiClient.get<MovieCommentRow[]>(`/api/v1/movies/comments/${movieId}`),
     addComment: (movieId: number, comment: string) =>
         apiClient.post<MovieCommentRow>("/api/v1/movies/comments", { movieId, comment }),
-    getTrending: () => apiClient.get<TrendingResponse>("/api/v1/movies/trending"),
+    getTrending: (page = 1) =>
+        apiClient.get<TrendingResponse>(`/api/v1/movies/trending?page=${page}`),
+    getTopRated: (page = 1) =>
+        apiClient.get<SearchResponse>(`/api/v1/movies/top-rated?page=${page}`),
+    discoverByGenre: (genreId: number, page = 1) =>
+        apiClient.get<SearchResponse>(
+            `/api/v1/movies/discover?genre=${encodeURIComponent(String(genreId))}&page=${page}`
+        ),
     searchMovies: (query: string, options?: SearchMoviesOptions) => {
         const params = new URLSearchParams();
         params.set("q", query.trim());

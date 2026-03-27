@@ -85,6 +85,32 @@ export const getMovieRatingSchema = z.object({
     }),
 });
 
+const optionalPageQuery = z
+    .string()
+    .optional()
+    .transform((v) => (v != null && v !== "" ? parseInt(v, 10) : 1))
+    .pipe(z.number().int().positive());
+
+/** GET /api/movies/top-rated — optional page */
+export const getTopRatedMoviesSchema = z.object({
+    query: z.object({
+        page: optionalPageQuery,
+    }),
+});
+
+/** GET /api/movies/discover — genre required; optional page */
+export const getDiscoverMoviesSchema = z.object({
+    query: z.object({
+        genre: z
+            .string()
+            .min(1, "genre is required")
+            .regex(/^\d+$/, "genre must be a positive integer")
+            .transform((v) => parseInt(v, 10))
+            .pipe(z.number().int().positive()),
+        page: optionalPageQuery,
+    }),
+});
+
 /** GET /api/movies/search — q required; page and genre optional */
 export const getMoviesSearchSchema = z.object({
     query: z.object({

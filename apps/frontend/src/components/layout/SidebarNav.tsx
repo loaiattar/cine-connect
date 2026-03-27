@@ -22,6 +22,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { useNotifications } from "@/hooks/useNotifications";
 import { focusVisibleRingInsetClass } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/api-origin";
+import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
 
 export type NavItemConfig = {
   to: string;
@@ -31,11 +33,13 @@ export type NavItemConfig = {
   end?: boolean;
   /** Custom active check (e.g. profile subtree). */
   isActive?: (pathname: string) => boolean;
+  /** Required for routes with validated search params (e.g. `/search`). */
+  search?: { q: string; page: number; list?: "trending" | "top_rated"; genre?: number };
 };
 
 const MAIN_NAV: NavItemConfig[] = [
   { to: "/", label: "Accueil", icon: Home, end: true },
-  { to: "/search", label: "Recherche", icon: Search, end: true },
+  { to: "/search", label: "Recherche", icon: Search, end: true, search: { q: "", page: 1 } },
   { to: "/favorites", label: "Favoris", icon: Heart, end: true },
   { to: "/watchlist", label: "À voir", icon: Bookmark, end: true },
   {
@@ -55,6 +59,15 @@ function navItemActive(pathname: string, item: NavItemConfig): boolean {
   if (item.end) return pathname === item.to;
   return pathname === item.to || pathname.startsWith(`${item.to}/`);
 }
+
+/** Desktop rail: center icon when collapsed; on sidebar expand, align with labels. Padding fits w-14 minus nav padding. */
+const sidebarRailRowClass = cn(
+  "flex min-w-0 items-center rounded-xl py-2.5 transition-colors",
+  "justify-center gap-0 px-1.5",
+  "motion-safe:transition-[gap,padding] motion-safe:duration-300 motion-safe:ease-out motion-reduce:transition-none",
+  "md:group-hover/sidebar:justify-start md:group-hover/sidebar:gap-3 md:group-hover/sidebar:pl-3 md:group-hover/sidebar:pr-2",
+  "md:group-focus-within/sidebar:justify-start md:group-focus-within/sidebar:gap-3 md:group-focus-within/sidebar:pl-3 md:group-focus-within/sidebar:pr-2"
+);
 
 export function NavItem({
   item,
@@ -78,13 +91,13 @@ export function NavItem({
   return (
     <Link
       to={item.to}
+      {...(item.search != null ? { search: item.search } : {})}
       title={item.label}
       aria-label={item.label}
       aria-current={active ? "page" : undefined}
       onClick={() => onMenuClose?.()}
       className={cn(
-        "flex min-w-0 items-center gap-3 rounded-xl py-2.5 transition-colors",
-        isDrawer ? "px-3" : "pl-2 pr-2 md:pl-3",
+        isDrawer ? cn("flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors") : sidebarRailRowClass,
         focusVisibleRingInsetClass,
         active
           ? "bg-accent-red/20 text-accent-red"
@@ -101,10 +114,11 @@ export function NavItem({
       </span>
       <span
         className={cn(
-          "min-w-0 flex-1 truncate text-sm font-medium",
+          "min-w-0 truncate text-sm font-medium",
           isDrawer
-            ? "text-left opacity-100"
+            ? "flex-1 text-left opacity-100"
             : cn(
+                "flex-none md:group-hover/sidebar:flex-1 md:group-focus-within/sidebar:flex-1",
                 "transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
                 "max-w-0 overflow-hidden opacity-0",
                 "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
@@ -131,6 +145,7 @@ function MobileNavDrawer() {
 
   const displayName = profileUser?.name ?? profileUser?.email ?? "Profil";
   const avatarUrl = profile?.avatarUrl ?? null;
+  const avatarSrc = resolveMediaUrl(avatarUrl);
 
   return (
     <div className="md:hidden">
@@ -240,12 +255,8 @@ function MobileNavDrawer() {
                   focusVisibleRingInsetClass
                 )}
               >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
-                  />
+                {avatarSrc ? (
+                  <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-9 w-9" />
                 ) : (
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] text-sm font-medium text-ink ring-1 ring-[var(--glass-border)]">
                     {displayName.slice(0, 1).toUpperCase() || "?"}
@@ -293,6 +304,7 @@ export function SidebarNav() {
 
   const displayName = profileUser?.name ?? profileUser?.email ?? "Profil";
   const avatarUrl = profile?.avatarUrl ?? null;
+  const avatarSrc = resolveMediaUrl(avatarUrl);
 
   return (
     <>
@@ -312,17 +324,14 @@ export function SidebarNav() {
           to="/"
           title="Lumera"
           aria-label="Lumera — accueil"
-          className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 transition-colors md:pl-3",
-            focusVisibleRingInsetClass
-          )}
+          className={cn(sidebarRailRowClass, "text-ink", focusVisibleRingInsetClass)}
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center">
             <Clapperboard className="h-6 w-6 text-accent-red" aria-hidden />
           </span>
           <span
             className={cn(
-              "truncate text-sm font-extrabold tracking-tight transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
+              "flex-none truncate text-sm font-extrabold tracking-tight transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none md:group-hover/sidebar:flex-1 md:group-focus-within/sidebar:flex-1",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -352,7 +361,8 @@ export function SidebarNav() {
           aria-label="Paramètres du compte"
           aria-current={pathname === "/settings" ? "page" : undefined}
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink md:pl-3",
+            sidebarRailRowClass,
+            "text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink",
             focusVisibleRingInsetClass,
             pathname === "/settings" && "bg-accent-red/20 text-accent-red"
           )}
@@ -362,7 +372,7 @@ export function SidebarNav() {
           </span>
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
+              "min-w-0 flex-none truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none md:group-hover/sidebar:flex-1 md:group-focus-within/sidebar:flex-1",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -377,16 +387,13 @@ export function SidebarNav() {
           title={displayName}
           aria-label={`Mon profil — ${displayName}`}
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2 pl-2 pr-2 transition-colors hover:bg-[var(--glass-bg-elevated)] md:pl-3",
+            sidebarRailRowClass,
+            "text-ink transition-colors hover:bg-[var(--glass-bg-elevated)]",
             focusVisibleRingInsetClass
           )}
         >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt=""
-              className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[var(--glass-border)]"
-            />
+          {avatarSrc ? (
+            <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-9 w-9" />
           ) : (
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] text-sm font-medium text-ink ring-1 ring-[var(--glass-border)]">
               {displayName.slice(0, 1).toUpperCase() || "?"}
@@ -394,7 +401,7 @@ export function SidebarNav() {
           )}
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium text-ink-secondary transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
+              "min-w-0 flex-none truncate text-sm font-medium text-ink-secondary transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none md:group-hover/sidebar:flex-1 md:group-focus-within/sidebar:flex-1",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"
@@ -410,7 +417,8 @@ export function SidebarNav() {
           title="Se déconnecter"
           aria-label="Se déconnecter"
           className={cn(
-            "flex min-w-0 items-center gap-3 rounded-xl py-2.5 pl-2 pr-2 text-left text-ink-secondary transition-colors hover:bg-accent-red/15 hover:text-accent-red-hover md:pl-3",
+            sidebarRailRowClass,
+            "text-left text-ink-secondary transition-colors hover:bg-accent-red/15 hover:text-accent-red-hover",
             focusVisibleRingInsetClass
           )}
         >
@@ -419,7 +427,7 @@ export function SidebarNav() {
           </span>
           <span
             className={cn(
-              "min-w-0 truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none",
+              "min-w-0 flex-none truncate text-sm font-medium transition-[max-width,opacity] duration-300 ease-out motion-reduce:transition-none md:group-hover/sidebar:flex-1 md:group-focus-within/sidebar:flex-1",
               "max-w-0 overflow-hidden opacity-0",
               "md:group-hover/sidebar:max-w-[11rem] md:group-hover/sidebar:opacity-100",
               "md:group-focus-within/sidebar:max-w-[11rem] md:group-focus-within/sidebar:opacity-100"

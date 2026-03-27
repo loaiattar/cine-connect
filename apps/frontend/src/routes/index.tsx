@@ -36,14 +36,26 @@ function getGenreNameFromIds(ids?: number[]): string | undefined {
   return match?.name;
 }
 
-function MovieRow({ title, items }: { title: string; items: TrendingItem[] }) {
+function MovieRow({
+  title,
+  items,
+  viewAllList,
+}: {
+  title: string;
+  items: TrendingItem[];
+  viewAllList: "trending" | "top_rated";
+}) {
   if (items.length === 0) return null;
 
   return (
     <GlassPanel className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold text-ink">{title}</h2>
-        <Link to="/search" className={cn(navLinkOutlineClass, "px-3 py-1.5 text-xs")}> 
+        <Link
+          to="/search"
+          search={{ q: "", list: viewAllList, page: 1 }}
+          className={cn(navLinkOutlineClass, "px-3 py-1.5 text-xs")}
+        >
           Voir tout
         </Link>
       </div>
@@ -142,7 +154,7 @@ function AuthenticatedHome() {
                     </Link>
                   </PrimaryButton>
                 ) : null}
-                <Link to="/search" className={navLinkOutlineClass}>
+                <Link to="/search" search={{ q: "", page: 1 }} className={navLinkOutlineClass}>
                   <Search className="h-4 w-4" aria-hidden />
                   Rechercher un film
                 </Link>
@@ -154,8 +166,8 @@ function AuthenticatedHome() {
 
       <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_290px]">
         <section className="min-w-0 space-y-6">
-          <MovieRow title="Trending maintenant" items={trendingRow} />
-          <MovieRow title="Mieux notés en tendance" items={topRatedRow} />
+          <MovieRow title="Trending maintenant" items={trendingRow} viewAllList="trending" />
+          <MovieRow title="Mieux notés en tendance" items={topRatedRow} viewAllList="top_rated" />
           <ContinueWatchingRow />
         </section>
 
@@ -167,20 +179,25 @@ function AuthenticatedHome() {
               <h2 className="text-lg font-semibold text-ink">Browse categories</h2>
             </div>
             <p className="text-sm text-ink-secondary">
-              Colonne genres (stub) pour la future Discover.
+              Ouvrez les films TMDB pour ce genre (pagination sur la page recherche).
             </p>
             <div className="grid grid-cols-1 gap-2">
               {MOVIE_GENRES.slice(0, 8).map((genre) => (
-                <button
+                <Link
                   key={genre.id}
-                  type="button"
+                  to="/search"
+                  search={{ q: "", genre: genre.id, page: 1 }}
                   className="rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-left text-sm text-ink-secondary transition-colors hover:bg-[var(--glass-bg-elevated)] hover:text-ink"
                 >
                   {genre.name}
-                </button>
+                </Link>
               ))}
             </div>
-            <Link to="/search" className={cn(navLinkOutlineClass, "w-full justify-center")}> 
+            <Link
+              to="/search"
+              search={{ q: "", page: 1 }}
+              className={cn(navLinkOutlineClass, "w-full justify-center")}
+            >
               Voir tous les genres
             </Link>
           </GlassPanel>

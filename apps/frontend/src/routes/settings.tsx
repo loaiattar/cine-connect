@@ -92,15 +92,16 @@ function ProfileSettingsForm({
       </div>
       <div>
         <label htmlFor="settings-avatar" className="mb-1 block text-sm text-ink-secondary">
-          URL de l&apos;avatar (temporaire)
+          Lien de l&apos;avatar (optionnel)
         </label>
         <input
           id="settings-avatar"
-          type="url"
+          type="text"
+          autoComplete="off"
           value={avatarUrl}
           onChange={(e) => setAvatarUrl(e.target.value)}
           className={glassInputClass}
-          placeholder="https://…"
+          placeholder="https://… ou chemin après upload (/uploads/avatars/…)"
         />
       </div>
       <div>
@@ -204,8 +205,20 @@ function SettingsPage() {
                 <span>Changement de mot de passe</span>
               </div>
               <p className="text-ink-muted">
-                Bientot disponible. Cette action necessite un endpoint backend dedie (mot de passe actuel + nouveau).
+                Pour confirmer qu&apos;il s&apos;agit bien de vous, nous envoyons un e-mail à votre adresse avec un
+                lien sécurisé (valide 1 h) pour choisir un nouveau mot de passe.
               </p>
+              {user.email ? (
+                <Link
+                  to="/forgot-password"
+                  search={{ email: user.email }}
+                  className="inline-block text-sm font-medium text-accent-red underline-offset-2 hover:underline"
+                >
+                  Recevoir l&apos;e-mail de changement de mot de passe
+                </Link>
+              ) : (
+                <p className="text-sm text-ink-muted">Aucune adresse e-mail sur le compte.</p>
+              )}
             </div>
           </GlassPanel>
 

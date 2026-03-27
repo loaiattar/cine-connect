@@ -90,7 +90,8 @@ export function useMovieSearch(
   options?: UseMovieSearchOptions
 ): UseMovieSearchReturn {
   const trimmed = query.trim();
-  const { page, genre, enabled = true } = options ?? {};
+  const page = options?.page ?? 1;
+  const { genre, enabled = true } = options ?? {};
   const shouldRun = enabled && trimmed.length > 0;
 
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -106,6 +107,42 @@ export function useMovieSearch(
     isLoading,
     isError,
     error: searchQueryError,
+    refetch,
+  };
+}
+
+export type MovieBrowseKind = "trending" | "top_rated" | "discover";
+
+export function useMovieBrowse(
+  kind: MovieBrowseKind | null,
+  options: { genreId?: number; page: number }
+): UseMovieSearchReturn {
+  const { genreId, page } = options;
+  const enabled =
+    kind === "trending" ||
+    kind === "top_rated" ||
+    (kind === "discover" && genreId != null && genreId > 0);
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["movies", "browse", kind, genreId ?? 0, page],
+    queryFn: async () => {
+      if (kind === "trending") return moviesService.getTrending(page);
+      if (kind === "top_rated") return moviesService.getTopRated(page);
+      if (kind === "discover" && genreId != null) {
+        return moviesService.discoverByGenre(genreId, page);
+      }
+      throw new Error("Invalid browse mode");
+    },
+    enabled,
+  });
+
+  const browseError = useQueryDisplayError(isError, error);
+
+  return {
+    data: data as SearchResponse | undefined,
+    isLoading,
+    isError,
+    error: browseError,
     refetch,
   };
 }

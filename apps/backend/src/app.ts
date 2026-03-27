@@ -18,6 +18,7 @@ import { openApiSpec } from './openapi';
 import { getCorsAllowlist } from './config';
 import { authRateLimiter, generalApiRateLimiter } from './middlewares/rateLimit.middleware';
 import path from "node:path";
+import { legacyUploadsRootFromCwd, resolveExistingAvatarFilePath, uploadsPublicRoot } from "./paths";
 
 function applyCors(app: Express): void {
   const allowlist = getCorsAllowlist();
@@ -41,11 +42,16 @@ const app: Express = express();
  * - `connect-src` `'self'`: in-browser fetch of `/openapi.json` same-origin.
  * - `img-src` / `font-src`: Swagger UI assets from CDN (`https:`, `data:`).
  *
+ * `crossOriginResourcePolicy: cross-origin`: default Helmet CORP is `same-origin`, which makes Firefox
+ * (and others) reject `<img src="http://api:port/uploads/...">` when the SPA is another origin
+ * (e.g. Vite on :5173). Avatars are public; this matches typical CDN-style embedding.
+ *
  * See also: `apps/backend/README.md` → Security headers.
  */
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -66,6 +72,24 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use(cookieParser());
+
+// Avatars: explicit sendFile so serving does not depend only on express.static (path/cwd edge cases on Windows).
+app.get("/uploads/avatars/:filename", (req, res, next) => {
+  const abs = resolveExistingAvatarFilePath(String(req.params.filename ?? ""));
+  if (!abs) {
+    res.status(404).json({ success: false, error: "Avatar file not found" });
+    return;
+  }
+  res.sendFile(abs, { maxAge: "1d" }, (err) => {
+    if (err) next(err);
+  });
+});
+
+// Uploaded media: canonical dir under apps/backend/uploads, plus legacy cwd/uploads when cwd is repo root.
+app.use("/uploads", express.static(uploadsPublicRoot));
+if (path.normalize(legacyUploadsRootFromCwd) !== path.normalize(uploadsPublicRoot)) {
+  app.use("/uploads", express.static(legacyUploadsRootFromCwd));
+}
 
 // HTTP request logging via morgan (skip in tests).
 // MORGAN_FORMAT: preset ("combined", "dev", "common", "short", "tiny") or a custom token string — see morgan docs.
@@ -153,7 +177,6 @@ app.get("/swagger", sendSwaggerHtml);
 app.get("/swagger/", sendSwaggerHtml);
 
 app.use(express.json());
-app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 
 const API_V1 = '/api/v1';
 app.use(API_V1, generalApiRateLimiter);

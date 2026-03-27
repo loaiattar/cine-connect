@@ -10,6 +10,8 @@ import {
   navLinkOutlineClass,
 } from "@/lib/glass-ui";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/api-origin";
+import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
 import { useState } from "react";
 
 type ProfileConnectionsTab = "followers" | "following";
@@ -17,6 +19,7 @@ type ProfileConnectionsTab = "followers" | "following";
 function FollowListRow({ user: u }: { user: FollowUserRow }) {
   const label = u.name?.trim() || "Utilisateur";
   const avatar = u.avatarUrl?.trim() || null;
+  const avatarSrc = resolveMediaUrl(avatar);
   return (
     <li>
       <Link
@@ -27,8 +30,8 @@ function FollowListRow({ user: u }: { user: FollowUserRow }) {
           focusVisibleRingClass
         )}
       >
-        {avatar ? (
-          <img src={avatar} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
+        {avatarSrc ? (
+          <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-10 w-10" />
         ) : (
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
             <User className="h-5 w-5 text-ink-muted" />
@@ -82,7 +85,7 @@ function UserProfilePage() {
   const [connectionsTab, setConnectionsTab] = useState<ProfileConnectionsTab>("followers");
 
   const displayName = user?.name ?? "Utilisateur";
-  const avatarDisplay = profile?.avatarUrl ?? null;
+  const avatarDisplay = resolveMediaUrl(profile?.avatarUrl ?? null);
   const followersCountDisplay = stats?.followersCount ?? followersTotal;
   const followingCountDisplay = stats?.followingCount ?? followingTotal;
   const countsLoading =
@@ -127,10 +130,11 @@ function UserProfilePage() {
           <div className="space-y-8">
             <GlassPanel className="flex items-center gap-4">
               {avatarDisplay ? (
-                <img
+                <RoundedAvatarImage
                   src={avatarDisplay}
                   alt=""
-                  className="h-20 w-20 rounded-full object-cover"
+                  sizeClassName="h-20 w-20"
+                  ringClassName="ring-1 ring-[var(--glass-border)]"
                 />
               ) : (
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">

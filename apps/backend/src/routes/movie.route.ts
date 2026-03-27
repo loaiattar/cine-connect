@@ -6,7 +6,9 @@ import { validate } from "../middlewares/validation.middleware";
 import { publicMovieReadRateLimiter } from "../middlewares/rateLimit.middleware";
 import {
     getMovieDetailsSchema,
+    getDiscoverMoviesSchema,
     getMoviesSearchSchema,
+    getTopRatedMoviesSchema,
     toggleFavoriteSchema,
     getUserFavoritesSchema,
     addToWatchlistSchema,
@@ -22,8 +24,24 @@ import {
 
 const router: Router = Router();
 
-// GET /api/movies/trending — list trending movies (TMDB)
+// GET /api/movies/trending — list trending movies (TMDB); optional ?page=
 router.get("/trending", publicMovieReadRateLimiter, asyncHandler(MovieController.getTrending));
+// GET /api/movies/top-rated — TMDB top rated; optional ?page= (auth, same as search)
+router.get(
+  "/top-rated",
+  publicMovieReadRateLimiter,
+  authMiddleware,
+  validate(getTopRatedMoviesSchema),
+  asyncHandler(MovieController.getTopRated)
+);
+// GET /api/movies/discover — TMDB discover by genre; ?genre=&page= (auth)
+router.get(
+  "/discover",
+  publicMovieReadRateLimiter,
+  authMiddleware,
+  validate(getDiscoverMoviesSchema),
+  asyncHandler(MovieController.discoverMovies)
+);
 // GET /api/movies/search — search movies (auth required; q, optional page, optional genre)
 router.get(
   "/search",
