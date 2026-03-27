@@ -66,6 +66,17 @@ process.once('SIGTERM', () => {
   void gracefulShutdown('SIGTERM');
 });
 
+httpServer.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(
+      { port, code: err.code },
+      `Port ${port} is already in use. Stop the other process (or change PORT in apps/backend/.env) and try again.`
+    );
+    process.exit(1);
+  }
+  throw err;
+});
+
 httpServer.listen(port, () => {
   logger.info(
     {
