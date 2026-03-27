@@ -15,7 +15,8 @@ COPY packages ./packages
 RUN pnpm install --frozen-lockfile
 
 # Vite inlines `import.meta.env.VITE_*` at build time — must be set here, not at nginx runtime.
-ARG VITE_API_BASE_URL=http://localhost:3000
+# No default: production bundles must not ship with an implicit API URL (see issue #341).
+ARG VITE_API_BASE_URL
 ARG VITE_APP_NAME=CinéConnect
 # Optional TMDB image CDN base (must match `utils.ts` default if unchanged)
 ARG VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p

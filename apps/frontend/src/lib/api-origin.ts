@@ -10,7 +10,9 @@ export function resolveApiBaseUrl(): string {
   if (import.meta.env.DEV) {
     return "";
   }
-  return "http://localhost:3000";
+  throw new Error(
+    "VITE_API_BASE_URL was not set at build time. Rebuild the app with VITE_API_BASE_URL defined (see apps/frontend/README.md)."
+  );
 }
 
 export const ApiClientConfig = {
