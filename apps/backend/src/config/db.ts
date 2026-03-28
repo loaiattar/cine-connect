@@ -1,79 +1,90 @@
 import { existsSync } from 'node:fs';
 import dotenv from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from '../db/schema';
+import { validateEnv } from './env';
 
 dotenv.config();
 
-const PRODUCTION_JWT_SECRET_MIN_LENGTH = 32;
+type DrizzleInstance = PostgresJsDatabase<typeof schema>;
+
+let pgClient: postgres.Sql | undefined;
+let drizzleDb: DrizzleInstance | undefined;
 
 /**
- * Validates that required environment variables are set.
- * Call early at bootstrap (e.g. in index.ts after dotenv.config()).
- * - DATABASE_URL: always required.
- * - JWT_SECRET: always required (set in apps/backend/.env.test for Vitest). No hardcoded fallback.
- * - TMDB_API_KEY: required when NODE_ENV is not "test" (movie/TMDB routes depend on it).
+ * Google Cloud SQL (unix socket) URLs look like:
+ *   postgresql://USER:PASSWORD@/DBNAME?host=/cloudsql/PROJECT:REGION:INSTANCE
+ * Node's URL parser and postgres.js reject that string (empty host, colons in query).
+ * Convert to postgres.js options with an explicit socket path.
  */
-export function validateEnv(): void {
-  if (!process.env.DATABASE_URL?.trim()) {
-    throw new Error('DATABASE_URL environment variable is required');
-  }
-
-  if (!process.env.JWT_SECRET?.trim()) {
-    throw new Error('JWT_SECRET environment variable is required');
-  }
-
-  if (
-    process.env.NODE_ENV === 'production' &&
-    process.env.JWT_SECRET.length < PRODUCTION_JWT_SECRET_MIN_LENGTH
-  ) {
-    throw new Error(
-      `JWT_SECRET must be at least ${PRODUCTION_JWT_SECRET_MIN_LENGTH} characters in production`
-    );
-  }
-
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (!process.env.TMDB_API_KEY?.trim()) {
-    throw new Error(
-      'TMDB_API_KEY environment variable is required when NODE_ENV is not "test" (movie routes depend on it)'
-    );
-  }
-}
-
-/**
- * Returns the JWT secret. Use this instead of reading process.env.JWT_SECRET directly.
- * validateEnv() must run at startup before any JWT is signed or verified.
- */
-export function getJwtSecret(): string {
-  return process.env.JWT_SECRET!.trim();
-}
-
-function getConnectionString(): string {
-  validateEnv();
-  let connectionString = process.env.DATABASE_URL!;
+function postgresConfigFromDatabaseUrl(
+  raw: string
+): string | postgres.Options<Record<string, postgres.PostgresType>> {
+  let url = raw.trim();
   const isDocker =
     process.env.IS_DOCKER === 'true' || existsSync('/.dockerenv');
-  // Docker Compose: backend container uses hostname `cine-db`, not localhost.
-  // Cloud Run (and similar) also sets IS_DOCKER in the image but must use DATABASE_URL as-is
-  // (e.g. Cloud SQL socket); K_SERVICE is set by Cloud Run.
   if (isDocker && !process.env.K_SERVICE) {
-    connectionString = connectionString.replace('localhost', 'cine-db');
+    url = url.replace('localhost', 'cine-db');
   }
-  return connectionString;
+
+  const m = url.match(
+    /^postgres(?:ql)?:\/\/([^:/?#]+):([^@]*?)@\/([^?#]+)(?:\?([^#]*))?$/i
+  );
+  if (m) {
+    const [, userEnc, passwordEnc, database, queryPart] = m;
+    const params = new URLSearchParams(
+      queryPart?.startsWith('?') ? queryPart.slice(1) : (queryPart ?? '')
+    );
+    const socketDir = params.get('host')?.trim();
+    if (socketDir?.startsWith('/cloudsql/')) {
+      const port = Number(params.get('port')) || 5432;
+      const decode = (s: string) =>
+        decodeURIComponent(s.replace(/\+/g, ' '));
+      return {
+        path: `${socketDir}/.s.PGSQL.${port}`,
+        database,
+        user: decode(userEnc),
+        password: decode(passwordEnc),
+        port,
+      };
+    }
+  }
+
+  return url;
 }
 
-const client = postgres(getConnectionString());
-export const db = drizzle(client, { schema });
+function ensurePool(): void {
+  if (pgClient) return;
+  validateEnv();
+  const cfg = postgresConfigFromDatabaseUrl(process.env.DATABASE_URL!);
+  pgClient =
+    typeof cfg === 'string' ? postgres(cfg) : postgres(cfg);
+  drizzleDb = drizzle(pgClient, { schema });
+}
 
-let dbClosed = false;
+/**
+ * Lazily creates the Postgres pool on first use so bootstrap can run dotenv.config()
+ * and validateEnv() before any DB connection (local dev and predictable Cloud Run startup).
+ */
+export const db = new Proxy({} as DrizzleInstance, {
+  get(_target, prop, receiver) {
+    ensurePool();
+    const real = drizzleDb as object;
+    const value = Reflect.get(real, prop, receiver);
+    if (typeof value === 'function') {
+      return (value as (...args: unknown[]) => unknown).bind(drizzleDb);
+    }
+    return value;
+  },
+});
 
 /** Closes the Postgres pool (postgres.js). Safe to call multiple times. */
 export async function closeDatabase(): Promise<void> {
-  if (dbClosed) return;
-  dbClosed = true;
+  if (!pgClient) return;
+  const client = pgClient;
+  pgClient = undefined;
+  drizzleDb = undefined;
   await client.end({ timeout: 10 });
 }
