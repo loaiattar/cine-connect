@@ -32,21 +32,20 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Backend'
-    entrypoint: bash
+    entrypoint: gcloud
     args:
-      - -c
-      - |
-        set -euo pipefail
-        gcloud run deploy backend-service \
-          --image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest \
-          --region=europe-west1 \
-          --add-cloudsql-instances=${_CLOUDSQL_INSTANCE} \
-          --remove-env-vars=JWT_SECRET,TMDB_API_KEY,DATABASE_URL \
-          --remove-secrets=JWT_SECRET,TMDB_API_KEY,DATABASE_URL \
-          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN} \
-          --set-secrets=JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,DATABASE_URL=DATABASE_URL:latest \
-          --allow-unauthenticated
-
+      - 'run'
+      - 'deploy'
+      - 'backend-service'
+      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest'
+      - '--region=europe-west1'
+      - '--add-cloudsql-instances=lumera-491513:europe-west1:lumera-db-instance'
+      - '--update-env-vars'
+      - 'NODE_ENV=production,FRONTEND_ORIGIN=https://frontend-service-96031994791.europe-west1.run.app,DATABASE_URL=postgresql://postgres:PASSWORD_loai123@/cineconnect_db?host=/cloudsql/lumera-491513:europe-west1:lumera-db-instance'
+      - '--update-secrets'
+      - 'JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest'
+      - '--allow-unauthenticated'
+      
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Frontend'
     args:
