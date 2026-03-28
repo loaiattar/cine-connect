@@ -57,7 +57,10 @@ function getConnectionString(): string {
   let connectionString = process.env.DATABASE_URL!;
   const isDocker =
     process.env.IS_DOCKER === 'true' || existsSync('/.dockerenv');
-  if (isDocker) {
+  // Docker Compose: backend container uses hostname `cine-db`, not localhost.
+  // Cloud Run (and similar) also sets IS_DOCKER in the image but must use DATABASE_URL as-is
+  // (e.g. Cloud SQL socket); K_SERVICE is set by Cloud Run.
+  if (isDocker && !process.env.K_SERVICE) {
     connectionString = connectionString.replace('localhost', 'cine-db');
   }
   return connectionString;

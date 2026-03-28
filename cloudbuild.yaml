@@ -1,0 +1,54 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Backend'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest', '-f', 'apps/backend/Dockerfile', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Backend'
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Deploy Backend'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend-service'
+      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest'
+      - '--region=europe-west1'
+      - '--add-cloudsql-instances=lumera-491513:europe-west1:lumera-db-instance'
+      - '--set-env-vars'
+      - 'TMDB_API_KEY=4b55ed4d99fa051fdb5367d52214964c,NODE_ENV=production,FRONTEND_ORIGIN=https://frontend-service-96031994791.europe-west1.run.app,DATABASE_URL=postgresql://postgres:PASSWORD_loai123@/cineconnect_db?host=/cloudsql/lumera-491513:europe-west1:lumera-db-instance'
+      - '--update-secrets'
+      - 'JWT_SECRET=JWT_SECRET:latest'
+      - '--allow-unauthenticated'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Frontend'
+    args: 
+      - 'build'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/frontend:latest'
+      - '--build-arg'
+      - 'VITE_API_BASE_URL=https://backend-service-96031994791.europe-west1.run.app'
+      - '-f'
+      - 'apps/frontend/Dockerfile'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Frontend'
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/frontend:latest']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Deploy Frontend'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend-service'
+      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/frontend:latest'
+      - '--region=europe-west1'
+      - '--allow-unauthenticated'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
