@@ -8,7 +8,7 @@ import { logger } from './logger';
 dotenv.config();
 validateEnv();
 
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 const httpServer = http.createServer(app);
 createSocketServer(httpServer);
 
@@ -77,10 +77,14 @@ httpServer.on('error', (err: NodeJS.ErrnoException) => {
   throw err;
 });
 
-httpServer.listen(port, () => {
+// Cloud Run (and other platforms) require listening on all interfaces, not only loopback.
+const listenHost = process.env.LISTEN_HOST ?? '0.0.0.0';
+
+httpServer.listen({ port, host: listenHost }, () => {
   logger.info(
     {
       port,
+      host: listenHost,
       serverUrl: `http://localhost:${port}`,
       docsUrl: `http://localhost:${port}/docs`,
       socketOrigin: `http://localhost:${port}`,

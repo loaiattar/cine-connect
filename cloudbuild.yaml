@@ -2,6 +2,7 @@
 #
 # Before this works:
 # 1) Secret Manager: create secrets JWT_SECRET, TMDB_API_KEY, DATABASE_URL (same names as below).
+#    JWT_SECRET: at least 32 characters when NODE_ENV=production (backend validateEnv).
 #    DATABASE_URL example for Cloud SQL socket:
 #    postgresql://USER:PASSWORD@/DBNAME?host=/cloudsql/PROJECT_ID:REGION:INSTANCE
 # 2) Cloud Build service account (see trigger "Service account", often ...@cloudbuild.gserviceaccount.com)
