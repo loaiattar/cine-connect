@@ -10,6 +10,11 @@
 #    roles/secretmanager.secretAccessor on those secrets, roles/logging.logWriter (fixes truncated logs),
 #    and Artifact Registry writer. Cloud Run's runtime SA needs roles/cloudsql.client for --add-cloudsql-instances.
 # 3) Override _FRONTEND_ORIGIN / _BACKEND_URL in the trigger if URLs differ.
+#
+# If deploy fails with: "Cannot update environment variable [TMDB_API_KEY] to string literal
+# because it has already been set with a different type" — an older revision used plaintext
+# env while the new deploy uses secrets (or the reverse). The Deploy Backend step removes
+# both bindings before re-applying secrets so the types stay consistent.
 
 substitutions:
   _FRONTEND_ORIGIN: https://frontend-service-96031994791.europe-west1.run.app
@@ -27,17 +32,20 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Backend'
-    entrypoint: gcloud
+    entrypoint: bash
     args:
-      - 'run'
-      - 'deploy'
-      - 'backend-service'
-      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest'
-      - '--region=europe-west1'
-      - '--add-cloudsql-instances=${_CLOUDSQL_INSTANCE}'
-      - '--set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN}'
-      - '--set-secrets=JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,DATABASE_URL=DATABASE_URL:latest'
-      - '--allow-unauthenticated'
+      - -c
+      - |
+        set -euo pipefail
+        gcloud run deploy backend-service \
+          --image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest \
+          --region=europe-west1 \
+          --add-cloudsql-instances=${_CLOUDSQL_INSTANCE} \
+          --remove-env-vars=JWT_SECRET,TMDB_API_KEY,DATABASE_URL \
+          --remove-secrets=JWT_SECRET,TMDB_API_KEY,DATABASE_URL \
+          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN} \
+          --set-secrets=JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,DATABASE_URL=DATABASE_URL:latest \
+          --allow-unauthenticated
 
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Frontend'
