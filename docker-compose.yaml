@@ -75,15 +75,18 @@ services:
       - cineconnect-network
 
   # VITE_* vars are baked in at image build time. Set VITE_API_BASE_URL in root .env (see .env.example)
-  # or: docker compose build --build-arg VITE_API_BASE_URL=https://api.example.com frontend
+  # or use VITE_SAME_ORIGIN_API=true with empty VITE_API_BASE_URL (nginx proxies /api to backend).
+  # NGINX_API_UPSTREAM must be reachable from the frontend container (Compose service name + port).
   frontend:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
       args:
+        VITE_SAME_ORIGIN_API: ${VITE_SAME_ORIGIN_API:-false}
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000}
         VITE_APP_NAME: ${VITE_APP_NAME:-CinéConnect}
         VITE_TMDB_IMAGE_BASE_URL: ${VITE_TMDB_IMAGE_BASE_URL:-https://image.tmdb.org/t/p}
+        NGINX_API_UPSTREAM: ${NGINX_API_UPSTREAM:-http://backend:3000}
     container_name: cine-frontend
     ports:
       - "8080:80"

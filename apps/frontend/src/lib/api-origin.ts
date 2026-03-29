@@ -10,8 +10,11 @@ export function resolveApiBaseUrl(): string {
   if (import.meta.env.DEV) {
     return "";
   }
+  if (String(import.meta.env.VITE_SAME_ORIGIN_API ?? "").toLowerCase() === "true") {
+    return "";
+  }
   throw new Error(
-    "VITE_API_BASE_URL was not set at build time. Rebuild the app with VITE_API_BASE_URL defined (see apps/frontend/README.md)."
+    "VITE_API_BASE_URL was not set at build time. Rebuild with VITE_API_BASE_URL or VITE_SAME_ORIGIN_API=true (see apps/frontend/README.md)."
   );
 }
 
