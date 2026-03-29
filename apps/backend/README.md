@@ -87,6 +87,17 @@ The API uses [Helmet](https://helmetjs.github.io/) early in the Express stack (`
 
 `crossOriginEmbedderPolicy` is disabled so typical cross-origin browser clients (SPA + API) are not blocked by default COEP behavior on JSON responses.
 
+## Database migrations (production)
+
+After deploying the API to a **new** database (e.g. Cloud SQL), apply migrations or the app will return 500 on register/login when inserting into missing tables (`refresh_tokens`, etc.):
+
+```bash
+# From repo root, with DATABASE_URL pointing at that database (Cloud SQL Auth Proxy if needed):
+pnpm --filter backend db:migrate
+```
+
+Alternatively: `pnpm --filter backend db:push` syncs the schema from `src/db/schema.ts` without using the `drizzle/` SQL files.
+
 ## Environment
 
 - `DATABASE_URL` — PostgreSQL connection string.

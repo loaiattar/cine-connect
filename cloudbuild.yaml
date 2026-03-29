@@ -9,6 +9,7 @@
 #    Cloud Run runtime SA, roles/secretmanager.secretAccessor on those secrets,
 #    roles/logging.logWriter, Artifact Registry writer. Runtime SA: roles/cloudsql.client.
 # 3) Override _FRONTEND_ORIGIN / _BACKEND_URL / _CLOUDSQL_INSTANCE in the trigger if needed.
+# 4) After first deploy or schema changes: run DB migrations on Cloud SQL (apps/backend/README.md).
 #
 # Never put DATABASE_URL, JWT_SECRET, or TMDB_API_KEY in --set-env-vars / --update-env-vars.
 # If a key was once a secret and you switch to a literal (or the reverse), gcloud fails until
