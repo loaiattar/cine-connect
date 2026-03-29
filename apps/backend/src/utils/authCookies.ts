@@ -28,12 +28,18 @@ export function authCookieBaseOptions(): CookieOptions {
   const sameSite = authCookieSameSite();
   // SameSite=None is rejected unless Secure is set.
   const secure = isProd || sameSite === "none";
-  return {
+  const base: CookieOptions & { partitioned?: boolean } = {
     httpOnly: true,
     secure,
     sameSite,
     path: "/",
   };
+  // CHIPS: without Partitioned, Firefox/Chrome often drop cross-site cookies on fetch from the SPA
+  // (e.g. separate *.run.app front/back). Requires SameSite=None + Secure.
+  if (sameSite === "none") {
+    base.partitioned = true;
+  }
+  return base;
 }
 
 export function attachAuthCookies(
