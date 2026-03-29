@@ -22,11 +22,12 @@ ARG VITE_API_BASE_URL=
 ARG VITE_APP_NAME=CinéConnect
 ARG VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
 ENV VITE_SAME_ORIGIN_API=${VITE_SAME_ORIGIN_API}
-ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_APP_NAME=${VITE_APP_NAME}
 ENV VITE_TMDB_IMAGE_BASE_URL=${VITE_TMDB_IMAGE_BASE_URL}
 
-RUN pnpm run build --filter=frontend
+# Same-origin builds: force empty VITE_API_BASE_URL (Cloud Build sometimes drops `=`-only args).
+RUN if [ "${VITE_SAME_ORIGIN_API}" = "true" ]; then export VITE_API_BASE_URL=; else export VITE_API_BASE_URL="${VITE_API_BASE_URL}"; fi \
+    && pnpm run build --filter=frontend
 
 FROM nginx:stable-alpine
 

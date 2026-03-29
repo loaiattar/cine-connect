@@ -60,7 +60,7 @@ async function tryRefreshSession(): Promise<boolean> {
   }
   const p = (async (): Promise<boolean> => {
     try {
-      const base = ApiClientConfig.BASE_URL;
+      const base = resolveApiBaseUrl();
       const res = await fetch(`${base}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
         method: "POST",
         credentials: "include",
@@ -93,10 +93,15 @@ async function tryRefreshSession(): Promise<boolean> {
 }
 
 export class ApiClient {
-  private baseUrl: string;
+  /** When set, used instead of {@link resolveApiBaseUrl} (tests). */
+  private readonly baseOverride?: string;
 
-  constructor(baseUrl: string = resolveApiBaseUrl()) {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    this.baseOverride = baseUrl;
+  }
+
+  private apiBase(): string {
+    return this.baseOverride ?? resolveApiBaseUrl();
   }
 
   /**
@@ -110,7 +115,7 @@ export class ApiClient {
     headers: Record<string, string> = {},
     retriedAfterRefresh = false
   ): Promise<T> {
-    const url = `${this.baseUrl}${resolveVersionedApiPath(endpoint)}`;
+    const url = `${this.apiBase()}${resolveVersionedApiPath(endpoint)}`;
 
     const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
     const requestHeaders: Record<string, string> = isFormData
