@@ -15,12 +15,23 @@ function accessCookieMaxAgeMs(): number {
 
 const REFRESH_COOKIE_MAX_MS = 7 * 24 * 60 * 60 * 1000;
 
+function authCookieSameSite(): CookieOptions["sameSite"] {
+  const raw = process.env.AUTH_COOKIE_SAME_SITE?.trim().toLowerCase();
+  if (raw === "none" || raw === "lax" || raw === "strict") {
+    return raw;
+  }
+  return "lax";
+}
+
 export function authCookieBaseOptions(): CookieOptions {
   const isProd = process.env.NODE_ENV === "production";
+  const sameSite = authCookieSameSite();
+  // SameSite=None is rejected unless Secure is set.
+  const secure = isProd || sameSite === "none";
   return {
     httpOnly: true,
-    secure: isProd,
-    sameSite: "lax",
+    secure,
+    sameSite,
     path: "/",
   };
 }

@@ -47,7 +47,7 @@ steps:
           --image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest \
           --region=europe-west1 \
           --add-cloudsql-instances=${_CLOUDSQL_INSTANCE} \
-          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN} \
+          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN},AUTH_COOKIE_SAME_SITE=none \
           --set-secrets=JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,DATABASE_URL=DATABASE_URL:latest \
           --allow-unauthenticated
 
