@@ -9,6 +9,8 @@
 #    Cloud Run runtime SA, roles/secretmanager.secretAccessor on those secrets,
 #    roles/logging.logWriter, Artifact Registry writer. Runtime SA: roles/cloudsql.client.
 # 3) Override _FRONTEND_ORIGIN / _BACKEND_URL / _CLOUDSQL_INSTANCE in the trigger if needed.
+#    Frontend is built with VITE_SAME_ORIGIN_API: nginx proxies /api to _BACKEND_URL so auth
+#    cookies stay first-party on the frontend host (cross-site cookies to *.run.app are unreliable).
 # 4) After first deploy or schema changes: run DB migrations on Cloud SQL (apps/backend/README.md).
 #
 # Never put DATABASE_URL, JWT_SECRET, or TMDB_API_KEY in --set-env-vars / --update-env-vars.
@@ -47,7 +49,7 @@ steps:
           --image=europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/backend:latest \
           --region=europe-west1 \
           --add-cloudsql-instances=${_CLOUDSQL_INSTANCE} \
-          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN},AUTH_COOKIE_SAME_SITE=none \
+          --set-env-vars=NODE_ENV=production,FRONTEND_ORIGIN=${_FRONTEND_ORIGIN} \
           --set-secrets=JWT_SECRET=JWT_SECRET:latest,TMDB_API_KEY=TMDB_API_KEY:latest,DATABASE_URL=DATABASE_URL:latest \
           --allow-unauthenticated
 
@@ -58,7 +60,11 @@ steps:
       - '-t'
       - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cine-connect-repo/frontend:latest'
       - '--build-arg'
-      - 'VITE_API_BASE_URL=${_BACKEND_URL}'
+      - 'VITE_SAME_ORIGIN_API=true'
+      - '--build-arg'
+      - 'VITE_API_BASE_URL='
+      - '--build-arg'
+      - 'NGINX_API_UPSTREAM=${_BACKEND_URL}'
       - '-f'
       - 'apps/frontend/Dockerfile'
       - '.'

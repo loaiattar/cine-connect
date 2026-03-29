@@ -13,9 +13,11 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, __dirname, "VITE_");
   if (command === "build") {
     const api = String(env.VITE_API_BASE_URL ?? "").trim();
-    if (!api) {
+    const sameOriginApi =
+      String(env.VITE_SAME_ORIGIN_API ?? "").trim().toLowerCase() === "true";
+    if (!api && !sameOriginApi) {
       throw new Error(
-        "VITE_API_BASE_URL must be set when running `vite build` (CI, Docker, or local: export it or use apps/frontend/.env.production). See apps/frontend/README.md."
+        "For `vite build`, set VITE_API_BASE_URL to the API origin, or set VITE_SAME_ORIGIN_API=true when nginx proxies /api to the backend (see apps/frontend/README.md)."
       );
     }
   }
