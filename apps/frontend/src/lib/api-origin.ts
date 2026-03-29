@@ -4,18 +4,39 @@
  */
 export function resolveApiBaseUrl(): string {
   const raw = import.meta.env.VITE_API_BASE_URL;
+  let baked: string;
   if (raw != null && String(raw).trim() !== "") {
-    return String(raw).replace(/\/$/, "");
+    baked = String(raw).replace(/\/$/, "");
+  } else if (import.meta.env.DEV) {
+    baked = "";
+  } else if (String(import.meta.env.VITE_SAME_ORIGIN_API ?? "").toLowerCase() === "true") {
+    baked = "";
+  } else {
+    throw new Error(
+      "VITE_API_BASE_URL was not set at build time. Rebuild with VITE_API_BASE_URL or VITE_SAME_ORIGIN_API=true (see apps/frontend/README.md)."
+    );
   }
-  if (import.meta.env.DEV) {
-    return "";
+
+  // Production in the browser: if the bundle still points at another host (e.g. old image with
+  // VITE_API_BASE_URL=https://backend…run.app) but the page is on the SPA host, use same-origin
+  // `/api` so nginx can proxy and httpOnly cookies stay first-party.
+  if (
+    typeof globalThis !== "undefined" &&
+    "location" in globalThis &&
+    import.meta.env.PROD &&
+    baked !== ""
+  ) {
+    const loc = (globalThis as unknown as { location: { origin: string } }).location;
+    try {
+      if (new URL(baked).origin !== loc.origin) {
+        return "";
+      }
+    } catch {
+      /* keep baked */
+    }
   }
-  if (String(import.meta.env.VITE_SAME_ORIGIN_API ?? "").toLowerCase() === "true") {
-    return "";
-  }
-  throw new Error(
-    "VITE_API_BASE_URL was not set at build time. Rebuild with VITE_API_BASE_URL or VITE_SAME_ORIGIN_API=true (see apps/frontend/README.md)."
-  );
+
+  return baked;
 }
 
 export const ApiClientConfig = {

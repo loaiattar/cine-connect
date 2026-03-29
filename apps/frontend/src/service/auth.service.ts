@@ -1,4 +1,4 @@
-import { ApiClientConfig } from "../lib/api-origin";
+import { ApiClientConfig, resolveApiBaseUrl } from "../lib/api-origin";
 import { parseApiEnvelope, userMessageFromApiJson } from "../lib/normalize-api-error";
 
 export interface LoginCredentials {
@@ -32,8 +32,6 @@ export interface ResetPasswordPayload {
   newPassword: string;
 }
 
-const baseUrl = ApiClientConfig.BASE_URL;
-
 export const authService = {
   /**
    * If a valid `cc_refresh` cookie exists, rotates tokens and returns session payload.
@@ -41,7 +39,7 @@ export const authService = {
    */
   async restoreSession(): Promise<AuthSessionResponse | null> {
     try {
-      const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
+      const res = await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/refresh`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -62,7 +60,7 @@ export const authService = {
   },
 
   async login(credentials: LoginCredentials): Promise<AuthSessionResponse> {
-    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/login`, {
+    const res = await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -87,7 +85,7 @@ export const authService = {
   },
 
   async register(credentials: RegisterCredentials): Promise<AuthSessionResponse> {
-    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/register`, {
+    const res = await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/register`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -109,7 +107,7 @@ export const authService = {
   },
 
   async logout(): Promise<void> {
-    await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/logout`, {
+    await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/logout`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -117,7 +115,7 @@ export const authService = {
   },
 
   async forgotPassword(payload: ForgotPasswordPayload): Promise<void> {
-    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/forgot-password`, {
+    const res = await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/forgot-password`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -130,7 +128,7 @@ export const authService = {
   },
 
   async resetPassword(payload: ResetPasswordPayload): Promise<void> {
-    const res = await fetch(`${baseUrl}${ApiClientConfig.API_V1_PREFIX}/auth/reset-password`, {
+    const res = await fetch(`${resolveApiBaseUrl()}${ApiClientConfig.API_V1_PREFIX}/auth/reset-password`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
