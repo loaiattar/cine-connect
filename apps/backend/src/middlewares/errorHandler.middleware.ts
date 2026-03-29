@@ -74,6 +74,23 @@ export function errorHandler(
     return;
   }
 
+  // PostgreSQL: undefined_table (e.g. missing refresh_tokens after deploy)
+  const pickPgCode = (e: unknown): string | null => {
+    if (e && typeof e === "object" && "code" in e && typeof (e as { code: unknown }).code === "string") {
+      return (e as { code: string }).code;
+    }
+    return null;
+  };
+  const pgCode = pickPgCode(err) ?? pickPgCode(cause);
+  if (pgCode === "42P01") {
+    logger.error(
+      { err },
+      "PostgreSQL undefined_table — run migrations against this database: pnpm --filter backend db:migrate (or db:push)."
+    );
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+    return;
+  }
+
   logger.error({ err }, "Unhandled error");
   res.status(500).json({ success: false, error: "Internal Server Error" });
 }
