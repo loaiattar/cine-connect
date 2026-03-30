@@ -74,7 +74,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
       const normalized = payload.messages.map((m) => ({
         id: m.id,
         senderId: m.senderId,
-        senderEmail: m.senderEmail,
+        senderName: m.senderName,
         roomId: m.roomId,
         content: m.content,
         createdAt:
@@ -90,7 +90,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
       roomId: string;
       text: string;
       userId?: number;
-      email?: string;
+      senderName?: string;
       timestamp?: string;
     }) => {
       const rid = payload.roomId;
@@ -98,7 +98,7 @@ export function useChatRoom(options: UseChatRoomOptions): UseChatRoomReturn {
       const newMsg: ChatMessage = {
         id: undefined,
         senderId: payload.userId ?? null,
-        senderEmail: payload.email ?? null,
+        senderName: payload.senderName ?? null,
         roomId: rid,
         content: payload.text ?? "",
         createdAt: payload.timestamp ?? new Date().toISOString(),

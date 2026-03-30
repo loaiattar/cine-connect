@@ -95,7 +95,8 @@ export const UserController = {
     const q = String(req.query.q ?? "");
     const limit = Number(req.query.limit) || 20;
     const offset = Number(req.query.offset) || 0;
-    const result = await UserService.searchPublicUsers(q, limit, offset);
+    const viewerUserId = req.user?.userId ?? null;
+    const result = await UserService.searchPublicUsers(q, limit, offset, viewerUserId);
     return success(res, result);
   },
 };

@@ -47,7 +47,7 @@ const MAIN_NAV: NavItemConfig[] = [
     label: "Profil",
     icon: User,
     end: true,
-    isActive: (p) => p === "/profile" || p.startsWith("/profile/"),
+    isActive: (p) => p === "/profile" || p === "/profile/" || /^\/profile\/\d/.test(p),
   },
   { to: "/chat", label: "Chat", icon: MessageCircle, end: true },
   { to: "/notifications", label: "Notifications", icon: Bell, end: true },

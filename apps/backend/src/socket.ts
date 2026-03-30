@@ -3,10 +3,10 @@
  *
  * Connection & authentication
  * - Connect to the same origin as the HTTP API (e.g. http://localhost:3000).
- * - Optional auth: send JWT in the handshake so the server can attach userId/email to the socket.
+ * - Optional auth: send JWT in the handshake so the server can attach userId and a display name to the socket.
  *   Client: io({ auth: { token: "Bearer <jwt>" } }) or auth: { token: "<jwt>" }.
  * - If no token or invalid token, the socket still connects but socket.data.userId is undefined
- *   (anonymous user; you can still join rooms and send messages).
+ *   (anonymous user; you can still join rooms and send messages). Display name is loaded from DB when authenticated.
  *
  * Room model
  * - Rooms are identified by string roomId. Examples: "global", "film:550", "film:123".
@@ -19,8 +19,8 @@
  * - message: (payload: { roomId: string; text: string }) — send a chat message to the room.
  *
  * Events (server -> client)
- * - message: { userId?: number; email?: string; text: string; roomId: string; timestamp: string } — also persisted to DB
- * - message_history: { roomId: string; messages: Array<{ id, senderId, roomId, content, createdAt, senderEmail? }> } — sent on join_room
+ * - message: { userId?: number; senderName?: string; text: string; roomId: string; timestamp: string } — also persisted to DB
+ * - message_history: { roomId: string; messages: Array<{ id, senderId, roomId, content, createdAt, senderName? }> } — sent on join_room
  * - user_joined: { roomId: string; userId?: number; socketId: string }
  * - user_left: { roomId: string; userId?: number; socketId: string }
  */
@@ -29,9 +29,12 @@ import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { parse as parseCookieHeader } from 'cookie';
 import jwt from 'jsonwebtoken';
+import { eq } from 'drizzle-orm';
+import { db } from './db';
+import { users } from './db/schema';
 import { getCorsAllowlist, getJwtSecret } from './config';
 import { COOKIE_ACCESS } from './utils/authCookies';
-import { MessageService } from './services/message.service';
+import { MessageService, chatSenderDisplayName } from './services/message.service';
 import { sanitizeUserText } from './utils/sanitize';
 
 const ROOM_PREFIX_FILM = 'film:';
@@ -63,7 +66,7 @@ export function createSocketServer(httpServer: HttpServer): Server {
     path: '/socket.io',
   });
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const cookieHeader = socket.handshake.headers.cookie;
     const cookies = cookieHeader ? parseCookieHeader(cookieHeader) : {};
     const fromCookie = cookies[COOKIE_ACCESS];
@@ -73,16 +76,25 @@ export function createSocketServer(httpServer: HttpServer): Server {
       (socket.handshake.headers?.authorization as string)?.replace(/^Bearer\s+/i, '');
     if (!token) {
       socket.data.userId = undefined;
-      socket.data.email = undefined;
+      socket.data.senderName = undefined;
       return next();
     }
     try {
-      const decoded = jwt.verify(token, getJwtSecret()) as { userId: number; email?: string };
+      const decoded = jwt.verify(token, getJwtSecret()) as { userId: number };
       socket.data.userId = decoded.userId;
-      socket.data.email = decoded.email ?? undefined;
+      try {
+        const [u] = await db
+          .select({ name: users.name })
+          .from(users)
+          .where(eq(users.id, decoded.userId))
+          .limit(1);
+        socket.data.senderName = chatSenderDisplayName(u?.name ?? null, decoded.userId);
+      } catch {
+        socket.data.senderName = chatSenderDisplayName(null, decoded.userId);
+      }
     } catch {
       socket.data.userId = undefined;
-      socket.data.email = undefined;
+      socket.data.senderName = undefined;
     }
     next();
   });
@@ -95,7 +107,6 @@ export function createSocketServer(httpServer: HttpServer): Server {
       io.to(id).emit('user_joined', {
         roomId: id,
         userId: socket.data.userId,
-        email: socket.data.email,
         socketId: socket.id,
       });
       try {
@@ -130,13 +141,19 @@ export function createSocketServer(httpServer: HttpServer): Server {
       } catch {
         // persist failed; still broadcast so clients see the message
       }
-      const message = {
-        roomId,
-        text,
-        userId: socket.data.userId,
-        email: socket.data.email,
-        timestamp: createdAt,
-      };
+      const message: {
+        roomId: string;
+        text: string;
+        timestamp: string;
+        userId?: number;
+        senderName?: string;
+      } = { roomId, text, timestamp: createdAt };
+      if (socket.data.userId != null) {
+        message.userId = socket.data.userId;
+        if (socket.data.senderName != null) {
+          message.senderName = socket.data.senderName;
+        }
+      }
       io.to(roomId).emit('message', message);
     });
   });

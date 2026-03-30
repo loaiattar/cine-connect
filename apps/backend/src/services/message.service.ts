@@ -6,9 +6,20 @@ import { sanitizeUserText } from '../utils';
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 100;
 
+/** Public chat label from `users.name`; never expose email. */
+export function chatSenderDisplayName(
+  name: string | null | undefined,
+  senderId: number | null
+): string | undefined {
+  if (senderId == null) return undefined;
+  const trimmed = name?.trim();
+  if (trimmed) return trimmed;
+  return `Utilisateur #${senderId}`;
+}
+
 export const MessageService = {
   /**
-   * Persist a chat message and return it (with optional sender email).
+   * Persist a chat message and return the row (no PII beyond sender id).
    */
   async create(senderId: number | null, roomId: string, content: string) {
     const clean = sanitizeUserText(content);
@@ -28,7 +39,7 @@ export const MessageService = {
 
   /**
    * Get paginated message history for a room, newest first.
-   * Each item includes sender email when senderId is set.
+   * Each item includes `senderName` (from `users.name`) when senderId is set — emails are never returned.
    *
    * Backed by `messages_room_id_created_at_idx` (room_id, created_at) — expect an index scan on room_id
    * with rows ordered by created_at. Verify with:
@@ -43,7 +54,7 @@ export const MessageService = {
         roomId: messages.roomId,
         content: messages.content,
         createdAt: messages.createdAt,
-        senderEmail: users.email,
+        userName: users.name,
       })
       .from(messages)
       .leftJoin(users, eq(messages.senderId, users.id))
@@ -64,7 +75,7 @@ export const MessageService = {
         roomId: r.roomId,
         content: r.content,
         createdAt: r.createdAt,
-        senderEmail: r.senderEmail ?? undefined,
+        senderName: chatSenderDisplayName(r.userName, r.senderId),
       })),
       total: totalResult[0]?.count ?? 0,
       limit: capped,

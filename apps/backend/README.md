@@ -41,9 +41,9 @@ The same server exposes a Socket.io endpoint for real-time chat. Use the **same 
 
 | Event        | Payload                                                                 |
 |-------------|-------------------------------------------------------------------------|
-| `message`   | `{ roomId, text, userId?, email?, timestamp }` — also persisted to DB   |
+| `message`   | `{ roomId, text, userId?, senderName?, timestamp }` — also persisted to DB (no email)   |
 | `message_history` | `{ roomId, messages }` — sent to the joining client when they join a room |
-| `user_joined` | `{ roomId, userId?, email?, socketId }`                              |
+| `user_joined` | `{ roomId, userId?, socketId }`                              |
 | `user_left` | `{ roomId, userId?, socketId }`                                        |
 
 ### Example (client)

@@ -50,6 +50,8 @@ export interface UserSearchRow {
   id: number;
   name: string | null;
   avatarUrl: string | null;
+  /** When logged in and this row is not you: whether you follow them. */
+  isFollowing?: boolean;
 }
 
 export interface UserSearchResponse {
