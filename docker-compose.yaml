@@ -46,6 +46,8 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
     container_name: cine-backend
+    volumes:
+      - ./apps/backend/uploads:/app/apps/backend/uploads
     ports:
       - "3000:3000"
     # No env_file: all vars from environment below. Set secrets in a root .env
