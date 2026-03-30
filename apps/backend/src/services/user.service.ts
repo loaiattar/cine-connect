@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { users, profiles, follows } from "../db/schema";
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { notFound, sanitizeUserText } from "../utils";
 
 /** Escape `%`, `_`, and `\` for use in ILIKE … ESCAPE '\\' (PostgreSQL). */
@@ -12,6 +12,8 @@ export type PublicUserSearchRow = {
   id: number;
   name: string | null;
   avatarUrl: string | null;
+  /** When the request is authenticated: whether the viewer follows this user (omitted for guests). */
+  isFollowing?: boolean;
 };
 
 export type PublicProfileStats = {
@@ -178,7 +180,12 @@ export const UserService = {
    * Search users by name or email (email is matched internally but never returned).
    * Public DTO: id, name, avatarUrl only.
    */
-  async searchPublicUsers(rawQuery: string, limit: number, offset: number) {
+  async searchPublicUsers(
+    rawQuery: string,
+    limit: number,
+    offset: number,
+    viewerUserId: number | null = null
+  ) {
     const q = rawQuery.trim().slice(0, 100);
     if (q.length === 0) {
       return { users: [] as PublicUserSearchRow[], total: 0, limit, offset };
@@ -205,12 +212,32 @@ export const UserService = {
       .limit(limit)
       .offset(offset);
 
+    let followingIds = new Set<number>();
+    if (viewerUserId != null && rows.length > 0) {
+      const candidateIds = rows.map((r) => r.id).filter((id) => id !== viewerUserId);
+      if (candidateIds.length > 0) {
+        const links = await db
+          .select({ followingId: follows.followingId })
+          .from(follows)
+          .where(
+            and(eq(follows.followerId, viewerUserId), inArray(follows.followingId, candidateIds))
+          );
+        followingIds = new Set(links.map((l) => l.followingId));
+      }
+    }
+
     return {
-      users: rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        avatarUrl: r.avatarUrl ?? null,
-      })),
+      users: rows.map((r) => {
+        const base = {
+          id: r.id,
+          name: r.name,
+          avatarUrl: r.avatarUrl ?? null,
+        };
+        if (viewerUserId == null || r.id === viewerUserId) {
+          return base;
+        }
+        return { ...base, isFollowing: followingIds.has(r.id) };
+      }),
       total: count,
       limit,
       offset,

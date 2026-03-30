@@ -14,7 +14,12 @@ router.get("/me", authMiddleware, asyncHandler(UserController.getMe));
 router.put("/me", authMiddleware, validate(updateProfileSchema), asyncHandler(UserController.updateMe));
 router.post("/me/avatar", authMiddleware, uploadAvatar, asyncHandler(UserController.uploadAvatar));
 router.delete("/me", authMiddleware, asyncHandler(UserController.deleteMe));
-router.get("/search", validate(searchUsersSchema), asyncHandler(UserController.searchUsers));
+router.get(
+  "/search",
+  optionalAuthMiddleware,
+  validate(searchUsersSchema),
+  asyncHandler(UserController.searchUsers)
+);
 router.get(
   "/:userId/profile",
   optionalAuthMiddleware,

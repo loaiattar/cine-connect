@@ -23,6 +23,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as MovieMovieIdRouteImport } from './routes/movie.$movieId'
 import { Route as DevGlassRouteImport } from './routes/dev.glass'
@@ -97,6 +98,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const ProfileUserIdRoute = ProfileUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,7 +147,6 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
-  '/profile': typeof ProfileRouteWithChildren
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
@@ -150,6 +156,7 @@ export interface FileRoutesByTo {
   '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/profile': typeof ProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +177,7 @@ export interface FileRoutesById {
   '/dev/glass': typeof DevGlassRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/profile/': typeof ProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +199,7 @@ export interface FileRouteTypes {
     | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
+    | '/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -200,7 +209,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/notifications'
-    | '/profile'
     | '/register'
     | '/reset-password'
     | '/search'
@@ -210,6 +218,7 @@ export interface FileRouteTypes {
     | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
+    | '/profile'
   id:
     | '__root__'
     | '/'
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/dev/glass'
     | '/movie/$movieId'
     | '/profile/$userId'
+    | '/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -350,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/profile/$userId': {
       id: '/profile/$userId'
       path: '/$userId'
@@ -376,10 +393,12 @@ declare module '@tanstack/react-router' {
 
 interface ProfileRouteChildren {
   ProfileUserIdRoute: typeof ProfileUserIdRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
   ProfileUserIdRoute: ProfileUserIdRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
 }
 
 const ProfileRouteWithChildren =

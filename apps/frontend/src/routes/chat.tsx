@@ -146,7 +146,8 @@ function ChatPage() {
                         >
                           <div className="flex items-baseline gap-2">
                             <span className="shrink-0 text-xs font-medium text-accent-red">
-                              {m.senderEmail ?? "Anonyme"}
+                              {m.senderName?.trim() ||
+                                (m.senderId != null ? `Utilisateur #${m.senderId}` : "Anonyme")}
                             </span>
                             <span className="text-xs text-ink-muted">{formatMessageTime(m.createdAt)}</span>
                           </div>

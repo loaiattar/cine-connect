@@ -4,7 +4,8 @@ import { apiClient } from "@/lib/api-client";
 export interface ChatMessage {
   id?: number;
   senderId?: number | null;
-  senderEmail?: string | null;
+  /** Public display name (`users.name`); email is never sent by the API. */
+  senderName?: string | null;
   roomId: string;
   content: string;
   createdAt: string;

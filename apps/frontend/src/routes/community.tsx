@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader2, User, Users } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2, User, UserMinus, UserPlus, Users } from "lucide-react";
 import { useUserSearch } from "@/hooks/useUserSearch";
 import { useNormalizedApiError } from "@/hooks/useNormalizedApiError";
+import { useAuth } from "@/hooks/useAuth";
+import { followService } from "@/service/follow.service";
 import { GlassPanel, PrimaryButton } from "@/components/glass";
 import { glassInputClass } from "@/lib/glass-ui";
 import { resolveMediaUrl } from "@/lib/api-origin";
 import { RoundedAvatarImage } from "@/components/ui/RoundedAvatarImage";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/community")({
   component: CommunityPage,
@@ -16,6 +20,24 @@ const DEBOUNCE_MS = 350;
 const PAGE_SIZE = 20;
 
 function CommunityPage() {
+  const queryClient = useQueryClient();
+  const { user: currentUser } = useAuth();
+  const myId = currentUser?.userId ?? null;
+
+  const followToggle = useMutation({
+    mutationFn: async (vars: { userId: number; follow: boolean }) => {
+      if (vars.follow) {
+        await followService.follow(vars.userId);
+      } else {
+        await followService.unfollow(vars.userId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users", "search"] });
+      queryClient.invalidateQueries({ queryKey: ["following"] });
+    },
+  });
+
   const [inputValue, setInputValue] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -94,22 +116,61 @@ function CommunityPage() {
                 const label = membre.name?.trim() || `Utilisateur #${membre.id}`;
                 const avatar = membre.avatarUrl?.trim() || null;
                 const avatarSrc = resolveMediaUrl(avatar);
+                const isSelf = myId != null && membre.id === myId;
+                const showFollow =
+                  myId != null && !isSelf && typeof membre.isFollowing === "boolean";
+                const following = membre.isFollowing === true;
+                const busy = followToggle.isPending && followToggle.variables?.userId === membre.id;
+
                 return (
                   <li key={membre.id}>
-                    <Link
-                      to="/profile/$userId"
-                      params={{ userId: String(membre.id) }}
-                      className="flex items-center gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 backdrop-blur-[var(--glass-blur)] transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]"
-                    >
-                      {avatarSrc ? (
-                        <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-12 w-12" />
-                      ) : (
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
-                          <User className="h-6 w-6 text-ink-muted" />
-                        </div>
+                    <div
+                      className={cn(
+                        "flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-4 py-3 backdrop-blur-[var(--glass-blur)]",
+                        "transition-colors hover:border-[var(--glass-border-strong)] hover:bg-[var(--glass-bg-elevated)]"
                       )}
-                      <span className="font-semibold text-ink">{label}</span>
-                    </Link>
+                    >
+                      <Link
+                        to="/profile/$userId"
+                        params={{ userId: String(membre.id) }}
+                        className="flex min-w-0 flex-1 items-center gap-3"
+                      >
+                        {avatarSrc ? (
+                          <RoundedAvatarImage src={avatarSrc} alt="" sizeClassName="h-12 w-12" />
+                        ) : (
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--glass-bg-elevated)] ring-1 ring-[var(--glass-border)]">
+                            <User className="h-6 w-6 text-ink-muted" />
+                          </div>
+                        )}
+                        <span className="min-w-0 truncate font-semibold text-ink">{label}</span>
+                      </Link>
+                      {isSelf && (
+                        <span className="shrink-0 text-xs text-ink-muted">Vous</span>
+                      )}
+                      {showFollow && (
+                        <PrimaryButton
+                          type="button"
+                          disabled={busy}
+                          className="!shrink-0 !px-3 !py-1.5 text-xs"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            followToggle.mutate({ userId: membre.id, follow: !following });
+                          }}
+                        >
+                          {following ? (
+                            <>
+                              <UserMinus className="mr-1 inline h-3.5 w-3.5" aria-hidden />
+                              Ne plus suivre
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus className="mr-1 inline h-3.5 w-3.5" aria-hidden />
+                              Suivre
+                            </>
+                          )}
+                        </PrimaryButton>
+                      )}
+                    </div>
                   </li>
                 );
               })}

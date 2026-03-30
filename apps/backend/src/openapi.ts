@@ -171,11 +171,13 @@ export const openApiSpec = {
       },
       UserSearchUser: {
         type: "object",
-        description: "Public user summary for search (no email)",
+        description:
+          "Public user summary for search (no email). When authenticated, includes isFollowing for users other than the viewer.",
         properties: {
           id: { type: "integer" },
           name: { type: "string", nullable: true },
           avatarUrl: { type: "string", nullable: true },
+          isFollowing: { type: "boolean", description: "Present when caller is logged in and row is not the viewer" },
         },
         required: ["id", "name", "avatarUrl"],
       },
@@ -294,7 +296,7 @@ export const openApiSpec = {
           roomId: { type: "string" },
           content: { type: "string" },
           createdAt: { type: "string", format: "date-time" },
-          senderEmail: { type: "string", nullable: true },
+          senderName: { type: "string", nullable: true, description: "Display name from user profile; email is never exposed." },
         },
       },
       MessageHistoryResponse: {
